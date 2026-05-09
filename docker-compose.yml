@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: lexicon
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lexicon_secret}
+      POSTGRES_DB: living_lexicon
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lexicon -d living_lexicon"]
+      interval: 10s
+      retries: 6
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-lexicon_secret}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+    ports:
+      - "127.0.0.1:7474:7474"   # browser UI
+      - "127.0.0.1:7687:7687"   # bolt protocol
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p \"$${NEO4J_PASSWORD:-lexicon_secret}\" 'RETURN 1' || exit 1"]
+      interval: 15s
+      retries: 8
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:11434/api/tags || exit 1"]
+      interval: 15s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-lexicon_secret}
+      POSTGRES_URL: postgresql+asyncpg://lexicon:${POSTGRES_PASSWORD:-lexicon_secret}@postgres:5432/living_lexicon
+      POSTGRES_SYNC_URL: postgresql://lexicon:${POSTGRES_PASSWORD:-lexicon_secret}@postgres:5432/living_lexicon
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3
+      ENABLE_WRITE_ENDPOINTS: ${ENABLE_WRITE_ENDPOINTS:-false}
+      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN:-}
+      REQUIRE_API_KEY: ${REQUIRE_API_KEY:-false}
+      PUBLIC_API_KEY: ${PUBLIC_API_KEY:-}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-120}
+      APP_ENV: ${APP_ENV:-development}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  ollama_data:
