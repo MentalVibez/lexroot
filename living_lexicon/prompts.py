@@ -4,6 +4,17 @@ Pure string construction — no LLM instantiation here.
 Extracted from api/ai_engine.py so prompts are independently testable and overridable.
 """
 
+def _select_eras(era_meanings: list[dict], max_eras: int = 4) -> list[dict]:
+    """Keep first + last eras (shows the arc), fill remaining slots by source authority."""
+    if len(era_meanings) <= max_eras:
+        return era_meanings
+    endpoints = {0, len(era_meanings) - 1}
+    middle = [(i, e) for i, e in enumerate(era_meanings) if i not in endpoints]
+    middle.sort(key=lambda x: (x[1].get("source_tier") or 99, x[0]))
+    keep = endpoints | {i for i, _ in middle[: max_eras - 2]}
+    return [e for i, e in enumerate(era_meanings) if i in keep]
+
+
 CONTEXT_INSTRUCTIONS: dict[str, str] = {
     "biblical":  "The reader is working through a KJV Bible passage. Lean on biblical examples (1611 translation, Paul's letters, Psalms). ",
     "legal":     "The reader is working through a historical legal document. Lean on examples from common law or legal Latin. ",
@@ -29,6 +40,7 @@ def build_drift_prompt(
     era_block = ""
     authority_line = ""
     if era_meanings:
+        era_meanings = _select_eras(era_meanings)
         lines = [
             f"  - {e['era_name']} ({e['era_start']}–{e['era_end']}): \"{e['meaning']}\""
             + (f" [{e['source_short_name']}]" if e.get("source_short_name") else "")

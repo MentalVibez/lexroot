@@ -99,3 +99,53 @@ def test_word_detective_uses_germanic_root_for_silent_letter_history():
 
     assert result.classification == "historical_exception"
     assert result.historical_exceptions[0]["label"] == "silent k"
+
+
+def test_word_detective_can_use_curated_spelling_history(tmp_path, monkeypatch):
+    from living_lexicon import word_detective
+
+    path = tmp_path / "spelling_history.csv"
+    path.write_text(
+        "word,phonics_rule_applies,standard_phonics_rule,spelling_history_type,exception_reason,"
+        "spelling_explanation,root_influence,evidence_grade,confidence_reason\n"
+        "debt,false,,latin_learned_spelling,Restored b from Latin debitum,"
+        "The spelling keeps a learned Latin b that is not pronounced.,Latin debitum,C,"
+        "Specialist etymological source supports the learned spelling.\n",
+        encoding="utf-8",
+    )
+    word_detective.load_spelling_history.cache_clear()
+    monkeypatch.setattr(word_detective, "DEFAULT_SPELLING_HISTORY", path)
+    monkeypatch.setattr(word_detective, "load_spelling_history", word_detective.lru_cache(maxsize=1)(lambda p=str(path): {
+        "debt": {
+            "word": "debt",
+            "phonics_rule_applies": "false",
+            "spelling_history_type": "latin_learned_spelling",
+            "exception_reason": "Restored b from Latin debitum",
+            "spelling_explanation": "The spelling keeps a learned Latin b that is not pronounced.",
+            "root_influence": "Latin debitum",
+            "evidence_grade": "C",
+            "confidence_reason": "Specialist etymological source supports the learned spelling.",
+        }
+    }))
+
+    historian = WordHistorian(
+        store=FakeStore({
+            "debt": {
+                "name": "debt",
+                "language": "English",
+                "definition": "Something owed.",
+                "root": "debitum",
+                "root_meaning": "thing owed",
+                "root_origin": "Latin",
+                "cognates": [],
+            }
+        }),
+        llm=None,
+    )
+
+    result = historian.word_detective("debt")
+
+    assert result.classification == "historical_exception"
+    assert result.spelling_history_type == "latin_learned_spelling"
+    assert result.phonics_rule_applies is False
+    assert result.evidence_grade == "C"

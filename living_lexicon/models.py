@@ -128,5 +128,13 @@ class WordDetectiveResult:
     confidence: float
     summary: str
     root_clue: dict
+    phonics_rule_applies: bool | None = None
+    standard_phonics_rule: str | None = None
+    spelling_history_type: str | None = None
+    exception_reason: str | None = None
+    spelling_explanation: str | None = None
+    root_influence: str | None = None
+    evidence_grade: str | None = None
+    confidence_reason: str | None = None
     standard_rules: list[dict] = field(default_factory=list)
     historical_exceptions: list[dict] = field(default_factory=list)

@@ -10,7 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from api.middleware import configure_middleware
-from api.routes import admin, ai, eras, health, pg_words, sources, words
+from api.routes import (
+    admin, ai, citations, contributions, eras, frequency,
+    health, pg_senses, pg_words, relations, semantic_fields, snapshots, sources, words,
+)
 from living_lexicon.config import LexiconConfig
 
 
@@ -73,9 +76,16 @@ configure_middleware(app)
 app.include_router(health.router)
 app.include_router(words.router)
 app.include_router(pg_words.router)
+app.include_router(pg_senses.router)
+app.include_router(citations.router)
+app.include_router(snapshots.router)
+app.include_router(frequency.router)
+app.include_router(semantic_fields.router)
+app.include_router(contributions.router)
 app.include_router(ai.router)
 app.include_router(eras.router)
 app.include_router(sources.router)
+app.include_router(relations.router)
 app.include_router(admin.router)
 
 

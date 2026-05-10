@@ -117,3 +117,52 @@ async def test_upsert_requires_auth(app_client):
     resp = await app_client.put("/pg/word", json={"word": "Secret"})
     # ENABLE_WRITE_ENDPOINTS=false (default) → 404; endpoints hidden
     assert resp.status_code == 404
+
+
+async def test_vitality_shape(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="awful")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "awful-oe-1",
+        "word": "awful",
+        "definition": "Inspiring awe or dread.",
+        "first_attested_year": 1000,
+        "last_attested_year": 1300,
+        "evidence_grade": "B",
+        "semantic_change_type": "pejoration",
+    }, headers=write_headers)
+
+    resp = await app_client.get("/pg/word/awful/vitality")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["word"] == "awful"
+    assert isinstance(data["vitality_score"], float)
+    assert 0.0 <= data["vitality_score"] <= 1.0
+    m = data["metrics"]
+    assert {"stability", "drift_velocity", "attestation_recency", "sense_count", "status"} <= set(m.keys())
+
+
+async def test_vitality_word_not_found(app_client):
+    resp = await app_client.get("/pg/word/nonexistent/vitality")
+    assert resp.status_code == 404
+
+
+async def test_era_check_flags_anachronism(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="prevent", definition="To come before.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "prevent-me-1",
+        "word": "prevent",
+        "definition": "To come before; to precede.",
+        "era_name": "Middle English",
+        "first_attested_year": 1350,
+    }, headers=write_headers)
+
+    resp = await app_client.post("/pg/word/era-check", json={
+        "text": "He tried to prevent the procession from reaching the cathedral.",
+        "era_name": "Middle English",
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["era_name"] == "Middle English"
+    assert data["words_checked"] > 0
+    flagged_words = [f["word"] for f in data["flagged"]]
+    assert "prevent" in flagged_words
