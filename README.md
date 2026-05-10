@@ -1,11 +1,16 @@
-# lexroot
+# The Living Lexicon
 
-**Etymology API backbone** — a production-ready FastAPI service providing word lookup,
-phonics classification, semantic drift, and historical context for 517,000+ English words
-including medical and clinical terminology.
+**Programmable Historical Semantic Intelligence** — a production-ready FastAPI service
+for querying how words changed meaning across time. Built for PhD linguists who need
+citable evidence, educators who need step-by-step etymology paths, and developers who
+need an embeddable historical word API.
 
-Built to be embedded in other projects: chatbots, AI agents, educational apps, and
-language tools. Ships with a LangChain plugin for zero-friction AI integration.
+Sits between three existing markets without competing in any:
+- Dictionary apps (static, consumer, not programmable)
+- Corpus linguistics tools (academic, expensive, not developer-friendly)
+- Brand monitoring tools (real-time frequency, no historical depth)
+
+Ships with a LangChain plugin for zero-friction AI agent integration.
 
 ---
 
@@ -14,28 +19,13 @@ language tools. Ships with a LangChain plugin for zero-friction AI integration.
 | Layer | Technology | Purpose |
 |---|---|---|
 | API | FastAPI 0.111+ | HTTP layer, auth, rate limiting |
-| Word index | PostgreSQL + SQLAlchemy 2.0 async | 517k words with definitions, phonemes, etymology |
-| Etymology graph | Neo4j 5 | Word relationships, historical eras, source claims |
+| Relational store | PostgreSQL + SQLAlchemy 2.0 async | Words, senses, attestations, relations, morphemes |
+| Graph store | Neo4j 5 | Etymological trees, cognates, cross-word relationships |
+| Scoring | `living_lexicon/vitality.py` | Authority-weighted vitality score (V = 0.4·S + 0.4·D + 0.2·A) |
 | LLM | Ollama (local) | Semantic drift, teaching cards, fact-checking |
-| Migrations | Alembic | Schema versioning |
+| Migrations | Alembic | 13 versioned migrations (001–013) |
 | Plugin | LangChain | Ready-made tools for AI agents |
-
----
-
-## Word corpus
-
-**517,977 unique words** built from six sources (highest priority first):
-
-| Source | Words | What's included |
-|---|---|---|
-| Etymology seed databases (v1+v2) | 138 | Hand-curated with full etymology |
-| Collins Scrabble Words (2019) | ~279k | Full definitions |
-| Primary lexicon | ~3k | Core vocabulary |
-| dwyl/english-words | ~370k | Broad coverage |
-| Medical supplement | ~59k | ICD-10, DSM-5, clinical terminology, acronyms (ADHD, MRI, CBT…) |
-
-Each word stores: `definition`, `phonemes`, `etymology_root`, `origin_language`,
-`language_family`, `historical_context`, and `semantic_drift_history` (JSONB).
+| SDK | `living_lexicon/` | Pure Python, pip-installable, zero DB dependencies |
 
 ---
 
@@ -45,181 +35,364 @@ Each word stores: `definition`, `phonemes`, `etymology_root`, `origin_language`,
 
 ```bash
 cp .env.example .env
-# Edit .env — set strong passwords for POSTGRES_PASSWORD and NEO4J_PASSWORD
+# Set POSTGRES_PASSWORD, NEO4J_PASSWORD, ADMIN_API_TOKEN
 ```
 
-### 2. Start services
+### 2. Start services and API
 
 ```bash
-docker-compose up -d
+make dev
+# Starts: postgres, neo4j, ollama (detached), then the API (foreground)
 ```
 
-All services (PostgreSQL, Neo4j, Ollama, API) are localhost-bound by default.
-
-### 3. Apply database migrations
+### 3. Apply migrations
 
 ```bash
-POSTGRES_URL=postgresql+asyncpg://lexicon:<password>@localhost:5432/living_lexicon \
-  alembic upgrade head
+make migrate
+# Runs: alembic upgrade head  (migrations 001–013)
 ```
 
-### 4. Load the word corpus
+### 4. Load corpus data
 
 ```bash
-# Generate the master lexicon (downloads dwyl word list ~10 MB)
-python3 -m ingestor.words_merge_importer
-
-# Generate medical supplement
-python3 -m ingestor.medical_importer
-
-# Re-merge to include medical terms
-python3 -m ingestor.words_merge_importer --no-fetch
-
-# Build one clean DB feed, including words and curated idioms.
-# Entries still missing definitions are excluded by default.
-python3 -m ingestor.lexicon_build_importer
-
-# Preview the import
-python3 -m ingestor.words_csv_importer \
-  --path Words/build/lexicon_import.csv \
-  --dry-run
-
-# Generate a data quality report
-python3 -m ingestor.data_quality_validator
-# Report includes definition source/license counts and rejected-entry review data.
-
-# Import into PostgreSQL (~5 min for 517k+ entries)
-python3 -m ingestor.words_csv_importer \
-  --path Words/build/lexicon_import.csv \
-  --batch-size 2000
+make import-gcide       # Webster's 1913 (~40k words) — requires Words/gcide-0.54.zip
+make import-frequency   # wordfreq Zipf scores → words table
+make import-senses      # curated senses + attestations from Words/sources/senses.csv
+make import-morphemes   # morpheme decompositions from Words/morphemes.csv (author first)
+make sync-neo4j         # sync PostgreSQL words/senses → Neo4j graph
 ```
 
-### 5. Build etymology data (optional, offline ~15 s)
-
-```bash
-python3 -m ingestor.etymology_pipeline --skip-wiktionary
-# Full pass with Wiktionary phonemes (requires internet, resumable):
-python3 -m ingestor.etymology_pipeline
-
-# Optional: import page-cited Shipley root claims from Words/sources/shipley_roots.csv
-python3 -m ingestor.shipley_importer --dry-run
-
-# Optional: import historically scoped senses and dated attestations
-python3 -m ingestor.senses_importer --dry-run
-```
-
-### 6. Access the API
+### 5. Verify
 
 ```
-http://localhost:8000/docs    ← interactive Swagger UI
+http://localhost:8000/docs    ← Swagger UI (all endpoints)
 http://localhost:8000/health  ← readiness probe
+```
+
+---
+
+## All make targets
+
+```bash
+make dev              # Start Docker services + app
+make test             # Fast suite — no Neo4j/Ollama/PostgreSQL required (39 tests)
+make test-all         # pytest -v across all testpaths
+make migrate          # alembic upgrade head
+make import-senses    # python -m ingestor.senses_importer
+make import-gcide     # Webster's 1913 from Words/gcide-0.54.zip
+make import-frequency # wordfreq Zipf → words.wordfreq_zipf
+make import-morphemes # morpheme CSV → morphemes table
+make sync-neo4j       # PostgreSQL → Neo4j graph
+make make-snapshot    # Prints curl command for POST /pg/snapshots
+make lint             # ruff check living_lexicon/ ingestor/ api/ langchain_plugin/
+make typecheck        # mypy living_lexicon/
+make help             # List all targets
 ```
 
 ---
 
 ## API reference
 
-### Word index (PostgreSQL — fast, no graph required)
+### Words (PostgreSQL — fast, no graph required)
 
 ```bash
-# Look up a word
-GET /pg/word/{word}
-
-# Paginated list
-GET /pg/words?offset=0&limit=50
-# → { "items": [...], "total": 517977, "offset": 0, "limit": 50 }
-
-# Prefix search
-GET /pg/words/search?q=char&limit=20
-
-# Historical senses and attestations
-GET /pg/word/{word}/senses
-GET /pg/sense/{sense_id}
-GET /pg/sense/{sense_id}/attestations
-
-# Scholarly quality fields on senses/attestations include:
-# evidence_grade, confidence_reason, citation, page, entry_headword, review_status
-
-# Upsert (requires admin token)
-PUT /pg/word
-Authorization: Bearer <ADMIN_API_TOKEN>
-{ "word": "Charity", "definition": "...", "phonemes": "/ˈtʃær.ɪ.ti/",
-  "origin_language": "Latin", "language_family": "Indo-European (Italic)" }
+GET  /pg/word/{word}                          # word record
+GET  /pg/words?offset=0&limit=50              # paginated list → { items, total, offset, limit }
+GET  /pg/words/search?q=char&limit=20         # prefix search
+PUT  /pg/word                                 # upsert (admin token required)
 ```
 
-### Etymology & context (Neo4j — rich relationships)
+### Senses and attestations
 
 ```bash
-GET /word/{word}                    # Full word context
-GET /word/{word}/etymology-claims   # Source-attributed etymology evidence
-GET /word/{word}/retrieval-bundle   # Complete context + claims + timeline for AI use
-GET /word/{word}/tree               # Root tree
-GET /word/{word}/cognates           # Related words sharing the same root
-GET /search?q={query}&limit=10      # Full-text search
+GET  /pg/word/{word}/senses                   # historical senses, ordered by first_attested_year
+     ?learner_level=beginner                  # filter: beginner | intermediate | advanced | research
+     ?reconstruction_level=attested           # filter: attested | reconstructed | disputed | folk_etymology
+GET  /pg/sense/{sense_id}                     # single sense
+GET  /pg/sense/{sense_id}/attestations        # dated quotation evidence
+PUT  /pg/sense                                # upsert (admin)
+POST /pg/attestation                          # add quotation (admin)
 ```
 
-### Historical eras
+### Vitality and semantic drift
 
 ```bash
-GET /word/{word}/era-timeline        # Word meaning across 7 historical eras
-GET /word/{word}/era/{era_name}      # Meaning in a specific era
-GET /era/by-year/{year}              # Which era a year falls in
-GET /era/{era_name}/words            # All words documented in an era
+GET  /pg/word/{word}/vitality
+# → { vitality_score, metrics: { stability, drift_velocity, attestation_recency,
+#     status, sense_count, last_attested }, frequency_zipf, note }
+# Stability is authority-weighted: Tier 1 sources (OED, de Vaan) count 4× more than Tier 4
+
+GET  /pg/word/{word}/drift-trajectory
+# → { word, trajectory: [{ era, change_type, definition_excerpt, evidence_grade }],
+#     sequence, unique_change_types, spans_years }
+
+POST /pg/drift/compare
+# Body: { "words": ["prevent", "awful", "nice"], "era": "Middle English" }
+# → per-word vitality + era senses — core endpoint for comparative historical semantics
+
+GET  /pg/semantic-fields?domain=law&change_type=pejoration&era=Early+Modern+English&limit=50
+# → senses that share domain/change_type/era — at least one filter required
+```
+
+### Etymology path (educator endpoint)
+
+```bash
+GET  /pg/word/{word}/etymology-path
+# → ordered steps oldest → newest: proto-language ancestors → historical eras → modern form
+# { word, steps: [{ form, language, era_or_period, meaning, reconstruction_level }],
+#   origin_language, language_family, total_steps }
+```
+
+### Word relations
+
+```bash
+GET  /pg/word/{word}/relations?type=synonym   # relation types: synonym | antonym | hypernym |
+                                              # hyponym | meronym | holonym | cognate |
+                                              # derived_from | root_of | calque_of | doublet_of
+GET  /pg/word/{word}/family                   # derivational family BFS via derived_from/root_of
+     ?depth=3&limit=50                        # (up to depth 5, max 200 words)
+POST /pg/word/relation                        # add relation edge (admin)
+```
+
+### Morpheme decomposition
+
+```bash
+GET  /pg/word/{word}/morphemes                # prefix/root/suffix breakdown
+# → [{ morpheme, role, origin_language, gloss, position }]
+
+GET  /pg/morpheme/{morpheme}/words?role=root  # all words sharing a morpheme
+# Key research endpoint: all words with Latin suffix -tion attested before 1600
+```
+
+### Period accuracy checking
+
+```bash
+POST /pg/word/era-check
+# Body: { "text": "He tried to prevent the attack.", "era_name": "Middle English" }
+# → flags words whose meaning in that era differs from the modern definition
+# { era_name, words_checked, flagged_count, flagged: [{ word, era_definition, modern_definition }] }
+```
+
+### Citation export (academic)
+
+```bash
+GET  /pg/sense/{sense_id}/cite?format=bibtex  # format: bibtex | apa | mla | chicago
+GET  /pg/word/{word}/cite?format=bibtex       # all senses, multi-entry BibTeX block
+# Citation key: living_lexicon_{word}_{source_slug}_{first_attested_year}
+```
+
+### Dataset snapshots (reproducible research)
+
+```bash
+POST /pg/snapshots                            # admin — serialize full corpus to JSONB
+GET  /pg/snapshots                            # list all snapshots (no data)
+GET  /pg/snapshots/{tag}                      # full snapshot record
+GET  /pg/snapshots/{tag}/export?format=jsonl  # StreamingResponse download (jsonl | csv)
+```
+
+### Frequency trending
+
+```bash
+GET  /pg/words/trending?direction=rising&min_zipf=4.0&limit=50
+# direction: rising | declining — ranked by vitality score
+```
+
+### Contributor workflow
+
+```bash
+POST /contribute/sense                        # propose a sense (contributor token)
+POST /contribute/attestation                  # propose a quotation (contributor token)
+GET  /contribute/my-submissions?status=pending # track your submissions
+
+GET  /admin/review/pending?word=awful         # list pending contributions (admin)
+PATCH /admin/review/sense/{sense_id}          # approve or reject (admin)
+# Body: { "action": "approve", "reviewer_notes": "..." }
+```
+
+### Etymology graph (Neo4j)
+
+```bash
+GET /word/{word}                    # full word context
+GET /word/{word}/etymology-claims   # source-attributed etymology evidence
+GET /word/{word}/retrieval-bundle   # complete context + claims + timeline for AI
+GET /word/{word}/tree               # root tree
+GET /word/{word}/cognates           # related words sharing the same root
+GET /search?q={query}&limit=10      # full-text search
+GET /word/{word}/era-timeline       # word meaning across historical eras
+GET /era/by-year/{year}             # which era a year falls in
+GET /sources                        # all etymology sources with authority tiers
 ```
 
 ### AI features (Ollama)
 
 ```bash
-GET /word/{word}/drift?context=legal      # Semantic drift explanation
-GET /word/{word}/teaching-card?level=k3   # Classroom-ready teaching card
-POST /word/{word}/fact-check              # Validate an AI response for accuracy
-  { "answer": "...", "strict": true }
-GET /word/{word}/word-detective           # Phonics rule classification
-```
-
-Word Detective can be strengthened with curated spelling-history evidence in
-`Words/sources/spelling_history.csv`. See `docs/word_detective_quality.md`.
-
-### Sources
-
-```bash
-GET /sources                      # All etymology sources with authority tiers
-GET /sources/{slug}               # Source details
-GET /word/{word}/sources          # Sources contributing to a word's etymology
-```
-
-### Health & admin
-
-```bash
-GET /health                       # Readiness: checks PostgreSQL, Neo4j, Ollama
-POST /ingest                      # Ingest a new word into the graph (admin only)
+GET  /word/{word}/drift?context=legal       # semantic drift explanation
+GET  /word/{word}/teaching-card?level=k3   # classroom-ready teaching card
+POST /word/{word}/fact-check               # validate an AI response for accuracy
+GET  /word/{word}/word-detective           # phonics rule classification
 ```
 
 ---
 
-## Security
+## Access control
 
-Write endpoints are **disabled by default**. Enable them only when needed:
+Two token tiers — both passed as `Authorization: Bearer <token>`:
 
-```bash
-ENABLE_WRITE_ENDPOINTS=true
-ADMIN_API_TOKEN=<strong-random-token>
+| Token | Env var | Controls |
+|---|---|---|
+| **Admin** | `ADMIN_API_TOKEN` | PUT /pg/word, PUT /pg/sense, POST /pg/attestation, POST /pg/snapshots, POST /pg/word/relation, GET+PATCH /admin/review/\* — also requires `ENABLE_WRITE_ENDPOINTS=true` |
+| **Contributor** | `CONTRIBUTOR_API_TOKEN` | POST /contribute/sense, POST /contribute/attestation, GET /contribute/my-submissions |
+
+Contributor senses always land with `review_status="pending"` and are invisible in public search until approved by an admin. Contributor identity is stored as `sha256(token:word)[:16]` — traceable but the raw token is never persisted.
+
+Write endpoints return **404** (not 401) when `ENABLE_WRITE_ENDPOINTS=false`, so their existence is not revealed to unauthenticated callers.
+
+---
+
+## Vitality score
+
+`compute_vitality(senses, current_year=2026, zipf=None)` in `living_lexicon/vitality.py`:
+
+```
+V = 0.4·S + 0.4·D + 0.2·A
 ```
 
-For public deployments, set `APP_ENV=production`. The app will refuse to start if:
+| Component | What it measures |
+|---|---|
+| **S** (stability) | Evidence grade × source authority tier. Tier 1 sources (OED, de Vaan, Beekes) weight 1.0; Tier 4 (community) 0.25. Minus semantic change type diversity. |
+| **D** (drift velocity) | Change-type breadth + proportion of senses with documented drift + year span (normalized to 1000 years). |
+| **A** (attestation recency) | Harmonic decay from `last_attested_year`. When `wordfreq_zipf` is present: `A = 0.6·A_raw + 0.4·(zipf/7)`. |
+
+Status labels: `highly_stable` | `highly_evolutionary` | `active` | `established` | `declining` | `archaic`
+
+---
+
+## Testing
+
+Tests run with **no external dependencies** — no PostgreSQL, Neo4j, or Ollama required.
+
+```bash
+make test        # 39 tests, ~0.15 s
+make test-all    # all testpaths including importer and SDK tests
+```
+
+HTTP endpoint tests monkeypatch all `crud.*` functions with in-memory dict-backed fakes.
+SDK tests use `InMemoryStore` and `StubLLMProvider` from `living_lexicon/testing.py`.
+
+```python
+# HTTP test pattern
+async def test_vitality_shape(app_client, write_headers):
+    await app_client.put("/pg/word", json={"word": "awful"}, headers=write_headers)
+    resp = await app_client.get("/pg/word/awful/vitality")
+    assert resp.status_code == 200
+    assert 0.0 <= resp.json()["vitality_score"] <= 1.0
+
+# SDK test pattern
+from living_lexicon.testing import InMemoryStore, WordHistorianFactory
+from tests.factories import WordSeedFactory, EraTimelineFactory
+
+store = InMemoryStore(
+    words=WordSeedFactory.build_keyed("prevent", root_meaning="to come before"),
+    era_timelines=EraTimelineFactory.build_timeline("prevent", {
+        "Middle English": "to come before",
+        "Early Modern English": "to hinder",
+    }),
+)
+h = WordHistorianFactory.build(store=store, llm_response="It originally meant X.")
+```
+
+**Never** import `Neo4jStore` or `OllamaProvider` in tests. **Never** use `aiosqlite`.
+If you add a new CRUD function used by an endpoint, add a matching monkeypatch to `tests/conftest.py`.
+
+---
+
+## Project structure
+
+```
+the-living-lexicon/
+├── living_lexicon/          # SDK — pip-installable, zero external dependencies
+│   ├── core.py              # WordHistorian — single entry point
+│   ├── vitality.py          # compute_vitality() — authority-weighted V score
+│   ├── citation_formatter.py  # to_bibtex/to_apa/to_mla/to_chicago
+│   ├── etymology_path.py    # build_etymology_path() — ordered step builder
+│   ├── word_detective.py    # phonics rule classifier
+│   ├── testing.py           # InMemoryStore, StubLLMProvider, WordHistorianFactory
+│   └── providers/           # Neo4jStore (neo4j extra), OllamaProvider (ollama extra)
+├── api/
+│   ├── main.py              # app + router registration
+│   ├── security.py          # require_admin_token(), require_contributor_token()
+│   └── routes/
+│       ├── pg_words.py      # /pg/word — CRUD, vitality, era-check, morphemes, etymology-path
+│       ├── pg_senses.py     # /pg/sense, /pg/attestation (+ ?learner_level filter)
+│       ├── relations.py     # /pg/word/{word}/relations, /family, POST /pg/word/relation
+│       ├── semantic_fields.py  # /pg/semantic-fields, /pg/drift/compare, /drift-trajectory
+│       ├── citations.py     # /pg/sense/{id}/cite, /pg/word/{word}/cite
+│       ├── snapshots.py     # /pg/snapshots — create, list, export
+│       ├── frequency.py     # /pg/words/trending
+│       ├── contributions.py # /contribute/sense|attestation|my-submissions
+│       └── admin.py         # /admin/review/pending, /admin/review/sense/{id}
+├── db/
+│   ├── models.py            # Word, Sense, Attestation, DatasetSnapshot,
+│   │                        # WordRelation, Morpheme ORM classes
+│   └── crud.py              # all async CRUD functions
+├── alembic/versions/        # 13 migrations (001–013)
+├── ingestor/                # data import scripts
+│   ├── base.py              # BaseImporter ABC + ImportResult
+│   ├── gcide_importer.py    # Webster's 1913 (gcide-0.54.zip → PostgreSQL)
+│   ├── senses_importer.py   # curated senses + attestations CSV
+│   ├── shipley_importer.py  # Shipley root claims
+│   ├── frequency_pg_importer.py  # wordfreq Zipf scores
+│   ├── morphemes_importer.py     # morpheme CSV (prefix/root/suffix)
+│   ├── neo4j_sync.py        # PostgreSQL → Neo4j sync
+│   └── sources_catalog.py   # 62 sources with authority tiers 1–4
+├── Words/sources/           # curated CSV data files (committed, versioned)
+├── docs/                    # data quality standards and field guides
+├── tests/
+│   ├── conftest.py          # CRUD monkeypatches, SDK fixtures, app_client
+│   ├── factories.py         # WordPayloadFactory, SensePayloadFactory, ...
+│   ├── test_pg_words.py
+│   ├── test_pg_senses.py
+│   ├── test_semantic_fields.py
+│   └── test_contributions.py
+└── langchain_plugin/        # LangChain tool wrapper
+```
+
+---
+
+## Configuration reference
+
+| Variable | Default | Notes |
+|---|---|---|
+| `APP_ENV` | `development` | Set `production` to enable security guards |
+| `DATABASE_URL` | — | psycopg2 connection string (for importers) |
+| `POSTGRES_URL` | — | asyncpg connection string (for the API) |
+| `NEO4J_URI` | `bolt://localhost:7687` | |
+| `OLLAMA_MODEL` | `llama3` | Any model pulled into Ollama |
+| `ENABLE_WRITE_ENDPOINTS` | `false` | Set `true` + `ADMIN_API_TOKEN` to unlock |
+| `ADMIN_API_TOKEN` | — | Strong random token for admin endpoints |
+| `CONTRIBUTOR_API_TOKEN` | — | Token for contributor submission endpoints |
+| `CORS_ORIGINS` | `*` | Must be explicit origins in production |
+| `RATE_LIMIT_PER_MINUTE` | `120` | Per-IP; `0` disables |
+| `LOG_LEVEL` | `INFO` | JSON-structured stdout logging |
+| `AUTO_CREATE_TABLES` | `false` | Create tables on startup (dev only; use migrations in prod) |
+
+The app **refuses to start** in production if:
 - `POSTGRES_PASSWORD` or `NEO4J_PASSWORD` is a known-weak value
-- `CORS_ORIGINS=*` (must list explicit origins)
-- Write endpoints are enabled without an `ADMIN_API_TOKEN`
+- `CORS_ORIGINS=*`
+- Write endpoints are enabled without `ADMIN_API_TOKEN`
 
-Optional read-layer protection:
+---
 
-```bash
-REQUIRE_API_KEY=true
-PUBLIC_API_KEY=<strong-random-key>     # clients send as X-API-Key header
-RATE_LIMIT_PER_MINUTE=120
-```
+## Source authority tiers
 
-See [SECURITY.md](SECURITY.md) for the full deployment checklist.
+62 sources registered in `ingestor/sources_catalog.py`:
+
+| Tier | Weight in vitality | Examples |
+|---|---|---|
+| 1 — Primary etymological | 1.0 | OED, MED, de Vaan, Beekes, Barnhart, Watkins PIE |
+| 2 — Major historical dictionaries | 0.75 | Century Dictionary, Webster 1828, Skeat |
+| 3 — Specialist references | 0.50 | Merriam-Webster, Collins, Shakespeare, KJV |
+| 4 — Supplementary | 0.25 | Partridge slang, Grose, community sources |
 
 ---
 
@@ -228,86 +401,29 @@ See [SECURITY.md](SECURITY.md) for the full deployment checklist.
 ```python
 from langchain_plugin import LexiconPlugin
 
-plugin = LexiconPlugin(
-    base_url="http://localhost:8000",
-    api_key="your-public-key",   # optional
-)
+plugin = LexiconPlugin(base_url="http://localhost:8000", api_key="your-public-key")
 tools = plugin.get_tools()
 # WordLookupTool, SemanticDriftTool, EraTimelineTool, SearchTool, GuardrailsTool
-```
 
-Use as tools in any LangChain agent:
-
-```python
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain_openai import ChatOpenAI
 
 agent = create_openai_tools_agent(ChatOpenAI(), tools, prompt)
-result = AgentExecutor(agent=agent, tools=tools).invoke(
+AgentExecutor(agent=agent, tools=tools).invoke(
     {"input": "What is the Latin root of 'charity' and how has its meaning changed?"}
 )
 ```
 
 ---
 
-## Development
+## Known content gaps
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
+These are data problems, not code problems. The API, tables, and importers are ready.
 
-# Run all tests (no running database required)
-pytest
-
-# Run only the HTTP endpoint tests
-pytest tests/test_pg_words.py -v
-```
-
-Tests use an in-memory SQLite database — no PostgreSQL or Neo4j needed.
-
----
-
-## Project structure
-
-```
-api/              FastAPI routes, middleware, schemas, security
-  routes/
-    pg_words.py   PostgreSQL word index endpoints (/pg/*)
-    words.py      Neo4j etymology endpoints
-    ai.py         Semantic drift, teaching cards, fact-check
-    eras.py       Historical era endpoints
-    sources.py    Etymology source endpoints
-    health.py     Readiness probe
-db/               SQLAlchemy models, CRUD, Alembic migrations
-alembic/          Schema migration versions
-ingestor/         Data pipeline scripts
-  words_merge_importer.py     Build master lexicon from all sources
-  medical_importer.py         ICD-10 + DSM-5 + clinical vocabulary
-  etymology_pipeline.py       Enrich with etymwn, Collins hints, Wiktionary
-  lexicon_build_importer.py   Build one clean word/idiom import CSV
-  data_quality_validator.py   Report missing definitions, weak sources, era issues
-  words_csv_importer.py       Bulk-load CSV into PostgreSQL
-  etymology_agents/           Three-agent etymology enrichment system
-living_lexicon/   Core SDK (word context, drift, eras, prompts)
-langchain_plugin/ Ready-made LangChain tools
-Words/            Data directory (large files excluded from git — see readme.txt)
-tests/            HTTP endpoint tests
-```
-
----
-
-## Configuration reference
-
-Copy `.env.example` to `.env`. Key variables:
-
-| Variable | Default | Notes |
-|---|---|---|
-| `APP_ENV` | `development` | Set `production` to enable security guards |
-| `POSTGRES_URL` | — | asyncpg connection string |
-| `NEO4J_URI` | `bolt://localhost:7687` | |
-| `OLLAMA_MODEL` | `llama3` | Any model pulled into Ollama |
-| `ENABLE_WRITE_ENDPOINTS` | `false` | Set `true` + `ADMIN_API_TOKEN` to unlock |
-| `CORS_ORIGINS` | `*` | Must be explicit origins in production |
-| `RATE_LIMIT_PER_MINUTE` | `120` | Per-IP; `0` disables |
-
-Full list with documentation: [`.env.example`](.env.example)
+| Gap | What to do |
+|---|---|
+| `morphemes` table is empty | Author `Words/morphemes.csv` (columns: word, morpheme, role, origin_language, gloss, position, source_slug) then `make import-morphemes` |
+| `word_relations` table is empty | Add edges via `POST /pg/word/relation` (admin) or write a bulk importer from WordNet/Wiktionary relation data |
+| `learner_level` defaults to `intermediate` on all senses | Add `learner_level` column to `Words/sources/senses.csv` and re-run `make import-senses` |
+| `reconstruction_level` defaults to `attested` | Tag PIE-reconstructed senses as `reconstructed` in the senses CSV |
+| pgvector embeddings | Migration 007 adds the column; populate with any embedding model after `make import-senses` |
