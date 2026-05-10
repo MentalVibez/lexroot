@@ -75,9 +75,22 @@ python3 -m ingestor.medical_importer
 # Re-merge to include medical terms
 python3 -m ingestor.words_merge_importer --no-fetch
 
-# Import into PostgreSQL (~5 min for 517k words)
+# Build one clean DB feed, including words and curated idioms.
+# Entries still missing definitions are excluded by default.
+python3 -m ingestor.lexicon_build_importer
+
+# Preview the import
 python3 -m ingestor.words_csv_importer \
-  --path Words/english_words_master_lexicon.csv \
+  --path Words/build/lexicon_import.csv \
+  --dry-run
+
+# Generate a data quality report
+python3 -m ingestor.data_quality_validator
+# Report includes definition source/license counts and rejected-entry review data.
+
+# Import into PostgreSQL (~5 min for 517k+ entries)
+python3 -m ingestor.words_csv_importer \
+  --path Words/build/lexicon_import.csv \
   --batch-size 2000
 ```
 
@@ -87,6 +100,12 @@ python3 -m ingestor.words_csv_importer \
 python3 -m ingestor.etymology_pipeline --skip-wiktionary
 # Full pass with Wiktionary phonemes (requires internet, resumable):
 python3 -m ingestor.etymology_pipeline
+
+# Optional: import page-cited Shipley root claims from Words/sources/shipley_roots.csv
+python3 -m ingestor.shipley_importer --dry-run
+
+# Optional: import historically scoped senses and dated attestations
+python3 -m ingestor.senses_importer --dry-run
 ```
 
 ### 6. Access the API
@@ -112,6 +131,14 @@ GET /pg/words?offset=0&limit=50
 
 # Prefix search
 GET /pg/words/search?q=char&limit=20
+
+# Historical senses and attestations
+GET /pg/word/{word}/senses
+GET /pg/sense/{sense_id}
+GET /pg/sense/{sense_id}/attestations
+
+# Scholarly quality fields on senses/attestations include:
+# evidence_grade, confidence_reason, citation, page, entry_headword, review_status
 
 # Upsert (requires admin token)
 PUT /pg/word
@@ -149,6 +176,9 @@ POST /word/{word}/fact-check              # Validate an AI response for accuracy
   { "answer": "...", "strict": true }
 GET /word/{word}/word-detective           # Phonics rule classification
 ```
+
+Word Detective can be strengthened with curated spelling-history evidence in
+`Words/sources/spelling_history.csv`. See `docs/word_detective_quality.md`.
 
 ### Sources
 
@@ -254,6 +284,8 @@ ingestor/         Data pipeline scripts
   words_merge_importer.py     Build master lexicon from all sources
   medical_importer.py         ICD-10 + DSM-5 + clinical vocabulary
   etymology_pipeline.py       Enrich with etymwn, Collins hints, Wiktionary
+  lexicon_build_importer.py   Build one clean word/idiom import CSV
+  data_quality_validator.py   Report missing definitions, weak sources, era issues
   words_csv_importer.py       Bulk-load CSV into PostgreSQL
   etymology_agents/           Three-agent etymology enrichment system
 living_lexicon/   Core SDK (word context, drift, eras, prompts)

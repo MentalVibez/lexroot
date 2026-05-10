@@ -6,7 +6,10 @@ duplicating any word.
 Sources (highest → lowest priority):
   1. etymology_seed_database.csv           — 61 words with full etymology
   2. etymology_seed_database_v2.csv        — 80 words with full etymology
-  3. Collins Scrabble Words (2019).txt     — ~279k words with definitions
+  3. open_definitions.csv                  — GCIDE + OEWN + Kaikki definitions
+     (public domain / CC BY 4.0 / CC-BY-SA — generate with definitions_importer)
+     Falls back to Collins Scrabble Words (2019) if open_definitions.csv is absent
+     and Collins is present locally (Collins is a licensed dataset, not in git).
   4. english_words_primary_lexicon.csv     — ~3k words, word-only
   5. dwyl/english-words (words_alpha.txt)  — ~466k words, word-only
   6. medical_terms.csv                     — ~59k clinical/pharmaceutical terms
@@ -34,6 +37,7 @@ WORDS_DIR = Path(__file__).parent.parent / "Words"
 DEFAULT_OUTPUT = WORDS_DIR / "english_words_master_lexicon.csv"
 
 COLLINS_FILE = WORDS_DIR / "Collins Scrabble Words (2019) with definitions.txt"
+OPEN_DEFINITIONS = WORDS_DIR / "open_definitions.csv"
 PRIMARY_LEXICON = WORDS_DIR / "english_words_primary_lexicon.csv"
 SEED_V1 = WORDS_DIR / "etymology_seed_database.csv"
 SEED_V2 = WORDS_DIR / "etymology_seed_database_v2.csv"
@@ -156,6 +160,27 @@ def load_collins(path: Path) -> dict[str, WordRecord]:
             records[k] = WordRecord(
                 word=word,
                 definition=definition,
+                origin_language="",
+                language_family="",
+                historical_context="",
+            )
+    return records
+
+
+def load_open_definitions(path: Path) -> dict[str, WordRecord]:
+    """Load Words/open_definitions.csv (word, definition) — drop-in for load_collins()."""
+    records: dict[str, WordRecord] = {}
+    if not path.exists():
+        return records
+    with path.open("r", encoding="utf-8", newline="") as fh:
+        for row in csv.DictReader(fh):
+            word_raw = row.get("word", "").strip()
+            if not word_raw:
+                continue
+            word = _capitalise(word_raw)
+            records[_key(word)] = WordRecord(
+                word=word,
+                definition=row.get("definition", "").strip(),
                 origin_language="",
                 language_family="",
                 historical_context="",
@@ -292,9 +317,26 @@ def main() -> None:
     print(f"  seed_v1: {len(seed_v1):,} words")
     print(f"  seed_v2: {len(seed_v2):,} words")
 
-    print("\n[2/7] Loading Collins Scrabble Words (2019) …")
-    collins = load_collins(COLLINS_FILE)
-    print(f"  Collins: {len(collins):,} words")
+    print("\n[2/7] Loading open-license definitions …")
+    open_defs = load_open_definitions(OPEN_DEFINITIONS)
+    if open_defs:
+        print(f"  open_definitions.csv: {len(open_defs):,} words")
+        collins = open_defs
+    elif COLLINS_FILE.exists():
+        print(
+            "  [fallback] open_definitions.csv not found — using Collins Scrabble Words.\n"
+            "             Run: python3 -m ingestor.definitions_importer",
+            file=sys.stderr,
+        )
+        collins = load_collins(COLLINS_FILE)
+        print(f"  Collins (fallback): {len(collins):,} words")
+    else:
+        print(
+            "  [warn] Neither open_definitions.csv nor Collins file found.\n"
+            "         Run: python3 -m ingestor.definitions_importer",
+            file=sys.stderr,
+        )
+        collins = {}
 
     print("\n[3/7] Loading primary lexicon …")
     primary = load_primary_lexicon(PRIMARY_LEXICON)

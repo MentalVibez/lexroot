@@ -858,6 +858,31 @@ ALL_SOURCES = [
         "authority_tier": 3,
         "description": "Religion-agnostic archive of public-domain and freely redistributable sacred, mythological, folklore, and esoteric texts translated into English.",
     },
+    {
+        "slug": "shipley-1984",
+        "short_name": "Shipley 1984",
+        "full_name": "The Origins of English Words: A Discursive Dictionary of Indo-European Roots",
+        "author": "Joseph T. Shipley",
+        "year": 1984,
+        "publisher": "Johns Hopkins University Press",
+        "category": "etymological",
+        "authority_tier": 2,
+        "description": "Discursive dictionary of Indo-European roots and English derivatives. Copyrighted source; use for citation-backed root claims and short notes, not bulk text ingestion.",
+    },
+
+    # ── Curated project supplements ──────────────────────────────────────────
+
+    {
+        "slug": "curated-idioms",
+        "short_name": "Curated Idioms",
+        "full_name": "Living Lexicon Curated Idiom Supplement",
+        "author": "The Living Lexicon project",
+        "year": 2026,
+        "publisher": "The Living Lexicon",
+        "category": "curated-supplement",
+        "authority_tier": 4,
+        "description": "Project-maintained idiom rows. Treat low-confidence starter rows as placeholders until replaced with dated historical dictionary or primary-text evidence.",
+    },
 ]
 
 # Free-text source strings used in the original seed_data.py → canonical slugs

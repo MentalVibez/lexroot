@@ -9,12 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import AsyncSessionLocal
 from living_lexicon import WordHistorian
-from living_lexicon.providers.llm.ollama import OllamaProvider
-from living_lexicon.providers.stores.neo4j_store import Neo4jStore
 
 
 @lru_cache(maxsize=1)
 def get_historian() -> WordHistorian:
+    from living_lexicon.providers.llm.ollama import OllamaProvider
+    from living_lexicon.providers.stores.neo4j_store import Neo4jStore
     return WordHistorian(
         store=Neo4jStore.from_env(),
         llm=OllamaProvider.from_env(),

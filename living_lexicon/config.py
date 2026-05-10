@@ -12,8 +12,9 @@ class LexiconConfig:
     neo4j_uri:      str = field(default_factory=lambda: os.getenv("NEO4J_URI",      "bolt://localhost:7687"))
     neo4j_user:     str = field(default_factory=lambda: os.getenv("NEO4J_USER",     "neo4j"))
     neo4j_password: str = field(default_factory=lambda: os.getenv("NEO4J_PASSWORD", "lexicon_secret"))
-    ollama_base:    str = field(default_factory=lambda: os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"))
-    ollama_model:   str = field(default_factory=lambda: os.getenv("OLLAMA_MODEL",   "llama3"))
+    ollama_base:        str = field(default_factory=lambda: os.getenv("OLLAMA_BASE_URL",     "http://localhost:11434"))
+    ollama_model:       str = field(default_factory=lambda: os.getenv("OLLAMA_MODEL",        "llama3"))
+    ollama_num_predict: int = field(default_factory=lambda: int(os.getenv("OLLAMA_NUM_PREDICT", "350")))
 
     def validate_security(self) -> None:
         """Fail closed for unsafe production defaults."""

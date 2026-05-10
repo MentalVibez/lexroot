@@ -1,152 +1,272 @@
 """
-GCIDE importer.
+GCIDE Importer — parses the GNU Collaborative International Dictionary of English
+(gcide-0.54.zip) and loads words + senses into PostgreSQL.
 
-Consumes local GCIDE tagged text/XML files and imports English headwords with
-historical dictionary definitions. GCIDE is useful as a broad historical
-definition layer; etymology-specific roots are kept pending unless a source
-entry exposes clear etymology text.
+The zip contains CIDE.A through CIDE.Z — streams of <p>...</p> entry blocks in
+a custom SGML-like format based on Webster's 1913 Revised Unabridged Dictionary.
 
 Usage:
-  python -m ingestor.gcide_importer --path Words/gcide.xml --limit 1000 --dry-run
-  python -m ingestor.gcide_importer --path Words/gcide.txt --limit 0
+    python -m ingestor.gcide_importer
+    python -m ingestor.gcide_importer --dry-run
+    python -m ingestor.gcide_importer --limit 500
+    python -m ingestor.gcide_importer --path Words/gcide-0.54.zip
 """
 from __future__ import annotations
 
-import argparse
+import os
 import re
-from html import unescape
+import zipfile
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from ingestor.graph_loader import LexiconIngestor, WordEntry
-from ingestor.sources_catalog import ALL_SOURCES
+import psycopg2
+import psycopg2.extras
+
+from ingestor.base import BaseImporter, ImportResult
+from ingestor.utils import is_valid_word
+
+SYNC_URL: str = os.getenv(
+    "POSTGRES_SYNC_URL",
+    "postgresql://lexicon:lexicon_secret@localhost:5432/living_lexicon",
+)
+
+SOURCE_SLUG = "1913-webster"
+ERA_NAME = "Late Modern English"
+FIRST_YEAR = 1890
+LAST_YEAR = 1913
+EVIDENCE_GRADE = "B"
+CONFIDENCE = "medium"
+CONFIDENCE_REASON = "Webster's 1913 Revised Unabridged Dictionary via GCIDE."
 
 
-GCIDE_SOURCE_SLUG = "gcide"
-_ENTRY_PATTERN = re.compile(r"<ent>(?P<word>.*?)</ent>(?P<body>.*?)(?=<ent>|$)", re.I | re.S)
-_DEF_PATTERN = re.compile(r"<def>(?P<definition>.*?)</def>", re.I | re.S)
-_TAG_PATTERN = re.compile(r"<[^>]+>")
-_WORD = re.compile(r"^[a-z][a-z' -]{1,79}$")
+# ---------------------------------------------------------------------------
+# GCIDE markup stripping
+# ---------------------------------------------------------------------------
+
+_ENTITY_MAP: dict[str, str] = {
+    "eacute": "é", "Eacute": "É", "aacute": "á", "Aacute": "Á",
+    "iacute": "í", "Iacute": "Í", "oacute": "ó", "Oacute": "Ó",
+    "uacute": "ú", "Uacute": "Ú", "agrave": "à", "Agrave": "À",
+    "egrave": "è", "Egrave": "È", "igrave": "ì", "ograve": "ò",
+    "ugrave": "ù", "atilde": "ã", "ntilde": "ñ", "Ntilde": "Ñ",
+    "amac": "ā", "emac": "ē", "imac": "ī", "omac": "ō", "umac": "ū",
+    "Amac": "Ā", "Emac": "Ē", "Imac": "Ī", "Omac": "Ō", "Umac": "Ū",
+    "oelig": "œ", "OElig": "Œ", "aelig": "æ", "AElig": "Æ",
+    "thorn": "þ", "Thorn": "Þ", "eth": "ð", "ETH": "Ð",
+    "szlig": "ß", "acirc": "â", "ecirc": "ê", "icirc": "î",
+    "ocirc": "ô", "ucirc": "û", "auml": "ä", "euml": "ë",
+    "iuml": "ï", "ouml": "ö", "uuml": "ü", "yuml": "ÿ",
+    "deg": "°", "sect": "§", "dagger": "†", "Dagger": "‡",
+    "prime": "'", "Prime": '"', "middot": "·", "bull": "•",
+    "ndash": "–", "mdash": "—", "lsquo": "'", "rsquo": "'",
+    "ldquo": '"', "rdquo": '"', "amp": "&", "lt": "<", "gt": ">",
+    "nbsp": " ", "copy": "©", "reg": "®", "trade": "™",
+    "frac12": "½", "frac14": "¼", "frac34": "¾",
+    "asl": "ă", "esl": "ĕ", "isl": "ĭ", "osl": "ŏ", "usl": "ŭ",
+}
+
+_SELF_CLOSE_RE = re.compile(r"<([a-zA-Z]+)/>")
+_TAG_RE = re.compile(r"<[^>]+>")
+_WS_RE = re.compile(r"\s+")
 
 
-def _clean_text(value: str) -> str:
-    value = _TAG_PATTERN.sub(" ", value)
-    value = unescape(value)
-    value = re.sub(r"\s+", " ", value).strip()
-    return value
+def _strip(text: str) -> str:
+    def _entity(m: re.Match) -> str:
+        return _ENTITY_MAP.get(m.group(1), "")
+
+    text = _SELF_CLOSE_RE.sub(_entity, text)
+    text = _TAG_RE.sub(" ", text)
+    return _WS_RE.sub(" ", text).strip()
 
 
-def _normalize_word(value: str) -> str:
-    value = _clean_text(value).casefold()
-    value = re.sub(r"\s+", " ", value)
-    return value.strip()
+def _first(tag: str, text: str) -> str | None:
+    m = re.search(rf"<{tag}>(.*?)</{tag}>", text, re.DOTALL | re.IGNORECASE)
+    return (_strip(m.group(1)) or None) if m else None
 
 
-def _is_seedable(word: str, include_phrases: bool = True) -> bool:
-    if not word or not _WORD.match(word):
-        return False
-    return include_phrases or (" " not in word and "-" not in word)
+def _all(tag: str, text: str) -> list[str]:
+    return [
+        s for s in (
+            _strip(m.group(1))
+            for m in re.finditer(rf"<{tag}>(.*?)</{tag}>", text, re.DOTALL | re.IGNORECASE)
+        )
+        if s
+    ]
 
 
-def load_gcide_entries(
-    path: str | Path,
-    limit: int | None = 5000,
-    include_phrases: bool = True,
-) -> list[WordEntry]:
-    file_path = Path(path)
-    if not file_path.exists():
-        raise FileNotFoundError(f"GCIDE file not found: {file_path}")
+# ---------------------------------------------------------------------------
+# Entry dataclass + parser
+# ---------------------------------------------------------------------------
 
-    text = file_path.read_text(encoding="utf-8", errors="ignore")
-    entries: list[WordEntry] = []
-    seen: set[str] = set()
+@dataclass
+class GcideEntry:
+    headword: str
+    part_of_speech: str | None
+    definitions: list[str]
+    etymology: str | None
+    domain: str | None
 
-    for match in _ENTRY_PATTERN.finditer(text):
-        word = _normalize_word(match.group("word"))
-        if word in seen or not _is_seedable(word, include_phrases=include_phrases):
-            continue
-        body = match.group("body")
-        definition_match = _DEF_PATTERN.search(body)
-        if not definition_match:
-            continue
-        definition = _clean_text(definition_match.group("definition"))
-        if not definition:
-            continue
 
-        seen.add(word)
-        entries.append(WordEntry(
-            name=word,
-            language="English",
-            definition=definition[:1000],
-            root_name=word,
-            root_meaning="GCIDE historical dictionary entry; etymology pending enrichment",
-            root_origin_language="Modern English",
-            cognates=None,
-            era_meanings=[
-                {
-                    "era_name": "18th-19th Century English",
-                    "meaning": definition[:1000],
-                    "usage_example": None,
-                    "register": "general",
-                    "source": GCIDE_SOURCE_SLUG,
-                    "confidence": "medium",
-                }
-            ],
-        ))
-        if limit is not None and len(entries) >= limit:
-            break
+def _parse_block(block: str) -> GcideEntry | None:
+    hw_raw = _first("hw", block)
+    if not hw_raw:
+        return None
+
+    headword = re.sub(r'["\']', "", hw_raw)
+    headword = re.sub(r"\s*\(.*?\)", "", headword).strip()
+
+    pos_raw = _first("pos", block)
+    pos = pos_raw.rstrip(".") if pos_raw else None
+
+    ety_m = re.search(r"<ety>(.*?)</ety>", block, re.DOTALL)
+    etymology = _strip(ety_m.group(1)) if ety_m else None
+
+    return GcideEntry(
+        headword=headword,
+        part_of_speech=pos,
+        definitions=_all("def", block),
+        etymology=etymology,
+        domain=_first("fld", block),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Zip loader
+# ---------------------------------------------------------------------------
+
+_CIDE_RE = re.compile(r"gcide-[^/]+/CIDE\.[A-Z]$")
+_BLOCK_RE = re.compile(r"<p>(.*?)</p>", re.DOTALL)
+
+
+def _load_from_zip(path: Path) -> list[GcideEntry]:
+    entries: list[GcideEntry] = []
+    with zipfile.ZipFile(path) as zf:
+        cide_files = sorted(n for n in zf.namelist() if _CIDE_RE.match(n))
+        for fname in cide_files:
+            with zf.open(fname) as fh:
+                content = fh.read().decode("latin-1")
+            for m in _BLOCK_RE.finditer(content):
+                entry = _parse_block(m.group(1))
+                if entry and entry.definitions:
+                    entries.append(entry)
     return entries
 
 
-def _register_source(ingestor: LexiconIngestor) -> None:
-    for source in ALL_SOURCES:
-        if source["slug"] == GCIDE_SOURCE_SLUG:
-            ingestor.ingest_source(source)
-            return
-    raise RuntimeError(f"Source '{GCIDE_SOURCE_SLUG}' is not in ALL_SOURCES")
+# ---------------------------------------------------------------------------
+# PostgreSQL writer
+# ---------------------------------------------------------------------------
+
+_WORD_SQL = """
+INSERT INTO words (word, definition, historical_context, entry_type,
+                   definition_source_slug, definition_source_name)
+VALUES (%s, %s, %s, 'word', %s, %s)
+ON CONFLICT (word) DO UPDATE SET
+    definition          = COALESCE(EXCLUDED.definition,          words.definition),
+    historical_context  = COALESCE(EXCLUDED.historical_context,  words.historical_context),
+    definition_source_slug = COALESCE(EXCLUDED.definition_source_slug, words.definition_source_slug),
+    definition_source_name = COALESCE(EXCLUDED.definition_source_name, words.definition_source_name)
+RETURNING id
+"""
+
+_SENSE_SQL = """
+INSERT INTO senses (
+    sense_id, word_id, part_of_speech, definition, meaning_type,
+    domain, era_name, first_attested_year, last_attested_year,
+    source_slug, confidence, confidence_reason, evidence_grade,
+    entry_headword, review_status, origin_status
+) VALUES (
+    %s, %s, %s, %s, 'attested',
+    %s, %s, %s, %s,
+    %s, %s, %s, %s,
+    %s, 'reviewed', 'attested'
+)
+ON CONFLICT (sense_id) DO NOTHING
+"""
 
 
-def import_from_gcide(
-    path: str | Path,
-    limit: int | None = 5000,
-    include_phrases: bool = True,
-    dry_run: bool = False,
-) -> dict[str, Any]:
-    print(f"[gcide] Loading {path}...")
-    entries = load_gcide_entries(path, limit=limit, include_phrases=include_phrases)
-    print(f"[gcide] Built {len(entries)} WordEntry objects")
+def _write(entries: list[GcideEntry], dry_run: bool = False) -> ImportResult:
+    result = ImportResult(dry_run=dry_run)
 
     if dry_run:
-        for entry in entries[:10]:
-            print(f"  {entry.name} | def={entry.definition[:70]}")
-        print("  [dry_run] — no data written")
-        return {"entries": len(entries), "dry_run": True}
+        for e in entries[:10]:
+            defn = (e.definitions[0] if e.definitions else "")[:80]
+            print(f"  [dry_run] {e.headword!r:<30} pos={e.part_of_speech!r:<12} def={defn!r}")
+        result.ingested = len(entries)
+        return result
 
-    ingestor = LexiconIngestor()
-    ingestor.ensure_indexes()
-    _register_source(ingestor)
-    results = ingestor.bulk_ingest(entries)
-    for entry in entries:
-        try:
-            ingestor.write_attested_in(entry.name, entry.language, GCIDE_SOURCE_SLUG)
-        except Exception:
-            pass
-    ingestor.close()
-    print(f"[gcide] Done — ingested={results['ingested']}, failed={results['failed']}")
-    return results
+    conn = psycopg2.connect(SYNC_URL)
+    try:
+        cur = conn.cursor()
+        for i, entry in enumerate(entries):
+            word = entry.headword.lower()
+            defn_primary = entry.definitions[0] if entry.definitions else None
+            try:
+                cur.execute(_WORD_SQL, (
+                    word, defn_primary, entry.etymology,
+                    SOURCE_SLUG, "Webster's 1913",
+                ))
+                row = cur.fetchone()
+                if not row:
+                    result.skipped += 1
+                    continue
+                word_id = row[0]
+            except Exception as exc:
+                result.failed += 1
+                result.errors.append(f"{word}: {exc}")
+                conn.rollback()
+                continue
+
+            for idx, defn in enumerate(entry.definitions):
+                sense_id = f"{word}-late-modern-gcide-{i}-{idx}"
+                try:
+                    cur.execute(_SENSE_SQL, (
+                        sense_id, word_id, entry.part_of_speech, defn,
+                        entry.domain, ERA_NAME, FIRST_YEAR, LAST_YEAR,
+                        SOURCE_SLUG, CONFIDENCE, CONFIDENCE_REASON, EVIDENCE_GRADE,
+                        entry.headword,
+                    ))
+                except Exception as exc:
+                    result.errors.append(f"{sense_id}: {exc}")
+                    conn.rollback()
+
+            result.ingested += 1
+
+            if (i + 1) % 500 == 0:
+                conn.commit()
+                pct = (i + 1) / len(entries) * 100
+                print(f"\r  progress: {i+1:,}/{len(entries):,} ({pct:.1f}%)", end="", flush=True)
+
+        conn.commit()
+        print()
+    finally:
+        conn.close()
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# BaseImporter subclass
+# ---------------------------------------------------------------------------
+
+class GcideImporter(BaseImporter):
+    source_name = "gcide"
+    cli_description = "Import words and senses from the GCIDE (Webster's 1913) zip."
+    default_path = Path("Words/gcide-0.54.zip")
+
+    def load(self, path: Path) -> list[Any]:
+        print(f"[gcide] Parsing {path} …")
+        raw = _load_from_zip(path)
+        valid = [
+            e for e in raw
+            if is_valid_word(e.headword.lower(), include_phrases=False)
+        ]
+        print(f"[gcide] {len(raw):,} total blocks; {len(valid):,} valid single words")
+        return valid
+
+    def ingest(self, records: list[Any], *, dry_run: bool = False) -> ImportResult:
+        return _write(records, dry_run=dry_run)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Import GCIDE tagged text/XML data into the Living Lexicon.")
-    parser.add_argument("--path", required=True, help="Path to GCIDE tagged text/XML file.")
-    parser.add_argument("--limit", type=int, default=5000, help="Max entries. Use 0 for no limit.")
-    parser.add_argument("--single-words-only", action="store_true", help="Skip phrases and hyphenated terms.")
-    parser.add_argument("--dry-run", action="store_true", help="Parse and preview without writing to Neo4j.")
-    args = parser.parse_args()
-
-    import_from_gcide(
-        path=args.path,
-        limit=None if args.limit == 0 else args.limit,
-        include_phrases=not args.single_words_only,
-        dry_run=args.dry_run,
-    )
+    GcideImporter().run_cli()

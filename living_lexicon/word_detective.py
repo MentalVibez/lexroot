@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import csv
+from functools import lru_cache
+from pathlib import Path
 import re
 
 from living_lexicon.models import EtymologyClaimInfo, RootInfo
@@ -14,6 +17,10 @@ class SpellingRule:
     explanation: str
     root_families: tuple[str, ...] = ()
     historical: bool = False
+
+
+WORDS_DIR = Path(__file__).parent.parent / "Words"
+DEFAULT_SPELLING_HISTORY = WORDS_DIR / "sources" / "spelling_history.csv"
 
 
 STANDARD_RULES: tuple[SpellingRule, ...] = (
@@ -141,12 +148,40 @@ def root_matches(rule: SpellingRule, root_families: set[str]) -> bool:
     return any(family in root for family in rule.root_families for root in root_families)
 
 
+def _clean(value: str | None) -> str:
+    return (value or "").strip()
+
+
+@lru_cache(maxsize=1)
+def load_spelling_history(path: str = str(DEFAULT_SPELLING_HISTORY)) -> dict[str, dict[str, str]]:
+    file_path = Path(path)
+    if not file_path.exists():
+        return {}
+    rows: dict[str, dict[str, str]] = {}
+    with file_path.open("r", encoding="utf-8", newline="") as fh:
+        for row in csv.DictReader(fh):
+            word = _clean(row.get("word")).casefold()
+            if word:
+                rows[word] = {key: _clean(value) for key, value in row.items()}
+    return rows
+
+
+def _bool_or_none(value: str | None) -> bool | None:
+    cleaned = _clean(value).casefold()
+    if cleaned in {"true", "yes", "1"}:
+        return True
+    if cleaned in {"false", "no", "0"}:
+        return False
+    return None
+
+
 def detect_spelling_rules(
     word: str,
     root: RootInfo,
     claims: list[EtymologyClaimInfo],
 ) -> dict:
     clean_word = re.sub(r"[^a-z]", "", word.casefold())
+    curated = load_spelling_history().get(word.casefold()) or load_spelling_history().get(clean_word)
     root_families = {
         normalize_root_family(root.origin_language),
         normalize_root_family(root.name),
@@ -182,10 +217,37 @@ def detect_spelling_rules(
     if claims:
         confidence += 0.08
 
+    if curated:
+        spelling_history_type = curated.get("spelling_history_type") or None
+        if spelling_history_type == "regular_phonics":
+            classification = "standard_phonics_rule"
+        elif spelling_history_type and spelling_history_type != "unknown":
+            classification = "historical_exception"
+        summary = curated.get("spelling_explanation") or curated.get("exception_reason") or summary
+        confidence = max(confidence, 0.88 if curated.get("evidence_grade") in {"A", "B", "C"} else 0.76)
+    else:
+        spelling_history_type = (
+            "regular_phonics"
+            if standard_matches and not historical_matches
+            else "unknown"
+        )
+
     return {
         "classification": classification,
         "confidence": round(min(confidence, 0.95), 2),
         "summary": summary,
+        "phonics_rule_applies": (
+            _bool_or_none(curated.get("phonics_rule_applies")) if curated else bool(standard_matches)
+        ),
+        "standard_phonics_rule": (
+            curated.get("standard_phonics_rule") if curated else (standard_matches[0].label if standard_matches else None)
+        ),
+        "spelling_history_type": spelling_history_type,
+        "exception_reason": curated.get("exception_reason") if curated else None,
+        "spelling_explanation": curated.get("spelling_explanation") if curated else summary,
+        "root_influence": curated.get("root_influence") if curated else root.name,
+        "evidence_grade": curated.get("evidence_grade") if curated else None,
+        "confidence_reason": curated.get("confidence_reason") if curated else None,
         "root_clue": {
             "name": root.name,
             "meaning": root.meaning,

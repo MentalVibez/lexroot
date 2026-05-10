@@ -38,6 +38,27 @@ These files are too large for version control and must be regenerated locally:
     Re-fetched automatically the first time you run:
       python3 -m ingestor.words_merge_importer
 
+  open_definitions.csv  (open-license definitions; regenerate with:)
+      python3 -m ingestor.definitions_importer
+
+    Replaces the proprietary Collins Scrabble Words dataset with three stacked
+    open-license sources (merged in priority order):
+      1. GCIDE (Webster 1913)             — public domain, ~90k definitions
+         Downloaded from gcide.gnu.org.ua (27 chapter files, cached locally)
+      2. Open English WordNet 2024        — CC BY 4.0, ~60k definitions
+         Downloaded from github.com/globalwordnet/english-wordnet releases
+      3. Kaikki/Wiktextract               — CC-BY-SA, 700k+ definitions [optional]
+         Downloaded from kaikki.org (~1 GB; use --sources gcide,oewn,kaikki)
+
+    Quick build (GCIDE + OEWN, ~2 min including downloads):
+      python3 -m ingestor.definitions_importer
+
+    Full build with Kaikki for maximum coverage (~1 GB download):
+      python3 -m ingestor.definitions_importer --sources gcide,oewn,kaikki
+
+    If open_definitions.csv is absent, words_merge_importer will fall back to
+    Collins Scrabble Words if that file is present locally (licensed, not in git).
+
   english_words_master_lexicon.csv  (~27 MB, 517k+ words)
     The combined master word list. Generate with:
       python3 -m ingestor.words_merge_importer
@@ -45,7 +66,8 @@ These files are too large for version control and must be regenerated locally:
     Sources merged (priority order, highest first):
       1. etymology_seed_database.csv       — 61 words + full etymology
       2. etymology_seed_database_v2.csv    — 80 words + full etymology
-      3. Collins Scrabble Words (2019).txt — 279,496 words + definitions
+      3. open_definitions.csv              — GCIDE + OEWN + Kaikki definitions
+         (Collins fallback if open_definitions.csv absent and Collins present locally)
       4. english_words_primary_lexicon.csv — 3,017 words
       5. dwyl/english-words (words_alpha)  — ~370,000 words
       6. medical_terms.csv                 — ~59,319 clinical/pharmaceutical terms
@@ -89,7 +111,45 @@ Columns: word, definition, phonemes, etymology_root, origin_language,
 
 == IMPORT TO POSTGRESQL ==
 
-After generating the master lexicon, load it into the words table:
+The clean import path is now one generated file:
+
+  Words/build/lexicon_import.csv
+
+Build it from the enriched word data plus curated sources such as idioms:
+
+  python3 -m ingestor.lexicon_build_importer
+
+The clean feed excludes entries that still have no definition after the open
+definition overlay. To keep every raw source entry anyway, use:
+
+  python3 -m ingestor.lexicon_build_importer --keep-missing-definitions
+
+Preview the import:
+
+  python3 -m ingestor.words_csv_importer \
+    --path Words/build/lexicon_import.csv \
+    --dry-run
+
+Generate a quality report before importing:
+
+  python3 -m ingestor.data_quality_validator
+
+Default report:
+
+  Words/build/data_quality_report.md
+
+Rejected entries that were excluded from the clean feed are written to:
+
+  Words/build/rejected_entries.csv
+
+Then load it into the words table:
+
+  python3 -m ingestor.words_csv_importer \
+    --path Words/build/lexicon_import.csv \
+    --batch-size 2000
+
+Legacy import paths still work. After generating the master lexicon, load it
+into the words table:
 
   python3 -m ingestor.words_csv_importer \
     --path Words/english_words_master_lexicon.csv \
@@ -99,3 +159,95 @@ After generating the master lexicon, load it into the words table:
   python3 -m ingestor.words_csv_importer \
     --path Words/english_words_etymology.csv \
     --batch-size 2000
+
+== IDIOMS AND ERA MEANINGS ==
+
+Curated idioms live in:
+
+  Words/sources/idioms.csv
+
+Use entry_type=idiom. Keep literal_meaning and figurative_meaning separate.
+Era-specific meanings should be source-backed and dated as closely as possible
+using era_name, start_year, end_year, meaning, usage_example, source_slug,
+confidence, and notes.
+
+See:
+
+  docs/era_meanings.md
+
+== HISTORICAL SENSES AND ATTESTATIONS ==
+
+For historically accurate "what did this word mean then?" work, keep the
+meaning layer separate from the broad word index:
+
+  Words/sources/senses.csv
+    One row per historically scoped meaning. Use this for part of speech,
+    definition, register, domain, era_name, first_attested_year,
+    last_attested_year, source_slug, confidence, and notes.
+
+  Words/sources/attestations.csv
+    One row per dated evidence item supporting a sense. Use this for compact
+    quotations, quote_year, quote_author, quote_work, citation, and source_slug.
+
+Use evidence grades consistently:
+
+  A = primary dated quotation or corpus attestation
+  B = historical dictionary with date, quotation, entry, or citation
+  C = specialist scholarly or etymological source
+  D = modern dictionary or secondary summary
+  E = inferred from root/etymology only
+
+High-confidence historical claims require source_slug plus citation/page/entry
+or dated attestation evidence. Root-only meanings should use evidence_grade=E
+and should not be marked high confidence.
+
+Preview/import:
+
+  python3 -m ingestor.senses_importer --dry-run
+  python3 -m ingestor.senses_importer
+
+API:
+
+  GET /pg/word/{word}/senses
+  GET /pg/sense/{sense_id}
+  GET /pg/sense/{sense_id}/attestations
+
+See:
+
+  docs/senses_and_attestations.md
+  docs/data_quality_standards.md
+
+== WORD DETECTIVE SPELLING HISTORY ==
+
+Curated spelling-history explanations live in:
+
+  Words/sources/spelling_history.csv
+
+Use this when a spelling needs a source-backed explanation separate from the
+automatic phonics detector. Important fields include spelling_history_type,
+exception_reason, spelling_explanation, root_influence, evidence_grade, and
+confidence_reason.
+
+See:
+
+  docs/word_detective_quality.md
+
+== SHIPLEY: THE ORIGINS OF ENGLISH WORDS ==
+
+Joseph T. Shipley's The Origins of English Words is registered as source:
+
+  shipley-1984
+
+Because the book is copyrighted, do not paste bulk entries or long prose into
+the repository. Add compact, page-cited root claims to:
+
+  Words/sources/shipley_roots.csv
+
+Preview/import:
+
+  python3 -m ingestor.shipley_importer --dry-run
+  python3 -m ingestor.shipley_importer
+
+See:
+
+  docs/shipley.md

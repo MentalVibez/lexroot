@@ -31,6 +31,7 @@ from living_lexicon.exceptions import (
     StoreConnectionError,
     WordNotFoundError,
 )
+from living_lexicon.testing import InMemoryStore, StubLLMProvider, WordHistorianFactory
 
 __version__ = "0.1.0"
 
@@ -50,4 +51,7 @@ __all__ = [
     "SourceNotFoundError",
     "StoreConnectionError",
     "LLMError",
+    "InMemoryStore",
+    "StubLLMProvider",
+    "WordHistorianFactory",
 ]
