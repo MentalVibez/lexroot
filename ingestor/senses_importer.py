@@ -68,6 +68,8 @@ def load_senses(path: str | Path = DEFAULT_SENSES) -> list[dict[str, Any]]:
                 "usage_region": _clean(row.get("usage_region")) or None,
                 "usage_register": _clean(row.get("usage_register")) or None,
                 "notes": _clean(row.get("notes")) or None,
+                "reconstruction_level": _clean(row.get("reconstruction_level")) or "attested",
+                "learner_level": _clean(row.get("learner_level")) or "intermediate",
             })
     return rows
 
@@ -112,7 +114,7 @@ INSERT INTO senses (
     first_attested_source, source_slug, confidence, confidence_reason,
     evidence_grade, citation, page, entry_headword, source_url, access_date,
     review_status, semantic_change_type, origin_status, usage_region,
-    usage_register, notes
+    usage_register, notes, reconstruction_level, learner_level
 ) VALUES %s
 ON CONFLICT (sense_id) DO UPDATE SET
     word = EXCLUDED.word,
@@ -140,7 +142,9 @@ ON CONFLICT (sense_id) DO UPDATE SET
     origin_status = EXCLUDED.origin_status,
     usage_region = EXCLUDED.usage_region,
     usage_register = EXCLUDED.usage_register,
-    notes = EXCLUDED.notes
+    notes = EXCLUDED.notes,
+    reconstruction_level = EXCLUDED.reconstruction_level,
+    learner_level = EXCLUDED.learner_level
 """
 
 ATTESTATION_SQL = """
@@ -185,7 +189,7 @@ def import_senses_and_attestations(
                         [tuple(row.values()) for row in senses],
                         template=(
                             "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                            "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         ),
                     )
                 if attestations:

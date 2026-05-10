@@ -416,14 +416,22 @@ AgentExecutor(agent=agent, tools=tools).invoke(
 
 ---
 
-## Known content gaps
+## Seed data
 
-These are data problems, not code problems. The API, tables, and importers are ready.
+Seed CSVs are committed and ready to load. After `make migrate`:
 
-| Gap | What to do |
+```bash
+make import-senses          # 17 senses across awful, nice, prevent, naughty, silly, port
+make import-morphemes       # 51 morpheme decompositions (port- family, graph- family, etc.)
+make import-word-relations  # 42 relation edges (synonyms, antonyms, derived_from, cognates)
+```
+
+### Expanding the data
+
+| What to add | How |
 |---|---|
-| `morphemes` table is empty | Author `Words/morphemes.csv` (columns: word, morpheme, role, origin_language, gloss, position, source_slug) then `make import-morphemes` |
-| `word_relations` table is empty | Add edges via `POST /pg/word/relation` (admin) or write a bulk importer from WordNet/Wiktionary relation data |
-| `learner_level` defaults to `intermediate` on all senses | Add `learner_level` column to `Words/sources/senses.csv` and re-run `make import-senses` |
-| `reconstruction_level` defaults to `attested` | Tag PIE-reconstructed senses as `reconstructed` in the senses CSV |
+| More senses / drift chains | Append rows to `Words/sources/senses.csv`, re-run `make import-senses` |
+| More morpheme decompositions | Append rows to `Words/morphemes.csv`, re-run `make import-morphemes` |
+| More word relations | Append rows to `Words/sources/word_relations.csv`, re-run `make import-word-relations` |
 | pgvector embeddings | Migration 007 adds the column; populate with any embedding model after `make import-senses` |
+| GCIDE (Webster's 1913) bulk import | Download `gcide-0.54.zip` to `Words/`, then `make import-gcide` |

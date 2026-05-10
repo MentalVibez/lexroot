@@ -1,4 +1,4 @@
-.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-morphemes sync-neo4j make-snapshot lint typecheck help
+.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-morphemes import-word-relations sync-neo4j make-snapshot lint typecheck help
 
 ## Start Docker services and the API app
 dev:
@@ -29,6 +29,10 @@ import-gcide:
 ## Import morpheme decompositions from CSV (Words/morphemes.csv)
 import-morphemes:
 	python -m ingestor.morphemes_importer
+
+## Import semantic and derivational word relations from CSV (Words/sources/word_relations.csv)
+import-word-relations:
+	python -m ingestor.word_relations_importer
 
 ## Sync PostgreSQL words → Neo4j graph (run after any bulk import)
 sync-neo4j:

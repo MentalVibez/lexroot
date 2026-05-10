@@ -1,0 +1,44 @@
+from_word,to_word,relation_type,era_name,source_slug,confidence,notes
+awful,dreadful,synonym,Late Modern English,oed,high,Both denote extreme badness; awful retains more colloquial register
+awful,terrible,synonym,Late Modern English,oed,high,
+awful,wonderful,antonym,Late Modern English,oed,high,wonderful preserves original sense of awe; awful has undergone pejoration
+awful,magnificent,antonym,Late Modern English,oed,medium,
+nice,pleasant,synonym,Late Modern English,oed,high,
+nice,agreeable,synonym,Late Modern English,oed,high,
+nice,disagreeable,antonym,Late Modern English,oed,high,
+nice,unpleasant,antonym,Late Modern English,oed,high,
+prevent,hinder,synonym,Early Modern English,oed,high,
+prevent,obstruct,synonym,Early Modern English,oed,high,
+prevent,allow,antonym,Late Modern English,oed,high,
+naughty,mischievous,synonym,Late Modern English,oed,high,
+naughty,disobedient,synonym,Late Modern English,oed,high,
+naughty,well-behaved,antonym,Late Modern English,oed,high,
+silly,foolish,synonym,Late Modern English,oed,high,
+silly,absurd,synonym,Late Modern English,oed,high,
+silly,wise,antonym,Late Modern English,oed,high,
+import,export,antonym,,oed,high,Directional antonyms via Latin in- vs ex- prefix on shared root portare
+import,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+export,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+transport,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+portable,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+report,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+support,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+deport,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+port,import,root_of,,oed,high,
+port,export,root_of,,oed,high,
+port,transport,root_of,,oed,high,
+port,portable,root_of,,oed,high,
+port,report,root_of,,oed,high,
+port,support,root_of,,oed,high,
+port,deport,root_of,,oed,high,
+photograph,biography,cognate,,oed,medium,Share Greek root graphein (to write)
+photograph,geography,cognate,,oed,medium,Share Greek root graphein (to write)
+biology,geography,cognate,,oed,medium,Share Greek root geo- or bio- — both Greek compound formations
+telephone,telescope,cognate,,oed,medium,Share Greek root tele- (far; distant)
+prevent,convention,cognate,,oed,medium,Share Latin root venire (to come)
+prevent,intervention,cognate,,oed,medium,Share Latin root venire (to come)
+instruction,destruction,cognate,,oed,medium,Share Latin root struere (to build; to arrange)
+instruction,construction,cognate,,oed,medium,Share Latin root struere (to build; to arrange)
+awful,awe,derived_from,Old English,oed,high,awful = awe + -ful; awe from Old Norse agi (terror)
+silly,silliness,root_of,,oed,high,
+naughty,naught,derived_from,Middle English,med,high,naughty derived from naught (nothing) + -y suffix

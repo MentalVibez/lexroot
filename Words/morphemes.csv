@@ -1,0 +1,53 @@
+word,morpheme,role,origin_language,gloss,position,source_slug
+import,in,prefix,Latin,into; inward,1,oed
+import,port,root,Latin,to carry; to bear,2,oed
+export,ex,prefix,Latin,out of; away from,1,oed
+export,port,root,Latin,to carry; to bear,2,oed
+transport,trans,prefix,Latin,across; through,1,oed
+transport,port,root,Latin,to carry; to bear,2,oed
+portable,port,root,Latin,to carry; to bear,1,oed
+portable,able,suffix,Latin,capable of; able to be,2,oed
+portmanteau,port,root,French,to carry,1,oed
+portmanteau,manteau,root,French,cloak; mantle,2,oed
+report,re,prefix,Latin,back; again,1,oed
+report,port,root,Latin,to carry; to bear,2,oed
+deport,de,prefix,Latin,away from; down,1,oed
+deport,port,root,Latin,to carry; to bear,2,oed
+support,sub,prefix,Latin,under; from below,1,oed
+support,port,root,Latin,to carry; to bear,2,oed
+photograph,photo,root,Greek,light,1,oed
+photograph,graph,root,Greek,to write; to draw,2,oed
+biography,bio,root,Greek,life,1,oed
+biography,graph,suffix,Greek,writing of; record of,2,oed
+geography,geo,root,Greek,earth,1,oed
+geography,graph,suffix,Greek,writing of; description of,2,oed
+biology,bio,root,Greek,life,1,oed
+biology,logy,suffix,Greek,study of; science of,2,oed
+telephone,tele,root,Greek,far; distant,1,oed
+telephone,phone,root,Greek,sound; voice,2,oed
+microscope,micro,root,Greek,small,1,oed
+microscope,scope,root,Greek,to look; to see,2,oed
+telescope,tele,root,Greek,far; distant,1,oed
+telescope,scope,root,Greek,to look; to see,2,oed
+prevent,pre,prefix,Latin,before; in advance,1,oed
+prevent,vent,root,Latin,to come; to arrive,2,oed
+intervention,inter,prefix,Latin,between; among,1,oed
+intervention,vent,root,Latin,to come; to arrive,2,oed
+intervention,ion,suffix,Latin,act of; state of,3,oed
+convention,con,prefix,Latin,together; with,1,oed
+convention,vent,root,Latin,to come; to arrive,2,oed
+convention,ion,suffix,Latin,act of; state of,3,oed
+instruction,in,prefix,Latin,into; inward,1,oed
+instruction,struct,root,Latin,to build; to arrange,2,oed
+instruction,ion,suffix,Latin,act of; state of,3,oed
+destruction,de,prefix,Latin,down; away from,1,oed
+destruction,struct,root,Latin,to build; to arrange,2,oed
+destruction,ion,suffix,Latin,act of; state of,3,oed
+construction,con,prefix,Latin,together; with,1,oed
+construction,struct,root,Latin,to build; to arrange,2,oed
+construction,ion,suffix,Latin,act of; state of,3,oed
+unhappy,un,prefix,Old English,not; opposite of,1,oed
+unhappy,happy,root,Old Norse,lucky; fortunate,2,oed
+unlikely,un,prefix,Old English,not; opposite of,1,oed
+unlikely,like,root,Old English,having the appearance of,2,oed
+unlikely,ly,suffix,Old English,in the manner of; having the quality of,3,oed
