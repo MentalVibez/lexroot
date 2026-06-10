@@ -41,8 +41,9 @@ services:
           name: living-lexicon-db
           property: connectionString
 
-  - type: static
+  - type: web
     name: pensiveape-web
+    runtime: static
     buildCommand: ""
     staticPublishPath: frontend
     domains:
