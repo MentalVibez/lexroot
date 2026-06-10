@@ -5,6 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PensiveApe — The Living Lexicon</title>
   <meta name="description" content="Discover the hidden histories of everyday words. Search any word and see how its meaning evolved across centuries — sourced from the OED, MED, and leading scholarly dictionaries.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#f7f2e8">
+  <link rel="canonical" href="https://pensiveape.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PensiveApe">
+  <meta property="og:title" content="PensiveApe — The Living Lexicon">
+  <meta property="og:description" content="Search a word and see its older meanings, roots, source path, and semantic drift across English history.">
+  <meta property="og:url" content="https://pensiveape.com/">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PensiveApe — The Living Lexicon">
+  <meta name="twitter:description" content="A word explorer for meaning, origin, roots, older texts, and better writing.">
+  <script type="application/ld+json" id="site-schema">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PensiveApe",
+      "alternateName": "The Living Lexicon",
+      "url": "https://pensiveape.com/",
+      "description": "A word explorer for English etymology, semantic change, older meanings, and historically aware writing.",
+      "inLanguage": "en-US",
+      "publisher": {
+        "@type": "Organization",
+        "name": "PensiveApe",
+        "url": "https://pensiveape.com/"
+      },
+      "about": [
+        "English etymology",
+        "historical semantics",
+        "Old English",
+        "Middle English",
+        "Latin and Romance borrowings",
+        "word history"
+      ]
+    }
+  </script>
+  <script type="application/ld+json" id="page-schema">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PensiveApe — The Living Lexicon",
+      "url": "https://pensiveape.com/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "description": "Search English words to explore modern meanings, older senses, roots, source paths, and semantic drift.",
+      "educationalUse": ["Reading older texts", "Writing", "Vocabulary study"],
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "students, writers, teachers, curious readers"
+      }
+    }
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2154,6 +2206,91 @@
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
+    function upsertMeta(selector, attrs) {
+      let el = document.head.querySelector(selector);
+      if (!el) {
+        el = document.createElement('meta');
+        document.head.appendChild(el);
+      }
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+    }
+
+    function setCanonical(url) {
+      let canonical = document.head.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', url);
+    }
+
+    function updatePageSchema(schema) {
+      const el = document.getElementById('page-schema');
+      if (el) el.textContent = JSON.stringify(schema, null, 2);
+    }
+
+    function updateDefaultSeo() {
+      const title = 'PensiveApe — The Living Lexicon';
+      const description = 'Search a word and see its older meanings, roots, source path, and semantic drift across English history.';
+      const url = 'https://pensiveape.com/';
+      document.title = title;
+      upsertMeta('meta[name="description"]', { name: 'description', content: description });
+      upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+      upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+      upsertMeta('meta[property="og:url"]', { property: 'og:url', content: url });
+      upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+      upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+      setCanonical(url);
+      updatePageSchema({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: title,
+        url,
+        applicationCategory: 'EducationalApplication',
+        operatingSystem: 'Any',
+        description,
+        educationalUse: ['Reading older texts', 'Writing', 'Vocabulary study'],
+        audience: {
+          '@type': 'Audience',
+          audienceType: 'students, writers, teachers, curious readers',
+        },
+      });
+    }
+
+    function updateWordSeo(data) {
+      const word = String(data.word || data.name || currentWord || '').toLowerCase();
+      if (!word) { updateDefaultSeo(); return; }
+      const displayWord = word.charAt(0).toUpperCase() + word.slice(1);
+      const title = `${displayWord} meaning, origin, and word history — PensiveApe`;
+      const definition = data.definition || 'Explore this word’s older meanings, roots, and source path.';
+      const origin = data.origin_language ? ` Origin: ${data.origin_language}.` : '';
+      const description = `${displayWord}: ${definition}${origin}`.slice(0, 158);
+      const url = `https://pensiveape.com/word/${encodeURIComponent(word)}`;
+      document.title = title;
+      upsertMeta('meta[name="description"]', { name: 'description', content: description });
+      upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'article' });
+      upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
+      upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+      upsertMeta('meta[property="og:url"]', { property: 'og:url', content: url });
+      upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
+      upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+      setCanonical(url);
+      updatePageSchema({
+        '@context': 'https://schema.org',
+        '@type': 'DefinedTerm',
+        name: displayWord,
+        termCode: word,
+        url,
+        description,
+        inDefinedTermSet: {
+          '@type': 'DefinedTermSet',
+          name: 'PensiveApe — The Living Lexicon',
+          url: 'https://pensiveape.com/',
+        },
+      });
+    }
+
     async function apiFetch(path, options) {
       const primary = `${API}${path}`;
       try {
@@ -2796,6 +2933,7 @@
       if (!wordRes.ok) {
         currentWordData = null;
         currentTimeline = [];
+        updateDefaultSeo();
         document.getElementById('word-content').innerHTML =
           '<p class="empty-state">Word not found in the production lexicon yet.</p>';
         document.getElementById('timeline-content').innerHTML =
@@ -2810,6 +2948,7 @@
       const wordData = await wordRes.json();
       currentWordData = wordData;
       currentTimeline = Array.isArray(wordData.semantic_drift_history) ? wordData.semantic_drift_history : [];
+      updateWordSeo(wordData);
       renderWordCard(wordData, []);
       if (Array.isArray(wordData.semantic_drift_history) && wordData.semantic_drift_history.length) {
         renderTimeline(wordData.semantic_drift_history);
