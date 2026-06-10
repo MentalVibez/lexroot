@@ -2138,6 +2138,8 @@
       (location.hostname === 'pensiveape.com' || location.hostname === 'www.pensiveape.com'
         ? 'https://api.pensiveape.com'
         : '');
+    const API_FALLBACK = window.LIVING_LEXICON_API_FALLBACK ||
+      (API === 'https://api.pensiveape.com' ? 'https://pensiveape-api.onrender.com' : '');
     let currentWord = '';
     let currentWordData = null;
     let currentTimeline = [];
@@ -2150,6 +2152,16 @@
       return String(str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    async function apiFetch(path, options) {
+      const primary = `${API}${path}`;
+      try {
+        return await fetch(primary, options);
+      } catch (err) {
+        if (!API_FALLBACK) throw err;
+        return fetch(`${API_FALLBACK}${path}`, options);
+      }
     }
 
     /* ── FACT TICKER ── */
@@ -2731,7 +2743,7 @@
 
     async function runAutocomplete(q) {
       try {
-        const res = await fetch(`${API}/pg/words/search?q=${encodeURIComponent(q)}&limit=5`);
+        const res = await apiFetch(`/pg/words/search?q=${encodeURIComponent(q)}&limit=5`);
         const data = await res.json();
         const results = Array.isArray(data) ? data : (data.results || []);
         const box = document.getElementById('autocomplete');
@@ -2766,7 +2778,20 @@
         document.getElementById('explorer').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
-      const wordRes = await fetch(`${API}/pg/word/${encodeURIComponent(currentWord)}`);
+      let wordRes;
+      try {
+        wordRes = await apiFetch(`/pg/word/${encodeURIComponent(currentWord)}`);
+      } catch {
+        document.getElementById('word-content').innerHTML =
+          '<p class="empty-state">Could not reach the word service. Please refresh and try again.</p>';
+        document.getElementById('timeline-content').innerHTML =
+          '<p class="empty-state">Timeline unavailable while the API is unreachable.</p>';
+        document.getElementById('roots-content').innerHTML =
+          '<p class="empty-state">Root data unavailable while the API is unreachable.</p>';
+        document.getElementById('sources-content').innerHTML =
+          '<p class="empty-state">Source data unavailable while the API is unreachable.</p>';
+        return;
+      }
 
       if (!wordRes.ok) {
         currentWordData = null;
@@ -3021,7 +3046,7 @@
 
       results.innerHTML = '<p class="empty-state">Checking older meanings…</p>';
       try {
-        const res = await fetch(`${API}/pg/word/era-check`, {
+        const res = await apiFetch('/pg/word/era-check', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text, era_name: era }),
@@ -3051,7 +3076,7 @@
     async function loadEraTimeline(word) {
       document.getElementById('timeline-content').textContent = 'Loading timeline…';
       try {
-        const res = await fetch(`${API}/word/${encodeURIComponent(word)}/era-timeline`);
+        const res = await apiFetch(`/word/${encodeURIComponent(word)}/era-timeline`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         currentTimeline = data.timeline || [];
@@ -3135,7 +3160,7 @@
       box.style.display = 'block';
       box.textContent = 'Asking the historian…';
       try {
-        const res = await fetch(`${API}/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
+        const res = await apiFetch(`/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
         const data = await res.json();
         box.textContent = data.ai_explanation || 'No explanation available.';
       } catch {
@@ -3155,8 +3180,8 @@
       content.innerHTML = '<div class="ai-loading">Analyzing… 10–30 seconds with a local LLM.</div>';
 
       try {
-        const url = `${API}/word/${encodeURIComponent(currentWord)}/drift${context ? `?context=${context}` : ''}`;
-        const res = await fetch(url);
+        const url = `/word/${encodeURIComponent(currentWord)}/drift${context ? `?context=${context}` : ''}`;
+        const res = await apiFetch(url);
         const data = await res.json();
         renderDriftExplanation(data.explanation || '');
       } catch {
@@ -3235,7 +3260,7 @@
       listDiv.innerHTML = `<h3>Loading words from ${esc(eraName)}…</h3>`;
 
       try {
-        const res = await fetch(`${API}/era/${encodeURIComponent(eraName)}/words?limit=20`);
+        const res = await apiFetch(`/era/${encodeURIComponent(eraName)}/words?limit=20`);
         const data = await res.json();
         listDiv.innerHTML = '';
 
