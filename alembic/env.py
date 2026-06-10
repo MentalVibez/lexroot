@@ -8,7 +8,7 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 # Import Base and all models so Alembic can diff against metadata
-from db.database import Base
+from db.database import ASYNC_DATABASE_URL, Base, _normalize_postgres_url
 import db.models  # noqa: F401 — registers Word model on Base.metadata
 
 config = context.config
@@ -20,13 +20,10 @@ target_metadata = Base.metadata
 # Prefer the async URL from the environment; fall back to alembic.ini value.
 # For migrations we use asyncpg (same driver the app uses at runtime).
 def _db_url() -> str:
-    url = os.getenv("POSTGRES_URL") or config.get_main_option("sqlalchemy.url", "")
-    # The app uses postgresql+asyncpg://...; alembic.ini may store postgresql://...
-    # Normalise to asyncpg for the async engine.
-    if url.startswith("postgresql://") or url.startswith("postgresql+psycopg2://"):
-        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
-        url = url.replace("postgresql+psycopg2://", "postgresql+asyncpg://", 1)
-    return url
+    url = os.getenv("POSTGRES_URL") or os.getenv("DATABASE_URL") or ASYNC_DATABASE_URL
+    if not url:
+        url = config.get_main_option("sqlalchemy.url", "")
+    return _normalize_postgres_url(url, async_driver=True)
 
 
 def run_migrations_offline() -> None:
