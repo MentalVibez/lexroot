@@ -2,11 +2,10 @@ services:
   - type: web
     name: pensiveape-api
     runtime: docker
-    plan: starter
+    plan: free
     region: oregon
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    preDeployCommand: alembic upgrade head
     domains:
       - api.pensiveape.com
     envVars:
@@ -54,5 +53,5 @@ databases:
   - name: living-lexicon-db
     databaseName: living_lexicon
     user: lexicon
-    plan: basic-256mb
+    plan: free
     region: oregon

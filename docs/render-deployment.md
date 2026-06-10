@@ -10,12 +10,14 @@ This project can deploy to Render for a lower-cost MVP than the AWS ECS stack.
 - API: `pensiveape-api`
   - Docker web service using `Dockerfile`
   - Custom domain: `api.pensiveape.com`
-  - Runs `alembic upgrade head` before deploy
+  - Free tier does not support Render `preDeployCommand`
 - Database: `living-lexicon-db`
-  - Render Postgres `basic-256mb`
-  - Persistent paid database for growing curated word data
+  - Render Postgres `free` for initial validation
+  - Upgrade to `basic-256mb` before treating the word database as durable
 
-Expected baseline cost is about $13/month: $7 web service + $6 Postgres.
+The current Blueprint is set to Render's free tier for initial launch validation.
+Upgrade the API to `starter` and Postgres to `basic-256mb` when you are ready
+for a durable public MVP database.
 
 ## First Deploy
 
@@ -47,6 +49,11 @@ Render injects the database connection string through `DATABASE_URL`,
 `POSTGRES_URL`, and `POSTGRES_SYNC_URL`. The app normalizes Render's standard
 Postgres URL into the async SQLAlchemy URL required by `asyncpg`.
 
+Because the free web service tier does not support `preDeployCommand`, Alembic
+migrations are not run automatically in this free Blueprint. The MVP fallback
+words keep the public API useful until migrations and imports are run manually
+or the API is upgraded to a paid plan.
+
 ## Post-Deploy Checks
 
 ```bash
@@ -65,12 +72,14 @@ Verify in the browser:
 ## Seeding Data
 
 The MVP fallback words keep the public site useful even before the database is
-seeded. For persistent growth, import curated data after the first deploy using
-a trusted machine or Render shell with the external Render Postgres URL.
+seeded. Free Postgres is suitable only for launch validation. For persistent
+growth, upgrade Postgres first, then import curated data using a trusted machine
+or Render shell with the external Render Postgres URL.
 
 Recommended first seed path:
 
 ```bash
+POSTGRES_SYNC_URL="<render external postgres url>" alembic upgrade head
 POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.words_csv_importer
 POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.senses_importer
 POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.word_relations_importer
