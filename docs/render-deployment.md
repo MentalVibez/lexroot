@@ -1,6 +1,7 @@
 # Render Deployment: PensiveApe MVP
 
-This project can deploy to Render for a lower-cost MVP than the AWS ECS stack.
+This project can deploy to Render for app hosting and Supabase for durable
+Postgres/Auth.
 
 ## Architecture
 
@@ -11,13 +12,12 @@ This project can deploy to Render for a lower-cost MVP than the AWS ECS stack.
   - Docker web service using `Dockerfile`
   - Custom domain: `api.pensiveape.com`
   - Free tier does not support Render `preDeployCommand`
-- Database: `living-lexicon-db`
-  - Render Postgres `free` for initial validation
-  - Upgrade to `basic-256mb` before treating the word database as durable
+- Database: Supabase Postgres
+  - Store the connection strings as secret env vars on `pensiveape-api`
+  - Use Supabase Auth later for saved words, classrooms, and collections
 
-The current Blueprint is set to Render's free tier for initial launch validation.
-Upgrade the API to `starter` and Postgres to `basic-256mb` when you are ready
-for a durable public MVP database.
+The current Blueprint keeps Render on the free tier for initial launch
+validation. Supabase provides the durable database layer.
 
 ## First Deploy
 
@@ -26,12 +26,17 @@ for a durable public MVP database.
 3. Confirm the Blueprint provisions:
    - `pensiveape-api`
    - `pensiveape-web`
-   - `living-lexicon-db`
-4. Add the DNS records Render provides for:
+4. In Supabase, create a project and copy the Postgres connection string.
+5. In Render, set these secret env vars on `pensiveape-api`:
+   - `DATABASE_URL`
+   - `POSTGRES_URL`
+   - `POSTGRES_SYNC_URL`
+   - `POSTGRES_PASSWORD`
+6. Add the DNS records Render provides for:
    - `pensiveape.com`
    - `www.pensiveape.com`
    - `api.pensiveape.com`
-5. Wait for TLS certificates to become active.
+7. Wait for TLS certificates to become active.
 
 ## Production Environment
 
@@ -45,14 +50,13 @@ The Blueprint sets:
 - `REQUIRE_API_KEY=false`
 - `AUTO_CREATE_TABLES=false`
 
-Render injects the database connection string through `DATABASE_URL`,
-`POSTGRES_URL`, and `POSTGRES_SYNC_URL`. The app normalizes Render's standard
-Postgres URL into the async SQLAlchemy URL required by `asyncpg`.
+Render expects the database connection strings to be set manually from Supabase.
+The app normalizes Supabase/standard Postgres URLs into the async SQLAlchemy URL
+required by `asyncpg`.
 
 Because the free web service tier does not support `preDeployCommand`, Alembic
 migrations are not run automatically in this free Blueprint. The MVP fallback
-words keep the public API useful until migrations and imports are run manually
-or the API is upgraded to a paid plan.
+words keep the public API useful until migrations and imports are run manually.
 
 ## Post-Deploy Checks
 
@@ -71,18 +75,17 @@ Verify in the browser:
 
 ## Seeding Data
 
-The MVP fallback words keep the public site useful even before the database is
-seeded. Free Postgres is suitable only for launch validation. For persistent
-growth, upgrade Postgres first, then import curated data using a trusted machine
-or Render shell with the external Render Postgres URL.
+The MVP fallback words keep the public site useful even before Supabase is
+seeded. For persistent growth, run migrations and import curated data using a
+trusted machine with the Supabase pooled or direct Postgres URL.
 
 Recommended first seed path:
 
 ```bash
-POSTGRES_SYNC_URL="<render external postgres url>" alembic upgrade head
-POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.words_csv_importer
-POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.senses_importer
-POSTGRES_SYNC_URL="<render external postgres url>" python3 -m ingestor.word_relations_importer
+POSTGRES_SYNC_URL="<supabase postgres url>" alembic upgrade head
+POSTGRES_SYNC_URL="<supabase postgres url>" python3 -m ingestor.words_csv_importer
+POSTGRES_SYNC_URL="<supabase postgres url>" python3 -m ingestor.senses_importer
+POSTGRES_SYNC_URL="<supabase postgres url>" python3 -m ingestor.word_relations_importer
 ```
 
 Keep write/admin endpoints disabled until admin authentication and workflows
