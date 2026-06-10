@@ -31,6 +31,7 @@ htmlcov/
 # IDE
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
@@ -51,7 +52,7 @@ Words/.wiktionary_checkpoint.json
 Words/.icd10_cache.csv
 Words/.glutanimate_medical.txt
 # Collins Scrabble Words — licensed dataset, not redistributable
-"Words/Collins Scrabble Words (2019) with definitions.txt"
+Words/Collins Scrabble Words (2019) with definitions.txt
 # Open-license definitions — generated; run: python3 -m ingestor.definitions_importer
 Words/open_definitions.csv
 Words/gcide.xml
@@ -67,6 +68,15 @@ Words/kaikki-en.jsonl.gz
 # ── Logs ──────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# ── Terraform local state/cache ───────────────────────────────────────────────
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+!*.tfvars.example
 
 # ── SQLite test databases ──────────────────────────────────────────────────────
 *.db

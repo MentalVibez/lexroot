@@ -11,6 +11,11 @@ from api.schemas import PaginatedResponse
 from api.security import require_admin_token
 from db import crud
 from living_lexicon.etymology_path import build_etymology_path
+from living_lexicon.mvp_fallback import (
+    era_check_featured_words,
+    get_featured_word,
+    search_featured_words,
+)
 from living_lexicon.vitality import compute_vitality
 
 _TOKEN_RE = re.compile(r"[a-zA-Z][a-zA-Z'-]*[a-zA-Z]|[a-zA-Z]")
@@ -101,8 +106,17 @@ async def era_check(
     if not tokens:
         raise HTTPException(status_code=422, detail="No word tokens found in text.")
 
-    era_senses = await crud.bulk_get_senses_by_era(session, tokens, payload.era_name)
-    word_rows = await crud.bulk_get_words(session, [w for w, s in era_senses.items() if s])
+    try:
+        era_senses = await crud.bulk_get_senses_by_era(session, tokens, payload.era_name)
+        word_rows = await crud.bulk_get_words(session, [w for w, s in era_senses.items() if s])
+    except Exception:
+        flagged = [FlaggedWord(**row) for row in era_check_featured_words(payload.text, payload.era_name)]
+        return EraCheckResponse(
+            era_name=payload.era_name,
+            words_checked=len(tokens),
+            flagged_count=len(flagged),
+            flagged=flagged,
+        )
 
     flagged: list[FlaggedWord] = []
     for word, senses in era_senses.items():
@@ -201,7 +215,12 @@ async def get_etymology_path(word: str, session: AsyncSession = Depends(get_pg_s
 
 @router.get("/word/{word}", response_model=WordResponse)
 async def get_word(word: str, session: AsyncSession = Depends(get_pg_session)):
-    row = await crud.get_word(session, word)
+    try:
+        row = await crud.get_word(session, word)
+    except Exception:
+        row = get_featured_word(word)
+    if row is None:
+        row = get_featured_word(word)
     if row is None:
         raise HTTPException(status_code=404, detail=f"'{word}' not found in the words table")
     return row
@@ -224,7 +243,11 @@ async def search_words(
     limit: int = Query(default=20, ge=1, le=100),
     session: AsyncSession = Depends(get_pg_session),
 ):
-    return await crud.search_words(session, prefix=q, limit=limit)
+    try:
+        rows = await crud.search_words(session, prefix=q, limit=limit)
+    except Exception:
+        return search_featured_words(q, limit=limit)
+    return rows or search_featured_words(q, limit=limit)
 
 
 class MorphemeResponse(BaseModel):

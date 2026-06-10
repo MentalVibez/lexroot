@@ -16,7 +16,10 @@ Graph schema:
 import os
 from dataclasses import dataclass, field
 from hashlib import sha1
-from neo4j import GraphDatabase, Driver
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from neo4j import Driver
 
 
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
@@ -54,7 +57,9 @@ class WordEntry:
 
 class LexiconIngestor:
     def __init__(self, uri: str = NEO4J_URI, user: str = NEO4J_USER, password: str = NEO4J_PASSWORD):
-        self.driver: Driver = GraphDatabase.driver(uri, auth=(user, password))
+        from neo4j import GraphDatabase
+
+        self.driver: "Driver" = GraphDatabase.driver(uri, auth=(user, password))
 
     def close(self):
         self.driver.close()
