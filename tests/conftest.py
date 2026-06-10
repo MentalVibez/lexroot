@@ -74,6 +74,9 @@ async def app_client(monkeypatch):
                 "figurative_meaning": None,
                 "example_usage": None,
                 "semantic_drift_history": None,
+                "wordfreq_zipf": None,
+                "wordfreq_rank": None,
+                "wordfreq_source_slug": None,
             }
             for field, value in defaults.items():
                 setattr(existing, field, value)
@@ -87,6 +90,23 @@ async def app_client(monkeypatch):
         folded = prefix.casefold()
         matches = [row for key, row in words.items() if key.startswith(folded)]
         return sorted(matches, key=lambda row: row.word)[:limit]
+
+    async def fake_suggest_words(_session, query: str, limit: int = 5):
+        from difflib import SequenceMatcher
+
+        folded = query.casefold()
+        if len(folded) < 4:
+            return []
+        scored = []
+        for key, row in words.items():
+            if key == folded or abs(len(key) - len(folded)) > 2:
+                continue
+            score = SequenceMatcher(None, folded, key).ratio()
+            if score >= 0.72:
+                rank = row.wordfreq_rank if row.wordfreq_rank is not None else 999_999_999
+                scored.append((score, rank, row.word, row))
+        scored.sort(key=lambda item: (-item[0], item[1], item[2]))
+        return [row for _, _, _, row in scored[:limit]]
 
     async def fake_get_sense(_session, sense_id: str):
         return senses.get(sense_id)
@@ -219,6 +239,7 @@ async def app_client(monkeypatch):
     monkeypatch.setattr(crud, "list_words", fake_list_words)
     monkeypatch.setattr(crud, "upsert_word", fake_upsert_word)
     monkeypatch.setattr(crud, "search_words", fake_search_words)
+    monkeypatch.setattr(crud, "suggest_words", fake_suggest_words)
     monkeypatch.setattr(crud, "get_sense", fake_get_sense)
     monkeypatch.setattr(crud, "list_senses", fake_list_senses)
     monkeypatch.setattr(crud, "upsert_sense", fake_upsert_sense)

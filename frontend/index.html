@@ -944,6 +944,25 @@
       color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.96rem;
     }
 
+    .did-you-mean {
+      display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center;
+      margin-top: 0.8rem; color: var(--muted); font-family: var(--ui-font);
+      font-style: normal;
+    }
+
+    .suggestion-chip {
+      border: 1px solid rgba(127, 55, 23, 0.18);
+      border-radius: 999px; padding: 0.48rem 0.75rem;
+      background: rgba(255, 252, 247, 0.95); color: var(--clay-deep);
+      font-family: var(--ui-font); font-weight: 700;
+      min-height: 2.45rem;
+    }
+
+    .suggestion-chip:hover, .suggestion-chip:focus-visible {
+      outline: none; border-color: var(--clay);
+      box-shadow: 0 8px 18px rgba(127, 55, 23, 0.12);
+    }
+
     .ai-section { margin-bottom: 1rem; }
     .ai-section-body, .ai-raw { margin-top: 0.32rem; color: var(--ink); line-height: 1.7; }
 
@@ -2307,6 +2326,57 @@
       } catch { hideAuto(); }
     }
 
+    async function renderNotFoundState(query) {
+      currentWordData = null;
+      currentTimeline = [];
+      updateDefaultSeo();
+
+      const wordContent = document.getElementById('word-content');
+      wordContent.innerHTML = '';
+      const message = document.createElement('p');
+      message.className = 'empty-state';
+      message.textContent = 'Word not found in the production lexicon yet.';
+      wordContent.appendChild(message);
+
+      try {
+        const res = await apiFetch(`/pg/words/suggest?q=${encodeURIComponent(query)}&limit=3`);
+        if (res.ok) {
+          const suggestions = await res.json();
+          if (Array.isArray(suggestions) && suggestions.length) {
+            const wrap = document.createElement('div');
+            wrap.className = 'did-you-mean';
+            const label = document.createElement('span');
+            label.textContent = 'Did you mean';
+            wrap.appendChild(label);
+            suggestions.forEach((suggestion, index) => {
+              const word = suggestion.word || suggestion;
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'suggestion-chip';
+              btn.textContent = word;
+              btn.addEventListener('click', () => loadWord(word, true));
+              wrap.appendChild(btn);
+              if (index === suggestions.length - 1) {
+                const mark = document.createElement('span');
+                mark.textContent = '?';
+                wrap.appendChild(mark);
+              }
+            });
+            wordContent.appendChild(wrap);
+          }
+        }
+      } catch {
+        // Suggestions are helpful, but absence of suggestions should not hide the not-found state.
+      }
+
+      document.getElementById('timeline-content').innerHTML =
+        '<p class="empty-state">No timeline available for that search yet.</p>';
+      document.getElementById('roots-content').innerHTML =
+        '<p class="empty-state">No root data available for that search yet.</p>';
+      document.getElementById('sources-content').innerHTML =
+        '<p class="empty-state">No source data available for that search yet.</p>';
+    }
+
     /* ── WORD LOADER ── */
     async function loadWord(word, scrollIntoView = true) {
       currentWord = word.toLowerCase();
@@ -2334,17 +2404,7 @@
       }
 
       if (!wordRes.ok) {
-        currentWordData = null;
-        currentTimeline = [];
-        updateDefaultSeo();
-        document.getElementById('word-content').innerHTML =
-          '<p class="empty-state">Word not found in the production lexicon yet.</p>';
-        document.getElementById('timeline-content').innerHTML =
-          '<p class="empty-state">No timeline available for that search yet.</p>';
-        document.getElementById('roots-content').innerHTML =
-          '<p class="empty-state">No root data available for that search yet.</p>';
-        document.getElementById('sources-content').innerHTML =
-          '<p class="empty-state">No source data available for that search yet.</p>';
+        await renderNotFoundState(currentWord);
         return;
       }
 

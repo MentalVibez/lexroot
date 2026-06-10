@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from difflib import SequenceMatcher
 import os
 from sqlalchemy import and_, func, select, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -9,7 +10,13 @@ from db.models import Attestation, DatasetSnapshot, Morpheme, Sense, Word, WordR
 
 
 async def get_word(session: AsyncSession, word: str) -> Word | None:
-    result = await session.execute(select(Word).where(Word.word == word))
+    folded = word.casefold()
+    result = await session.execute(
+        select(Word)
+        .where(func.lower(Word.word) == folded)
+        .order_by((Word.word == word).desc())
+        .limit(1)
+    )
     return result.scalar_one_or_none()
 
 
@@ -105,6 +112,37 @@ async def search_words(
         .limit(limit)
     )
     return list(result.scalars().all())
+
+
+async def suggest_words(
+    session: AsyncSession,
+    query: str,
+    limit: int = 5,
+) -> list[Word]:
+    """Return likely spelling suggestions from existing lexicon rows."""
+    folded = query.strip().casefold()
+    if len(folded) < 4:
+        return []
+
+    result = await session.execute(
+        select(Word)
+        .where(func.length(Word.word).between(max(1, len(folded) - 2), len(folded) + 2))
+        .order_by(Word.wordfreq_rank.is_(None), Word.wordfreq_rank, Word.word)
+        .limit(1000)
+    )
+    candidates = list(result.scalars().all())
+    scored: list[tuple[float, int, str, Word]] = []
+    for row in candidates:
+        candidate = row.word.casefold()
+        if candidate == folded:
+            continue
+        score = SequenceMatcher(None, folded, candidate).ratio()
+        if score >= 0.72:
+            rank = row.wordfreq_rank if row.wordfreq_rank is not None else 999_999_999
+            scored.append((score, rank, row.word, row))
+
+    scored.sort(key=lambda item: (-item[0], item[1], item[2]))
+    return [row for _, _, _, row in scored[:limit]]
 
 
 async def upsert_sense(

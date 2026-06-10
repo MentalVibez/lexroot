@@ -35,8 +35,18 @@ class WordResponse(BaseModel):
     figurative_meaning: str | None = None
     example_usage: str | None = None
     semantic_drift_history: list | None = None
+    wordfreq_zipf: float | None = None
+    wordfreq_rank: int | None = None
+    wordfreq_source_slug: str | None = None
 
     model_config = {"from_attributes": True}
+
+
+class WordSuggestionResponse(BaseModel):
+    word: str
+    wordfreq_zipf: float | None = None
+    wordfreq_rank: int | None = None
+    definition: str | None = None
 
 
 class WordUpsertPayload(BaseModel):
@@ -225,6 +235,24 @@ async def search_words(
     session: AsyncSession = Depends(get_pg_session),
 ):
     return await crud.search_words(session, prefix=q, limit=limit)
+
+
+@router.get("/words/suggest", response_model=list[WordSuggestionResponse])
+async def suggest_words(
+    q: str = Query(min_length=3, max_length=100),
+    limit: int = Query(default=5, ge=1, le=10),
+    session: AsyncSession = Depends(get_pg_session),
+):
+    rows = await crud.suggest_words(session, query=q, limit=limit)
+    return [
+        WordSuggestionResponse(
+            word=row.word,
+            wordfreq_zipf=row.wordfreq_zipf,
+            wordfreq_rank=row.wordfreq_rank,
+            definition=row.definition,
+        )
+        for row in rows
+    ]
 
 
 class MorphemeResponse(BaseModel):

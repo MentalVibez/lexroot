@@ -57,6 +57,18 @@ async def test_upsert_and_get_roundtrip(app_client, write_headers):
     assert data["historical_context"] == "From Latin caritas (dearness, love)."
 
 
+async def test_get_word_is_case_insensitive(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="Invisible")
+
+    resp = await app_client.get("/pg/word/invisible")
+    assert resp.status_code == 200
+    assert resp.json()["word"] == "Invisible"
+
+    resp = await app_client.get("/pg/word/INVISIBLE")
+    assert resp.status_code == 200
+    assert resp.json()["word"] == "Invisible"
+
+
 async def test_upsert_backward_compat_without_enrichment_fields(app_client, write_headers):
     """PUT with only word + phonemes must still succeed; new fields default to null."""
     data = await _upsert(app_client, write_headers, word="Simple", phonemes="/ˈsɪm.pəl/")
@@ -92,6 +104,26 @@ async def test_search_prefix(app_client, write_headers):
     assert resp.status_code == 200
     words = {r["word"] for r in resp.json()}
     assert {"Charity", "Charitable", "Charcoal"} == words
+
+
+async def test_suggest_words_returns_likely_typo_correction(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="invisible")
+    await _upsert(app_client, write_headers, word="invincible")
+    await _upsert(app_client, write_headers, word="banana")
+
+    resp = await app_client.get("/pg/words/suggest?q=invisable")
+    assert resp.status_code == 200
+    words = [r["word"] for r in resp.json()]
+    assert words[0] == "invisible"
+    assert "banana" not in words
+
+
+async def test_suggest_words_returns_empty_for_unrelated_query(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="invisible")
+
+    resp = await app_client.get("/pg/words/suggest?q=zzzzzzzz")
+    assert resp.status_code == 200
+    assert resp.json() == []
 
 
 async def test_upsert_coalesces_on_second_call(app_client, write_headers):
