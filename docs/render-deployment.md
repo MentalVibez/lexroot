@@ -22,12 +22,23 @@ validation. Supabase provides the durable database layer.
 ## First Deploy
 
 1. Push a branch containing `render.yaml`.
-2. In Render, create a new Blueprint from the GitHub repo and branch.
-3. Confirm the Blueprint provisions:
+2. Set local secrets without committing them:
+
+```bash
+export RENDER_API_KEY="<render api key>"
+export SUPABASE_DATABASE_URL="<supabase postgres connection string>"
+```
+
+3. Create/reuse the Render services and attach domains:
+
+```bash
+scripts/render_go_live.py
+```
+
+4. Confirm Render has:
    - `pensiveape-api`
    - `pensiveape-web`
-4. In Supabase, create a project and copy the Postgres connection string.
-5. In Render, set these secret env vars on `pensiveape-api`:
+5. Confirm these secret env vars exist on `pensiveape-api`:
    - `DATABASE_URL`
    - `POSTGRES_URL`
    - `POSTGRES_SYNC_URL`
@@ -37,6 +48,10 @@ validation. Supabase provides the durable database layer.
    - `www.pensiveape.com`
    - `api.pensiveape.com`
 7. Wait for TLS certificates to become active.
+
+You can also create the services manually from the Render dashboard as a
+Blueprint from the GitHub repo and branch. The script is preferred for this MVP
+because it avoids committing database secrets or manually duplicating settings.
 
 ## Production Environment
 
