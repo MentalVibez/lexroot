@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pensiveape.com/sitemap.xml
