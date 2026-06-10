@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources — PensiveApe</title>
+  <meta name="description" content="A concise guide to trusted dictionaries, corpora, and tools for exploring the history of English.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #f7f2e8;
+      --ink: #1e1f1b;
+      --muted: #6d6555;
+      --clay: #a5532a;
+      --clay-deep: #7f3717;
+      --sage: #556b5d;
+      --night: #1d2c35;
+      --gold: #d5a94f;
+      --cream: #fffdf8;
+      --line: rgba(34, 38, 31, 0.12);
+      --shadow: 0 14px 36px rgba(63, 43, 20, 0.1);
+      --hero-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      --ui-font: "Avenir Next Condensed", "Gill Sans", "Trebuchet MS", sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #faf6ef 0%, var(--paper) 48%, #f3eadb 100%);
+      color: var(--ink);
+      font-family: var(--hero-font);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1060px, calc(100% - 2rem)); margin: 0 auto; padding: 1rem 0 4rem; }
+    .topbar {
+      display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+      padding: 0.5rem 0 1.2rem; color: var(--muted); font-family: var(--ui-font);
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-mark {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      background: conic-gradient(from 210deg, var(--clay), var(--gold), var(--sage), var(--clay));
+    }
+    .brand h1 {
+      color: var(--night); font-family: var(--ui-font); font-size: 0.95rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .topbar a { color: var(--clay-deep); }
+    .hero {
+      padding: clamp(2rem, 5vw, 4rem) 0 2rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1.4rem;
+    }
+    .eyebrow {
+      font-family: var(--ui-font); text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--clay-deep); font-size: 0.76rem; margin-bottom: 0.8rem;
+    }
+    h2 { font-size: clamp(2.4rem, 6vw, 5rem); line-height: 0.95; color: var(--night); max-width: 11ch; }
+    .hero p { max-width: 42rem; color: var(--muted); margin-top: 1rem; font-size: 1.08rem; }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem; margin: 1rem 0 1.4rem;
+    }
+    .card {
+      background: var(--cream); border: 1px solid var(--line); border-radius: 1rem;
+      padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
+    }
+    .card h3 {
+      font-family: var(--ui-font); text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--clay-deep); font-size: 0.76rem; margin-bottom: 0.6rem;
+    }
+    .card p { color: var(--muted); }
+    .card .meta {
+      color: var(--muted);
+      font-family: var(--ui-font);
+      font-size: 0.82rem;
+      margin-bottom: 0.45rem;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+    .tag {
+      border: 1px solid rgba(34, 38, 31, 0.12);
+      border-radius: 999px;
+      color: var(--sage);
+      font-family: var(--ui-font);
+      font-size: 0.76rem;
+      padding: 0.22rem 0.55rem;
+      background: rgba(255,253,248,0.72);
+    }
+    .card a {
+      display: inline-flex; margin-top: 0.75rem; color: var(--clay-deep);
+      font-family: var(--ui-font); font-weight: 700;
+      min-height: 2.6rem; align-items: center;
+    }
+    .section-title {
+      margin-top: 1.8rem; color: var(--night);
+      font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1;
+    }
+    .note {
+      margin-top: 1rem; padding: 1rem 1.1rem; border-left: 3px solid var(--gold);
+      background: rgba(255,253,248,0.75); color: var(--muted); border-radius: 0 1rem 1rem 0;
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 1rem, 1060px); padding-top: 0.75rem; }
+      .topbar { align-items: flex-start; gap: 0.8rem; }
+      .brand h1 { font-size: 0.86rem; }
+      .topbar > a:last-child {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.45rem 0.7rem;
+        background: rgba(255,253,248,0.7);
+      }
+      .hero { padding: 1.4rem 0 1.2rem; }
+      h2 { font-size: clamp(2.15rem, 13vw, 3.4rem); max-width: 10ch; }
+      .hero p { font-size: 1rem; }
+      .grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .card { padding: 1rem; }
+      .section-title { margin-top: 1.4rem; }
+    }
+    @media (max-width: 430px) {
+      .topbar { flex-direction: column; }
+      .topbar > a:last-child { width: 100%; justify-content: center; display: inline-flex; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><h1>PensiveApe</h1></span>
+      </a>
+      <a href="/">Back to explorer</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Scholar's shelf</p>
+        <h2>Good sources without the maze.</h2>
+        <p>
+          Start with friendly guides and podcasts, then move into historical dictionaries,
+          corpora, and primary texts when a claim needs stronger evidence.
+        </p>
+      </section>
+
+      <h3 class="section-title">Best starting points</h3>
+      <section class="grid" aria-label="Best starting resources">
+        <article class="card">
+          <h3>Online Etymology Dictionary</h3>
+          <div class="meta">Douglas Harper · public website</div>
+          <p>The fastest friendly starting point for most English word histories.</p>
+          <div class="tag-row"><span class="tag">Best for beginners</span><span class="tag">Link only</span></div>
+          <a href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline</a>
+        </article>
+        <article class="card">
+          <h3>The Adventure of English</h3>
+          <div class="meta">Melvyn Bragg · book</div>
+          <p>A public-facing narrative history of English; useful for orienting curious readers.</p>
+          <div class="tag-row"><span class="tag">Best for students</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>The Story of English</h3>
+          <div class="meta">McCrum, Cran, and MacNeil · book</div>
+          <p>A broad cultural history of English that pairs well with the site's historical timeline.</p>
+          <div class="tag-row"><span class="tag">Best for curious readers</span><span class="tag">Metadata only</span></div>
+        </article>
+      </section>
+
+      <h3 class="section-title">English vocabulary layers</h3>
+      <section class="grid" aria-label="English vocabulary layers">
+        <article class="card">
+          <h3>Inherited Germanic</h3>
+          <p>Core English: bodily, domestic, emotional, direct. Think bread, hand, house, love, death, lord.</p>
+        </article>
+        <article class="card">
+          <h3>Anglo-Norman / French</h3>
+          <p>Law, court, cuisine, rank, government, and social polish. Think justice, royal, parliament, beef.</p>
+        </article>
+        <article class="card">
+          <h3>Latin and Greek</h3>
+          <p>Church, medicine, science, philosophy, scholarship, and technical language. Think charity, patient, biology.</p>
+        </article>
+      </section>
+
+      <h3 class="section-title">Word histories and roots</h3>
+      <section class="grid" aria-label="Word history and root resources">
+        <article class="card">
+          <h3>American Heritage Dictionary of Indo-European Roots</h3>
+          <div class="meta">Calvert Watkins · reference</div>
+          <p>A strong lead for tracing English vocabulary back through Indo-European root families.</p>
+          <div class="tag-row"><span class="tag">Best for roots</span><span class="tag">Citation lead</span></div>
+          <a href="https://www.ahdictionary.com/word/indoeurop.html" target="_blank" rel="noopener noreferrer">Visit AHDictionary</a>
+        </article>
+        <article class="card">
+          <h3>The Merriam-Webster New Book of Word Histories</h3>
+          <div class="meta">Merriam-Webster · reference</div>
+          <p>Readable word-history essays that can inspire topics for later dictionary verification.</p>
+          <div class="tag-row"><span class="tag">Best for writers</span><span class="tag">Metadata only</span></div>
+          <a href="https://www.merriam-webster.com" target="_blank" rel="noopener noreferrer">Visit Merriam-Webster</a>
+        </article>
+        <article class="card">
+          <h3>The Etymologicon</h3>
+          <div class="meta">Mark Forsyth · book</div>
+          <p>A playful route into hidden word connections; best used as a curiosity engine, not final evidence.</p>
+          <div class="tag-row"><span class="tag">Best for delight</span><span class="tag">Metadata only</span></div>
+        </article>
+      </section>
+
+      <h3 class="section-title">For older texts</h3>
+      <section class="grid" aria-label="Older text resources">
+        <article class="card">
+          <h3>Middle English Dictionary</h3>
+          <div class="meta">University of Michigan · dictionary/corpus</div>
+          <p>The definitive free reference for Middle English vocabulary and citations.</p>
+          <div class="tag-row"><span class="tag">Best for older texts</span><span class="tag">Citation-grade</span></div>
+          <a href="https://quod.lib.umich.edu/m/middle-english-dictionary/" target="_blank" rel="noopener noreferrer">Visit MED</a>
+        </article>
+        <article class="card">
+          <h3>Bosworth-Toller</h3>
+          <div class="meta">Old English dictionary</div>
+          <p>A core Old English dictionary for Anglo-Saxon forms, meanings, and citations.</p>
+          <div class="tag-row"><span class="tag">Best for Old English</span><span class="tag">Citation-grade</span></div>
+          <a href="https://bosworthtoller.com" target="_blank" rel="noopener noreferrer">Visit Bosworth-Toller</a>
+        </article>
+        <article class="card">
+          <h3>A Book of Middle English</h3>
+          <div class="meta">Burrow and Turville-Petre · book</div>
+          <p>A practical bridge into Middle English grammar, reading, and vocabulary.</p>
+          <div class="tag-row"><span class="tag">Best for students</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>Old and Middle English: An Anthology</h3>
+          <div class="meta">Elaine Treharne · book</div>
+          <p>Useful for pairing word histories with real historical passages and classroom reading.</p>
+          <div class="tag-row"><span class="tag">Best for teachers</span><span class="tag">Metadata only</span></div>
+        </article>
+      </section>
+
+      <h3 class="section-title">For deeper scholarship</h3>
+      <section class="grid" aria-label="Scholarly resources">
+        <article class="card">
+          <h3>Oxford English Dictionary</h3>
+          <div class="meta">historical dictionary</div>
+          <p>The central historical dictionary of English. Often available through libraries.</p>
+          <div class="tag-row"><span class="tag">Best for citations</span><span class="tag">Subscription/library</span></div>
+          <a href="https://www.oed.com" target="_blank" rel="noopener noreferrer">Visit OED</a>
+        </article>
+        <article class="card">
+          <h3>Perseus Digital Library</h3>
+          <div class="meta">Tufts University · corpus</div>
+          <p>Greek and Latin primary texts with morphological tools for classical borrowings.</p>
+          <div class="tag-row"><span class="tag">Best for Latin/Greek</span><span class="tag">Citation lead</span></div>
+          <a href="https://www.perseus.tufts.edu" target="_blank" rel="noopener noreferrer">Visit Perseus</a>
+        </article>
+        <article class="card">
+          <h3>How English Works</h3>
+          <div class="meta">Curzan and Adams · book</div>
+          <p>A linguistics-grounded introduction that helps translate expert terms into usable explanations.</p>
+          <div class="tag-row"><span class="tag">Best for teachers</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>In Search of the Indo-Europeans</h3>
+          <div class="meta">J.P. Mallory · book</div>
+          <p>A deeper background source for Indo-European language history and reconstruction caution.</p>
+          <div class="tag-row"><span class="tag">Best for scholars</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>The Horse, the Wheel, and Language</h3>
+          <div class="meta">David W. Anthony · book</div>
+          <p>Archaeological context for Indo-European spread; useful background, not word-level proof.</p>
+          <div class="tag-row"><span class="tag">Best for context</span><span class="tag">Metadata only</span></div>
+        </article>
+      </section>
+
+      <h3 class="section-title">Alphabet and writing systems</h3>
+      <section class="grid" aria-label="Alphabet and writing resources">
+        <article class="card">
+          <h3>ABC et Cetera</h3>
+          <div class="meta">Alexander and Nicholas Humez · book</div>
+          <p>A lively history of the Roman alphabet and the written forms behind English literacy.</p>
+          <div class="tag-row"><span class="tag">Best for alphabet history</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>Alpha Beta</h3>
+          <div class="meta">John Man · book</div>
+          <p>A broad narrative on alphabetic writing and its role in Western textual culture.</p>
+          <div class="tag-row"><span class="tag">Best for writing systems</span><span class="tag">Metadata only</span></div>
+        </article>
+        <article class="card">
+          <h3>Project Gutenberg</h3>
+          <div class="meta">public-domain text library</div>
+          <p>Free primary texts including Shakespeare, the King James Bible, Chaucer, and more.</p>
+          <div class="tag-row"><span class="tag">Best for primary texts</span><span class="tag">Public access</span></div>
+          <a href="https://www.gutenberg.org" target="_blank" rel="noopener noreferrer">Visit Gutenberg</a>
+        </article>
+      </section>
+
+      <h3 class="section-title">Podcasts and ongoing listening</h3>
+      <section class="grid" aria-label="Language podcasts">
+        <article class="card">
+          <h3>History of English Podcast</h3>
+          <div class="meta">Kevin Stroud · podcast</div>
+          <p>A clear chronological journey through English from Indo-European roots onward.</p>
+          <div class="tag-row"><span class="tag">Best for sequence</span><span class="tag">Link only</span></div>
+          <a href="https://www.historyofenglishpodcast.com" target="_blank" rel="noopener noreferrer">Visit podcast</a>
+        </article>
+        <article class="card">
+          <h3>Lingthusiasm</h3>
+          <div class="meta">Gretchen McCulloch and Lauren Gawne · podcast</div>
+          <p>Accessible linguistics that helps users hear how language works in everyday life.</p>
+          <div class="tag-row"><span class="tag">Best for public linguistics</span><span class="tag">Link only</span></div>
+          <a href="https://lingthusiasm.com/" target="_blank" rel="noopener noreferrer">Visit Lingthusiasm</a>
+        </article>
+        <article class="card">
+          <h3>The Allusionist</h3>
+          <div class="meta">Helen Zaltzman · podcast</div>
+          <p>Sharp, story-driven episodes about words, names, usage, and language culture.</p>
+          <div class="tag-row"><span class="tag">Best for curiosity</span><span class="tag">Link only</span></div>
+          <a href="https://www.theallusionist.org/" target="_blank" rel="noopener noreferrer">Visit The Allusionist</a>
+        </article>
+        <article class="card">
+          <h3>A Way With Words</h3>
+          <div class="meta">Martha Barnette and Grant Barrett · podcast</div>
+          <p>Listener-friendly discussions of idioms, regional speech, word origins, and usage.</p>
+          <div class="tag-row"><span class="tag">Best for families</span><span class="tag">Link only</span></div>
+          <a href="https://waywordradio.org/" target="_blank" rel="noopener noreferrer">Visit A Way With Words</a>
+        </article>
+        <article class="card">
+          <h3>Words for Granted</h3>
+          <div class="meta">Ray Belli · podcast</div>
+          <p>Focused word-origin episodes that pair well with the Word Explorer experience.</p>
+          <div class="tag-row"><span class="tag">Best for etymology</span><span class="tag">Link only</span></div>
+          <a href="https://www.wordsforgranted.com/" target="_blank" rel="noopener noreferrer">Visit Words for Granted</a>
+        </article>
+      </section>
+
+      <div class="note">
+        These recommendations are learning resources. PensiveApe word claims should still be
+        backed by historical dictionaries, corpora, or primary texts; books and podcasts are
+        best treated as orientation, teaching inspiration, or citation leads.
+      </div>
+    </main>
+  </div>
+</body>
+</html>

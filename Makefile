@@ -1,4 +1,4 @@
-.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-morphemes import-word-relations sync-neo4j make-snapshot lint typecheck help
+.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-morphemes import-word-relations research-triage sync-neo4j make-snapshot lint typecheck help
 
 ## Start Docker services and the API app
 dev:
@@ -33,6 +33,10 @@ import-morphemes:
 ## Import semantic and derivational word relations from CSV (Words/sources/word_relations.csv)
 import-word-relations:
 	python -m ingestor.word_relations_importer
+
+## Classify learning resources without scraping copyrighted bodies
+research-triage:
+	python3 -m ingestor.research_triage_agent
 
 ## Sync PostgreSQL words → Neo4j graph (run after any bulk import)
 sync-neo4j:

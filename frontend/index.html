@@ -3,495 +3,3270 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Living Lexicon</title>
+  <title>PensiveApe — The Living Lexicon</title>
+  <meta name="description" content="Discover the hidden histories of everyday words. Search any word and see how its meaning evolved across centuries — sourced from the OED, MED, and leading scholarly dictionaries.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --parchment:#f5f0e8; --parchment2:#ede6d4; --ink:#2c1810; --ink-muted:#7a6350;
-      --gold:#b8860b; --gold-light:#e6c96b; --border:#c9b99a;
-      --dot-filled:#8b4513; --dot-empty:#c9b99a; --accent:#5c3317;
+      --paper: #f7f2e8;
+      --paper-deep: #ebdfc8;
+      --ink: #1e1f1b;
+      --muted: #6d6555;
+      --clay: #a5532a;
+      --clay-deep: #7f3717;
+      --sage: #556b5d;
+      --night: #1d2c35;
+      --gold: #d5a94f;
+      --cream: #fffdf8;
+      --line: rgba(34, 38, 31, 0.16);
+      --card: rgba(255, 252, 247, 0.84);
+      --shadow: 0 18px 50px rgba(63, 43, 20, 0.12);
+      --shadow-sm: 0 8px 24px rgba(63, 43, 20, 0.08);
+      --hero-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      --ui-font: "Avenir Next Condensed", "Gill Sans", "Trebuchet MS", sans-serif;
+      --radius: 1.4rem;
+      --radius-sm: 0.9rem;
     }
-    body { background:var(--parchment); color:var(--ink); font-family:Georgia,'Times New Roman',serif; min-height:100vh; }
-    header { background:var(--accent); color:var(--gold-light); padding:1rem 2rem; display:flex; align-items:center; gap:2rem; flex-wrap:wrap; }
-    header h1 { font-size:1.4rem; letter-spacing:0.05em; white-space:nowrap; }
-    header p.tagline { font-size:0.8rem; opacity:0.75; font-style:italic; margin-top:0.15rem; }
-    .search-bar { display:flex; gap:0.5rem; flex:1; max-width:500px; position:relative; }
-    .search-bar input { flex:1; padding:0.55rem 0.9rem; border:2px solid var(--gold); border-radius:4px; background:var(--parchment); color:var(--ink); font-family:inherit; font-size:1rem; }
-    .search-bar input:focus { outline:none; border-color:var(--gold-light); }
-    .search-bar button { padding:0.55rem 1.1rem; background:var(--gold); color:var(--ink); border:none; border-radius:4px; cursor:pointer; font-family:inherit; font-weight:bold; }
-    .search-bar button:hover { background:var(--gold-light); }
-    #autocomplete { position:absolute; top:calc(100% + 4px); left:0; right:60px; background:var(--parchment); border:1px solid var(--border); border-radius:4px; z-index:100; display:none; box-shadow:0 4px 12px rgba(0,0,0,.15); }
-    .autocomplete-item { padding:0.5rem 0.9rem; cursor:pointer; border-bottom:1px solid var(--parchment2); font-size:0.9rem; }
-    .autocomplete-item:hover { background:var(--parchment2); }
-    main { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; padding:1.5rem 2rem; max-width:1100px; margin:0 auto; }
-    @media (max-width:700px) { main { grid-template-columns:1fr; padding:1rem; } }
-    .panel { background:white; border:1px solid var(--border); border-radius:6px; padding:1.5rem; min-height:200px; }
-    .panel h2 { font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:1rem; border-bottom:1px solid var(--parchment2); padding-bottom:0.5rem; }
-    #word-name { font-size:2rem; color:var(--accent); margin-bottom:0.3rem; }
-    #word-definition { font-size:0.95rem; color:var(--ink-muted); font-style:italic; margin-bottom:1.2rem; line-height:1.5; }
-    .root-box { background:var(--parchment); border-left:3px solid var(--gold); padding:0.6rem 0.9rem; margin-bottom:1.2rem; border-radius:0 4px 4px 0; font-size:0.88rem; }
-    .root-box .root-label { color:var(--ink-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; }
-    .root-box .root-text { color:var(--accent); font-weight:bold; font-style:italic; font-size:1rem; }
-    .section-label { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-muted); margin-bottom:0.5rem; }
-    .pills { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:1.3rem; }
-    .pill { padding:0.3rem 0.7rem; background:var(--parchment2); border:1px solid var(--border); border-radius:20px; font-size:0.82rem; cursor:pointer; color:var(--accent); }
-    .pill:hover { background:var(--gold-light); border-color:var(--gold); }
-    .drift-controls { display:flex; align-items:center; gap:0.7rem; margin-top:1rem; }
-    .context-select { padding:0.45rem 0.7rem; border:1px solid var(--border); border-radius:4px; background:var(--parchment); color:var(--ink); font-family:inherit; font-size:0.88rem; }
-    .explain-btn { padding:0.5rem 1.2rem; background:var(--accent); color:var(--gold-light); border:none; border-radius:4px; cursor:pointer; font-family:inherit; font-size:0.9rem; font-style:italic; }
-    .explain-btn:hover { background:var(--dot-filled); }
-    .explain-btn:disabled { opacity:0.6; cursor:not-allowed; }
-    .timeline { position:relative; padding-left:1.5rem; }
-    .timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:2px; background:var(--border); }
-    .era-entry { position:relative; margin-bottom:1.1rem; cursor:pointer; }
-    .era-dot { position:absolute; left:-1.5rem; top:4px; width:14px; height:14px; border-radius:50%; border:2px solid var(--dot-filled); background:var(--parchment); transition:transform 0.15s; }
-    .era-dot.filled { background:var(--dot-filled); }
-    .era-entry:hover .era-dot { transform:scale(1.2); }
-    .era-name { font-size:0.8rem; font-weight:bold; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; }
-    .era-years { font-size:0.72rem; color:var(--ink-muted); margin-left:0.4rem; }
-    .era-meaning { font-size:0.88rem; color:var(--ink); font-style:italic; margin-top:0.2rem; line-height:1.4; }
-    .era-example { font-size:0.78rem; color:var(--ink-muted); margin-top:0.2rem; border-left:2px solid var(--gold-light); padding-left:0.5rem; }
-    .era-empty { font-size:0.8rem; color:var(--dot-empty); font-style:italic; }
-    .era-ai-inline { background:var(--parchment); border:1px solid var(--border); border-radius:4px; padding:0.7rem; margin-top:0.5rem; font-size:0.84rem; line-height:1.6; display:none; white-space:pre-wrap; }
-    #ai-panel { grid-column:1 / -1; display:none; }
-    .ai-loading { text-align:center; color:var(--ink-muted); font-style:italic; padding:1rem; }
-    .ai-section { margin-bottom:1rem; }
-    .ai-section-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--gold); margin-bottom:0.3rem; font-weight:bold; }
-    .ai-section-body { font-size:0.95rem; line-height:1.7; color:var(--ink); }
-    .ai-raw { font-size:0.93rem; line-height:1.7; white-space:pre-wrap; }
-    .empty-state { text-align:center; color:var(--ink-muted); font-style:italic; padding:2rem 1rem; font-size:0.9rem; line-height:1.8; }
-    #era-browse { grid-column:1 / -1; }
-    .era-browse-pills { display:flex; flex-wrap:wrap; gap:0.5rem; }
-    .era-browse-pill { padding:0.35rem 0.8rem; background:var(--parchment2); border:1px solid var(--border); border-radius:4px; font-size:0.8rem; cursor:pointer; color:var(--ink-muted); }
-    .era-browse-pill:hover { background:var(--parchment); border-color:var(--gold); color:var(--accent); }
-    #era-word-list { margin-top:1rem; display:none; }
-    #era-word-list h3 { font-size:0.85rem; color:var(--ink-muted); margin-bottom:0.7rem; }
-    .era-word-item { display:flex; gap:1rem; padding:0.5rem 0; border-bottom:1px solid var(--parchment2); font-size:0.88rem; cursor:pointer; align-items:baseline; }
-    .era-word-item:hover { background:var(--parchment); padding-left:0.3rem; }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(213,169,79,0.22), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(85,107,93,0.18), transparent 25%),
+        linear-gradient(180deg, #faf6ef 0%, var(--paper) 34%, #f3eadb 100%);
+      font-family: var(--hero-font);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; touch-action: manipulation; }
+    input, textarea, select, button { font-size: 16px; }
+
+    .site-shell {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding-bottom: 4rem;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0 0.75rem;
+      color: var(--muted);
+      font-family: var(--ui-font);
+      letter-spacing: 0.04em;
+      font-size: 0.9rem;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+
+    .brand-mark {
+      width: 2.3rem; height: 2.3rem; border-radius: 50%;
+      background: conic-gradient(from 210deg, var(--clay), var(--gold), var(--sage), var(--clay));
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.45);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--night); font-family: var(--ui-font);
+    }
+
+    .brand p { font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+    .top-links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; }
+    .top-links a:hover { color: var(--clay-deep); }
+
+    /* ── FACT TICKER ── */
+    .fact-ticker {
+      background: linear-gradient(135deg, var(--night), #2a3d47);
+      color: #f4ecde;
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 1.2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: var(--ui-font);
+      font-size: 0.9rem;
+      min-height: 3rem;
+    }
+
+    .fact-ticker-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--gold); white-space: nowrap; flex: 0 0 auto;
+    }
+
+    .fact-ticker-text {
+      flex: 1; min-width: 0; line-height: 1.45;
+      transition: opacity 0.4s ease;
+    }
+
+    .fact-ticker-text.fading { opacity: 0; }
+
+    .fact-ticker-source {
+      font-size: 0.75rem; color: rgba(244,236,222,0.5);
+      white-space: nowrap; flex: 0 0 auto;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255,250,242,0.94), rgba(248,240,225,0.86)),
+        linear-gradient(120deg, rgba(213,169,79,0.08), rgba(85,107,93,0.08));
+      border: 1px solid rgba(127, 55, 23, 0.12);
+      border-radius: 2rem;
+      box-shadow: var(--shadow);
+      padding: clamp(2rem, 4vw, 4rem);
+      margin-bottom: 1.6rem;
+      isolation: isolate;
+    }
+
+    .hero::before, .hero::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(2px); z-index: -1;
+    }
+
+    .hero::before {
+      width: 18rem; height: 18rem; right: -4rem; top: -5rem;
+      background: radial-gradient(circle, rgba(213,169,79,0.28), transparent 68%);
+    }
+
+    .hero::after {
+      width: 22rem; height: 22rem; left: -7rem; bottom: -10rem;
+      background: radial-gradient(circle, rgba(85,107,93,0.18), transparent 68%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .hero-grid > * { min-width: 0; }
+
+    .eyebrow {
+      font-family: var(--ui-font); text-transform: uppercase;
+      letter-spacing: 0.16em; font-size: 0.74rem;
+      color: var(--clay-deep); margin-bottom: 1rem;
+    }
+
+    .hero h2 {
+      font-size: clamp(2.6rem, 6vw, 5.4rem); line-height: 0.94;
+      color: var(--night); max-width: 11ch; margin-bottom: 1rem;
+    }
+
+    .hero-lead {
+      max-width: min(32rem, 100%); color: var(--muted);
+      font-size: clamp(1.03rem, 1.9vw, 1.2rem); margin-bottom: 1.5rem;
+    }
+
+    .hero-search {
+      position: relative; display: flex; gap: 0.75rem;
+      align-items: stretch; margin-bottom: 0.9rem; max-width: min(42rem, 100%);
+      width: 100%;
+    }
+
+    .hero-search input {
+      flex: 1; min-width: 0;
+      border: 1px solid rgba(127, 55, 23, 0.2);
+      border-radius: 999px; padding: 1rem 1.2rem;
+      background: rgba(255,255,255,0.9);
+      font-family: var(--ui-font); font-size: 1rem; color: var(--night);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+    }
+
+    .hero-search input:focus {
+      outline: none; border-color: var(--clay);
+      box-shadow: 0 0 0 4px rgba(165,83,42,0.12);
+    }
+
+    .hero-search button, .cta-inline {
+      border: none; padding: 0 1.4rem; border-radius: 999px;
+      background: linear-gradient(135deg, var(--clay), var(--clay-deep));
+      color: #fff8ef; letter-spacing: 0.05em;
+      font-family: var(--ui-font); font-size: 0.96rem;
+      box-shadow: 0 12px 24px rgba(127, 55, 23, 0.22);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      min-height: 3rem;
+    }
+
+    .hero-search button:hover, .cta-inline:hover {
+      transform: translateY(-1px); box-shadow: 0 16px 32px rgba(127, 55, 23, 0.28);
+    }
+
+    #autocomplete {
+      position: absolute; left: 1rem; right: 8.5rem;
+      top: calc(100% + 0.45rem);
+      display: none;
+      background: rgba(255, 252, 247, 0.98);
+      border: 1px solid rgba(34, 38, 31, 0.1);
+      border-radius: 1rem; overflow: hidden;
+      box-shadow: var(--shadow); z-index: 10;
+    }
+
+    .autocomplete-item {
+      padding: 0.82rem 1rem; cursor: pointer;
+      border-bottom: 1px solid rgba(34, 38, 31, 0.08);
+      font-family: var(--ui-font); font-size: 0.95rem;
+      background: rgba(255,255,255,0.72);
+    }
+
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: rgba(235,223,200,0.75); }
+
+    .hero-support {
+      display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.25rem;
+      color: var(--muted); font-family: var(--ui-font); font-size: 0.92rem;
+    }
+
+    .hero-support span::before { content: "•"; color: var(--gold); margin-right: 0.45rem; }
+
+    .example-strip { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+    .example-pill {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      padding: 0.55rem 0.85rem; border-radius: 999px;
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      background: rgba(255,255,255,0.55);
+      font-family: inherit;
+      transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .example-pill:hover {
+      transform: translateY(-1px); background: rgba(255,250,242,0.95);
+      border-color: rgba(165,83,42,0.28);
+    }
+
+    .example-pill strong {
+      font-family: var(--ui-font); font-size: 0.9rem;
+      letter-spacing: 0.05em; text-transform: uppercase; color: var(--clay-deep);
+    }
+
+    .example-pill span { color: var(--muted); font-size: 0.92rem; }
+
+    /* ── WORD OF THE DAY ── */
+    .hero-story {
+      background: rgba(255,255,255,0.56);
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1.2rem;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .hero-story h3 {
+      font-family: var(--ui-font); letter-spacing: 0.12em;
+      text-transform: uppercase; font-size: 0.76rem;
+      color: var(--sage); margin-bottom: 0.9rem;
+    }
+
+    .story-card { display: grid; gap: 0.9rem; }
+    .story-word { font-size: 2.2rem; color: var(--night); line-height: 1; }
+    .story-card p { color: var(--muted); font-size: 1rem; }
+    .story-stages { display: grid; gap: 0.75rem; }
+
+    .story-stage {
+      padding: 0.8rem 0.9rem; border-left: 3px solid var(--gold);
+      background: rgba(247,242,232,0.95); border-radius: 0.8rem;
+    }
+
+    .story-stage strong {
+      display: block; font-family: var(--ui-font); text-transform: uppercase;
+      letter-spacing: 0.1em; font-size: 0.74rem; color: var(--clay-deep);
+      margin-bottom: 0.28rem;
+    }
+
+    .story-button {
+      justify-self: start; padding: 0.75rem 1rem; border-radius: 999px;
+      background: transparent; color: var(--night);
+      border: 1px solid rgba(34, 38, 31, 0.15); font-size: 0.92rem;
+      font-family: var(--ui-font);
+      transition: background 0.16s ease;
+    }
+
+    .story-button:hover { background: rgba(255,255,255,0.65); }
+
+    /* ── SECTION LAYOUT ── */
+    .section-grid {
+      display: grid; grid-template-columns: repeat(12, 1fr);
+      gap: 1.1rem; margin-bottom: 1.1rem;
+    }
+
+    .card {
+      grid-column: span 4;
+      background: var(--card);
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+    }
+
+    .card h3 {
+      font-family: var(--ui-font); text-transform: uppercase;
+      letter-spacing: 0.12em; font-size: 0.74rem;
+      color: var(--clay-deep); margin-bottom: 0.65rem;
+    }
+
+    .card p, .feature-list li, .user-list li { color: var(--muted); font-size: 0.98rem; }
+
+    .split-card {
+      grid-column: span 6;
+      background: linear-gradient(160deg, rgba(255,252,247,0.94), rgba(240,232,218,0.82));
+    }
+
+    .split-card strong { color: var(--night); display: block; margin-bottom: 0.4rem; font-size: 1.02rem; }
+
+    .feature-list, .user-list {
+      list-style: none; display: grid; gap: 0.75rem; margin-top: 0.75rem;
+    }
+
+    .feature-list li, .user-list li { padding-left: 1rem; position: relative; }
+
+    .feature-list li::before, .user-list li::before {
+      content: ""; position: absolute; left: 0; top: 0.55rem;
+      width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--gold);
+    }
+
+    .mode-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-card strong {
+      display: block;
+      color: var(--night);
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .mode-card p { color: var(--muted); }
+
+    .section-intro {
+      margin: 1rem 0 0.9rem;
+      display: flex; justify-content: space-between;
+      gap: 1rem; align-items: end; flex-wrap: wrap;
+    }
+
+    .section-intro h3 {
+      font-size: clamp(1.9rem, 4vw, 3rem); line-height: 0.98;
+      color: var(--night); max-width: 12ch;
+    }
+
+    .section-intro p { max-width: 38rem; color: var(--muted); font-size: 1rem; }
+
+    /* Keep the homepage focused: deeper learning lives on the resources page. */
+    #why-learn,
+    #linguistics-primer,
+    #teachers-writers,
+    #philology-resources {
+      display: none;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1.6rem 0;
+    }
+
+    .stat-item {
+      background: var(--cream);
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1.2rem 1.3rem;
+      box-shadow: var(--shadow-sm); text-align: center;
+    }
+
+    .stat-number {
+      font-size: clamp(2rem, 4vw, 2.8rem); color: var(--clay-deep);
+      line-height: 1; margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-family: var(--ui-font); font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--muted); line-height: 1.4;
+    }
+
+    /* ── SEMANTIC SHIFTS GALLERY ── */
+    .shifts-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem; margin-top: 1rem;
+    }
+
+    .shift-card {
+      background: var(--cream);
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1.1rem 1.2rem;
+      box-shadow: var(--shadow-sm); cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .shift-card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(63, 43, 20, 0.14); }
+    .shift-card:focus { outline: 2px solid var(--clay); outline-offset: 2px; }
+
+    .shift-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--clay), var(--gold));
+    }
+
+    .shift-word { font-size: 1.6rem; color: var(--night); line-height: 1; margin-bottom: 0.5rem; }
+
+    .shift-era {
+      font-family: var(--ui-font); font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--clay-deep); margin-bottom: 0.2rem;
+    }
+
+    .shift-meaning-then, .shift-meaning-now {
+      font-style: italic; color: var(--muted); font-size: 0.88rem; line-height: 1.4;
+    }
+
+    .shift-arrow {
+      font-family: var(--ui-font); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--sage); margin: 0.45rem 0 0.2rem;
+    }
+
+    .shift-source {
+      margin-top: 0.65rem; font-family: var(--ui-font); font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(109, 101, 85, 0.5);
+      padding-top: 0.55rem; border-top: 1px solid rgba(34, 38, 31, 0.08);
+    }
+
+    /* ── QUIZ ── */
+    .quiz-section {
+      background: linear-gradient(160deg, #1d2c35, #2a3d47);
+      border-radius: 2rem; padding: clamp(1.5rem, 3vw, 2.5rem);
+      margin: 1.6rem 0; color: #f4ecde;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 22px 60px rgba(20, 30, 37, 0.25);
+    }
+
+    .quiz-header {
+      display: flex; justify-content: space-between;
+      align-items: flex-start; flex-wrap: wrap;
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+
+    .quiz-header h3 {
+      font-size: clamp(1.7rem, 3.5vw, 2.4rem); line-height: 0.98; color: #f4ecde;
+    }
+
+    .quiz-header p {
+      color: rgba(244,236,222,0.65); font-family: var(--ui-font);
+      font-size: 0.95rem; max-width: 34rem; margin-top: 0.5rem;
+    }
+
+    .quiz-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+
+    .quiz-score-badge {
+      font-family: var(--ui-font); font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--gold); padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(213,169,79,0.3); border-radius: 999px; white-space: nowrap;
+    }
+
+    .quiz-card {
+      background: rgba(250, 244, 233, 0.97); color: var(--ink);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+
+    .quiz-progress {
+      font-family: var(--ui-font); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); margin-bottom: 0.6rem;
+    }
+
+    .quiz-word { font-size: clamp(2rem, 5vw, 3rem); color: var(--night); line-height: 1; margin-bottom: 0.4rem; }
+    .quiz-prompt { color: var(--muted); font-size: 0.95rem; font-style: italic; margin-bottom: 1.2rem; }
+
+    .quiz-choices {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.65rem;
+    }
+
+    .quiz-choice {
+      border: 1.5px solid rgba(34, 38, 31, 0.14); border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.7); color: var(--ink);
+      padding: 0.75rem 0.9rem; text-align: left;
+      font-family: var(--ui-font); font-size: 0.92rem;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+
+    .quiz-choice:hover:not(:disabled) {
+      border-color: var(--clay); background: rgba(255,250,242,0.95); transform: translateY(-1px);
+    }
+
+    .quiz-choice.correct { border-color: var(--sage); background: rgba(85,107,93,0.12); color: #2d4a36; }
+    .quiz-choice.wrong { border-color: #c0392b; background: rgba(192,57,43,0.08); color: #8b2315; opacity: 0.7; }
+    .quiz-choice:disabled { cursor: not-allowed; }
+
+    .quiz-reveal {
+      margin-top: 1rem; padding: 1rem; border-radius: var(--radius-sm);
+      background: rgba(247,242,232,0.95); border-left: 3px solid var(--gold); display: none;
+    }
+
+    .quiz-reveal.show { display: block; }
+    .quiz-reveal p { color: var(--ink); font-size: 0.93rem; line-height: 1.65; }
+
+    .quiz-reveal-source {
+      margin-top: 0.45rem; font-family: var(--ui-font); font-size: 0.73rem;
+      text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    }
+
+    .quiz-actions { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+
+    .quiz-btn-primary {
+      padding: 0.7rem 1.2rem; border-radius: 999px; border: none;
+      background: linear-gradient(135deg, var(--clay), var(--clay-deep));
+      color: #fff8ef; font-family: var(--ui-font); font-size: 0.9rem;
+      box-shadow: 0 8px 20px rgba(127, 55, 23, 0.22);
+      display: none; transition: transform 0.15s ease;
+    }
+
+    .quiz-btn-primary.show { display: inline-block; }
+    .quiz-btn-primary:hover { transform: translateY(-1px); }
+
+    .quiz-btn-ghost {
+      padding: 0.7rem 1.2rem; border-radius: 999px;
+      background: rgba(244,236,222,0.12); color: rgba(244,236,222,0.75);
+      border: 1px solid rgba(244,236,222,0.2);
+      font-family: var(--ui-font); font-size: 0.85rem;
+      transition: background 0.15s ease;
+    }
+
+    .quiz-btn-ghost:hover { background: rgba(244,236,222,0.2); }
+
+    .quiz-explore-btn {
+      display: none; padding: 0.7rem 1.2rem; border-radius: 999px;
+      background: rgba(244,236,222,0.12); color: rgba(244,236,222,0.75);
+      border: 1px solid rgba(244,236,222,0.2);
+      font-family: var(--ui-font); font-size: 0.85rem;
+      transition: background 0.15s ease;
+    }
+
+    .quiz-explore-btn.show { display: inline-block; }
+    .quiz-explore-btn:hover { background: rgba(244,236,222,0.2); }
+
+    .quiz-complete { text-align: center; padding: 2rem; display: none; }
+    .quiz-complete.show { display: block; }
+
+    .score-big { font-size: clamp(3rem, 8vw, 5rem); color: var(--gold); line-height: 1; margin-bottom: 0.5rem; }
+
+    .quiz-complete p {
+      color: rgba(244,236,222,0.75); font-family: var(--ui-font);
+      font-size: 1rem; max-width: 28rem; margin: 0 auto 1.5rem;
+    }
+
+    /* ── EXPLORER ── */
+    .explorer {
+      background: linear-gradient(180deg, rgba(28,43,52,0.98), rgba(32,43,49,0.94));
+      color: #f4ecde; border-radius: 2rem;
+      box-shadow: 0 22px 60px rgba(20, 30, 37, 0.25);
+      padding: clamp(1.35rem, 3vw, 2rem);
+      margin: 1.6rem 0; border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .explorer-header {
+      display: flex; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 1.2rem;
+    }
+
+    .explorer-header h3 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 0.98; max-width: 11ch; }
+
+    .explorer-header p {
+      max-width: 36rem; color: rgba(244,236,222,0.7);
+      font-family: var(--ui-font); font-size: 0.97rem;
+    }
+
+    .explorer-toolbar {
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      align-items: center; margin-bottom: 1rem;
+    }
+
+    .explorer-tabs, .reader-levels, .word-actions {
+      display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center;
+    }
+
+    .explorer-tab, .level-btn, .word-action-btn {
+      border: 1px solid rgba(244,236,222,0.18);
+      background: rgba(244,236,222,0.08);
+      color: rgba(244,236,222,0.82);
+      border-radius: 999px;
+      padding: 0.55rem 0.82rem;
+      font-family: var(--ui-font);
+      font-size: 0.84rem;
+      transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+      min-height: 2.65rem;
+    }
+
+    .explorer-tab:hover, .level-btn:hover, .word-action-btn:hover {
+      background: rgba(244,236,222,0.16); transform: translateY(-1px);
+    }
+
+    .explorer-tab.active, .level-btn.active {
+      background: var(--gold); color: var(--night); border-color: rgba(213,169,79,0.6);
+    }
+
+    .reader-levels::before {
+      content: "Depth";
+      color: rgba(244,236,222,0.58);
+      font-family: var(--ui-font);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-right: 0.15rem;
+    }
+
+    .explorer-grid { display: block; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .panel {
+      background: rgba(250, 244, 233, 0.95); color: var(--ink);
+      border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius);
+      padding: 1.25rem; min-height: 18rem;
+      overflow-wrap: anywhere;
+    }
+
+    .panel h2 {
+      font-family: var(--ui-font); font-size: 0.76rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.95rem;
+      padding-bottom: 0.55rem; border-bottom: 1px solid rgba(34, 38, 31, 0.08);
+    }
+
+    #word-name { font-size: 2.2rem; color: var(--clay-deep); margin-bottom: 0.3rem; line-height: 1; }
+    #word-definition { color: var(--muted); font-style: italic; margin-bottom: 1.2rem; font-size: 1rem; }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .story-block {
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      background: rgba(255,253,248,0.78);
+      border-radius: 1rem;
+      padding: 0.9rem;
+      min-height: 7rem;
+    }
+
+    .story-block.full { grid-column: 1 / -1; }
+
+    .story-block h3 {
+      font-family: var(--ui-font);
+      color: var(--clay-deep);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .story-block p { color: var(--ink); line-height: 1.62; }
+
+    .layer-note {
+      margin-top: 0.75rem;
+      padding: 0.8rem 0.9rem;
+      border-left: 3px solid var(--sage);
+      border-radius: 0 0.85rem 0.85rem 0;
+      background: rgba(85,107,93,0.1);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .layer-comparison {
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 0.75rem;
+    }
+
+    .layer-row {
+      display: grid;
+      grid-template-columns: 7rem 1fr;
+      gap: 0.75rem;
+      align-items: baseline;
+      padding: 0.62rem 0.75rem;
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: 0.85rem;
+      background: rgba(255,253,248,0.72);
+    }
+
+    .layer-row strong {
+      color: var(--clay-deep);
+      font-family: var(--ui-font);
+      letter-spacing: 0.04em;
+    }
+
+    .layer-row span { color: var(--muted); }
+
+    .word-insight {
+      margin: 0.8rem 0 1rem;
+      padding: 0.85rem 1rem;
+      border-radius: 1rem;
+      background: rgba(213,169,79,0.16);
+      border: 1px solid rgba(213,169,79,0.25);
+      color: var(--night);
+      font-size: 1.02rem;
+    }
+
+    .trust-row {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin: 0.7rem 0 0.3rem;
+    }
+
+    .saved-note {
+      color: var(--sage);
+      font-family: var(--ui-font);
+      font-size: 0.85rem;
+      min-height: 1.2rem;
+    }
+
+    .root-box {
+      background: linear-gradient(135deg, rgba(247,242,232,0.95), rgba(235,223,200,0.92));
+      border-left: 3px solid var(--gold); padding: 0.8rem 0.95rem;
+      margin-bottom: 1rem; border-radius: 0 0.9rem 0.9rem 0; font-size: 0.95rem;
+    }
+
+    .root-label, .section-label, .ai-section-label {
+      font-family: var(--ui-font); font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted);
+    }
+
+    .root-text { color: var(--clay-deep); font-style: italic; font-weight: 700; }
+
+    .source-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.2rem 0.55rem; border-radius: 999px;
+      background: rgba(85,107,93,0.1); border: 1px solid rgba(85,107,93,0.2);
+      font-family: var(--ui-font); font-size: 0.68rem;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage);
+    }
+
+    .source-badge::before { content: "✓"; }
+
+    details.source-details {
+      margin-top: 1rem;
+      border: 1px solid rgba(34, 38, 31, 0.1);
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.62);
+      padding: 0.85rem 1rem;
+    }
+
+    details.source-details summary {
+      cursor: pointer;
+      color: var(--clay-deep);
+      font-family: var(--ui-font);
+      font-weight: 700;
+    }
+
+    .pills, .era-browse-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .pill, .era-browse-pill {
+      padding: 0.42rem 0.8rem; border-radius: 999px;
+      border: 1px solid rgba(34, 38, 31, 0.12); background: rgba(235,223,200,0.68);
+      font-size: 0.84rem; color: var(--clay-deep); cursor: pointer;
+      font-family: var(--ui-font);
+      transition: background 0.16s ease, transform 0.16s ease;
+    }
+
+    .pill:hover, .era-browse-pill:hover { background: rgba(213,169,79,0.28); transform: translateY(-1px); }
+
+    .drift-controls { display: flex; align-items: center; gap: 0.7rem; margin-top: 1rem; flex-wrap: wrap; }
+
+    .context-select, .explain-btn { border-radius: 999px; font-family: var(--ui-font); font-size: 0.9rem; }
+
+    .context-select {
+      border: 1px solid rgba(34, 38, 31, 0.12); background: #fffdf8;
+      color: var(--ink); padding: 0.62rem 0.95rem;
+    }
+
+    .explain-btn {
+      border: none; background: var(--night); color: #f4ecde; padding: 0.65rem 1rem;
+    }
+
+    .explain-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 1.4rem; }
+
+    .timeline::before {
+      content: ""; position: absolute; left: 0.45rem; top: 0.3rem; bottom: 0.35rem;
+      width: 2px; background: rgba(34, 38, 31, 0.15);
+    }
+
+    .era-entry { position: relative; margin-bottom: 1rem; padding-bottom: 0.2rem; cursor: pointer; }
+
+    .era-dot {
+      position: absolute; left: -1.4rem; top: 0.18rem; width: 14px; height: 14px;
+      border-radius: 50%; border: 2px solid var(--clay-deep); background: #fffdf8;
+      transition: transform 0.16s ease;
+    }
+
+    .era-dot.filled { background: var(--clay-deep); }
+    .era-entry:hover .era-dot { transform: scale(1.14); }
+
+    .era-name {
+      font-family: var(--ui-font); font-size: 0.82rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--clay-deep);
+    }
+
+    .era-years { margin-left: 0.4rem; color: var(--muted); font-size: 0.78rem; }
+    .era-meaning { margin-top: 0.22rem; color: var(--ink); font-style: italic; }
+
+    .era-example {
+      margin-top: 0.32rem; padding-left: 0.65rem;
+      border-left: 2px solid rgba(213,169,79,0.8); color: var(--muted); font-size: 0.86rem;
+    }
+
+    .era-empty { color: var(--muted); font-size: 0.88rem; font-style: italic; }
+
+    .era-ai-inline {
+      display: none; margin-top: 0.5rem; padding: 0.75rem; border-radius: 0.95rem;
+      border: 1px solid rgba(34, 38, 31, 0.08); background: rgba(255,255,255,0.8);
+      color: var(--ink); white-space: pre-wrap; font-size: 0.9rem;
+    }
+
+    #ai-panel { grid-column: 1 / -1; display: none; }
+
+    .text-help-form {
+      display: grid; gap: 0.8rem;
+    }
+
+    .text-help-form textarea {
+      width: 100%;
+      min-height: 8rem;
+      resize: vertical;
+      border: 1px solid rgba(34, 38, 31, 0.12);
+      border-radius: 1rem;
+      padding: 0.9rem;
+      font: inherit;
+      color: var(--ink);
+      background: #fffdf8;
+    }
+
+    .text-help-controls {
+      display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center;
+    }
+
+    .flagged-word {
+      margin-top: 0.75rem;
+      border-left: 3px solid var(--gold);
+      padding: 0.7rem 0.85rem;
+      background: rgba(247,242,232,0.86);
+      border-radius: 0 0.85rem 0.85rem 0;
+    }
+
+    .flagged-word strong { color: var(--clay-deep); }
+
+    .ai-loading, .empty-state {
+      color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.96rem;
+    }
+
+    .ai-section { margin-bottom: 1rem; }
+    .ai-section-body, .ai-raw { margin-top: 0.32rem; color: var(--ink); line-height: 1.7; }
+
+    #era-browse { grid-column: 1 / -1; }
+    #era-word-list { margin-top: 1rem; display: none; }
+
+    #era-word-list h3 {
+      color: var(--muted); font-size: 0.92rem; margin-bottom: 0.7rem;
+      font-family: var(--ui-font); letter-spacing: 0.03em;
+    }
+
+    .era-word-item {
+      display: flex; gap: 1rem; align-items: baseline; padding: 0.68rem 0;
+      border-bottom: 1px solid rgba(34, 38, 31, 0.08); cursor: pointer;
+    }
+
+    .era-word-item:hover { color: var(--clay-deep); }
+    .era-word-item span { color: var(--muted); }
+
+    /* ── SOURCES ── */
+    .sources-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 0.85rem; margin-top: 1rem;
+    }
+
+    .source-card {
+      background: var(--cream); border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1rem 1.1rem; box-shadow: var(--shadow-sm);
+    }
+
+    .source-card-abbr {
+      font-family: var(--ui-font); font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--clay-deep); margin-bottom: 0.3rem;
+    }
+
+    .source-card-full { font-size: 0.93rem; color: var(--night); font-style: italic; margin-bottom: 0.35rem; }
+
+    .source-card-tier {
+      font-family: var(--ui-font); font-size: 0.72rem;
+      color: var(--sage); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .scholar-shelf {
+      margin-top: 1rem;
+      border: 1px solid rgba(34, 38, 31, 0.1);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,0.8);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .scholar-shelf summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      color: var(--night);
+      font-family: var(--ui-font);
+      font-weight: 700;
+    }
+
+    .scholar-shelf summary::-webkit-details-marker { display: none; }
+    .scholar-shelf summary::after { content: "Open"; color: var(--clay-deep); }
+    .scholar-shelf[open] summary::after { content: "Close"; }
+
+    .scholar-shelf-content { padding: 0 1.2rem 1.2rem; }
+
+    /* ── SCHOLARLY RESOURCES ── */
+    .resource-era-row {
+      display: grid;
+      grid-template-columns: 15rem 1fr;
+      gap: 1.4rem;
+      margin-bottom: 2rem;
+      align-items: start;
+    }
+
+    .resource-era-label { position: sticky; top: 1.2rem; }
+
+    .resource-era-badge {
+      display: inline-block;
+      padding: 0.32rem 0.75rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--clay), var(--clay-deep));
+      color: #fff8ef;
+      font-family: var(--ui-font);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.55rem;
+    }
+
+    .resource-era-badge.era-sage {
+      background: linear-gradient(135deg, var(--sage), #3a5244);
+    }
+
+    .resource-era-badge.era-night {
+      background: linear-gradient(135deg, #2a3d47, var(--night));
+    }
+
+    .resource-era-badge.era-gold {
+      background: linear-gradient(135deg, var(--gold), #b8882a);
+      color: var(--night);
+    }
+
+    .resource-era-title {
+      font-size: 1.15rem; color: var(--night);
+      margin-bottom: 0.3rem; line-height: 1.25;
+    }
+
+    .resource-era-subtitle {
+      font-family: var(--ui-font); font-size: 0.8rem;
+      color: var(--muted); line-height: 1.45;
+    }
+
+    .resource-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .resource-card {
+      background: var(--cream);
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .resource-card-name { font-size: 0.97rem; color: var(--night); line-height: 1.3; }
+
+    .resource-card-org {
+      font-family: var(--ui-font); font-size: 0.73rem;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--clay-deep);
+    }
+
+    .resource-card-desc {
+      color: var(--muted); font-size: 0.87rem;
+      line-height: 1.5; flex: 1; margin-top: 0.1rem;
+    }
+
+    .resource-card-footer {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 0.5rem;
+      margin-top: 0.55rem; padding-top: 0.55rem;
+      border-top: 1px solid rgba(34, 38, 31, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .access-badge {
+      font-family: var(--ui-font); font-size: 0.68rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.2rem 0.5rem; border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .access-badge.free {
+      background: rgba(85,107,93,0.12); color: var(--sage);
+      border: 1px solid rgba(85,107,93,0.2);
+    }
+
+    .access-badge.library {
+      background: rgba(213,169,79,0.12); color: #7a5010;
+      border: 1px solid rgba(213,169,79,0.3);
+    }
+
+    .access-badge.subscription {
+      background: rgba(29,44,53,0.08); color: var(--night);
+      border: 1px solid rgba(29,44,53,0.15);
+    }
+
+    .resource-link {
+      font-family: var(--ui-font); font-size: 0.8rem;
+      color: var(--clay-deep); white-space: nowrap;
+      transition: color 0.15s ease;
+    }
+
+    .resource-link:hover { color: var(--night); }
+
+    .resource-link-muted {
+      font-family: var(--ui-font); font-size: 0.78rem;
+      color: var(--muted); white-space: nowrap;
+      font-style: italic;
+    }
+
+    .resource-divider {
+      border: none;
+      border-top: 1px solid rgba(34, 38, 31, 0.09);
+      margin: 0 0 2rem;
+    }
+
+    @media (max-width: 820px) {
+      .resource-era-row { grid-template-columns: 1fr; }
+      .resource-era-label { position: static; }
+    }
+
+    /* ── CLOSING / FOOTER ── */
+    .closing-banner {
+      margin-top: 1.2rem; padding: 1.4rem 1.5rem; border-radius: 1.6rem;
+      background: linear-gradient(135deg, rgba(85,107,93,0.12), rgba(213,169,79,0.18));
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap;
+    }
+
+    .closing-banner h3 { font-size: clamp(1.4rem, 3vw, 2.2rem); line-height: 1; color: var(--night); }
+    .closing-banner p { color: var(--muted); max-width: 34rem; }
+
+    .eyebrow-gold { color: var(--gold); }
+
+    .eyebrow-explorer { color: #d8c18f; margin-bottom: 0.6rem; }
+
+    .site-footer {
+      margin-top: 2rem; padding-top: 1.5rem;
+      border-top: 1px solid rgba(34, 38, 31, 0.1);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      font-family: var(--ui-font); font-size: 0.8rem; color: var(--muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .hero-grid, .explorer-grid, .story-grid { grid-template-columns: 1fr; }
+      .story-block.full { grid-column: auto; }
+      .card { grid-column: span 6; }
+      .split-card { grid-column: span 12; }
+    }
+
+    @media (max-width: 720px) {
+      .site-shell { width: min(100% - 1rem, 1180px); }
+      .topbar {
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding-top: 0.8rem;
+      }
+      .brand { gap: 0.6rem; }
+      .brand-mark { width: 2rem; height: 2rem; }
+      .brand h1 { font-size: 0.88rem; }
+      .brand p { display: none; }
+      .top-links {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        max-width: 52vw;
+        gap: 0.45rem;
+        padding-bottom: 0.2rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .top-links a {
+        flex: 0 0 auto;
+        padding: 0.45rem 0.65rem;
+        border: 1px solid rgba(34, 38, 31, 0.1);
+        border-radius: 999px;
+        background: rgba(255,253,248,0.62);
+      }
+      .fact-ticker {
+        align-items: flex-start;
+        gap: 0.45rem;
+        padding: 0.75rem 0.85rem;
+        font-size: 0.84rem;
+      }
+      .fact-ticker-label { white-space: normal; min-width: 4.1rem; }
+      .hero {
+        border-radius: 1.25rem;
+        padding: 1.35rem;
+        margin-bottom: 1rem;
+      }
+      .hero h2 {
+        font-size: clamp(2.25rem, 13vw, 3.5rem);
+        max-width: 10ch;
+      }
+      .hero-lead { font-size: 1rem; margin-bottom: 1rem; }
+      .hero-search { flex-direction: column; }
+      .hero-search input { border-radius: 1rem; min-height: 3.15rem; }
+      .hero-search button { min-height: 3.2rem; width: 100%; border-radius: 1rem; }
+      #autocomplete { left: 0; right: 0; top: calc(100% + 0.35rem); }
+      .hero-support { gap: 0.55rem 1rem; font-size: 0.85rem; }
+      .example-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.2rem; -webkit-overflow-scrolling: touch; }
+      .example-pill { flex: 0 0 auto; }
+      .card, .split-card { grid-column: span 12; }
+      .section-grid, .stats-bar, .shifts-track { gap: 0.75rem; }
+      .section-intro h3 { font-size: clamp(1.75rem, 10vw, 2.35rem); }
+      .quiz-section, .explorer { border-radius: 1.25rem; padding: 1rem; }
+      .quiz-header { align-items: flex-start; }
+      .quiz-meta { align-items: flex-start; width: 100%; }
+      .quiz-card { padding: 1rem; }
+      .quiz-actions > * { flex: 1 1 100%; text-align: center; }
+      .panel { min-height: 0; padding: 1rem; border-radius: 1rem; }
+      .explorer-header h3 { max-width: 100%; font-size: clamp(1.8rem, 10vw, 2.5rem); }
+      .explorer-toolbar { align-items: flex-start; gap: 0.7rem; }
+      .explorer-tabs {
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .explorer-tab { flex: 0 0 auto; }
+      .reader-levels, .word-actions { width: 100%; }
+      .level-btn { flex: 1 1 0; }
+      .word-action-btn { flex: 1 1 calc(50% - 0.45rem); }
+      .story-block { min-height: 0; padding: 0.85rem; }
+      .text-help-controls > * { width: 100%; }
+      .text-help-form textarea { min-height: 7rem; }
+      .closing-banner { align-items: flex-start; }
+      .fact-ticker-source { display: none; }
+      .quiz-choices { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 430px) {
+      .site-shell { width: min(100% - 0.75rem, 1180px); }
+      .topbar { flex-direction: column; }
+      .top-links { max-width: 100%; width: 100%; }
+      .hero { padding: 1rem; }
+      .hero-story { padding: 1rem; }
+      .story-word, #word-name { font-size: 1.85rem; }
+      .source-badge { max-width: 100%; white-space: normal; }
+      .closing-banner .cta-inline { width: 100%; min-height: 3.1rem; }
+    }
   </style>
 </head>
 <body>
+  <div class="site-shell">
 
-<header>
-  <div>
-    <h1>The Living Lexicon</h1>
-    <p class="tagline">Etymology for readers of old texts</p>
-  </div>
-  <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search a word… e.g. prevent, charity, quick" autocomplete="off">
-    <button onclick="triggerSearch()">Look up</button>
-    <div id="autocomplete"></div>
-  </div>
-</header>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <h1>PensiveApe</h1>
+          <p>The Living Lexicon</p>
+        </div>
+      </div>
+      <nav class="top-links" aria-label="Page sections">
+        <a href="#explorer">Explorer</a>
+        <a href="#quiz-section">Quiz</a>
+        <a href="#explorer" onclick="switchExplorerTab('text-help')">Text help</a>
+        <a href="/resources.html">Resources</a>
+      </nav>
+    </header>
 
-<main>
-  <div class="panel" id="word-panel">
-    <h2>Word</h2>
-    <div id="word-content">
-      <p class="empty-state">Search for a word above to explore its history.<br>
-      Try: prevent &bull; charity &bull; passion &bull; quick &bull; naughty</p>
+    <!-- Rotating fact ticker -->
+    <div class="fact-ticker" role="note" aria-label="Etymology fact of the moment">
+      <span class="fact-ticker-label">Did you know</span>
+      <span class="fact-ticker-text" id="fact-text"></span>
+      <span class="fact-ticker-source" id="fact-source" aria-label="Source"></span>
     </div>
-  </div>
 
-  <div class="panel" id="timeline-panel">
-    <h2>Era Timeline</h2>
-    <div id="timeline-content">
-      <p class="empty-state">The word's meaning across seven historical eras will appear here.<br>
-      Filled dot = documented meaning. Hollow dot = no record for that era.</p>
-    </div>
-  </div>
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">A time machine for words</p>
+          <h2 id="hero-heading">See the hidden lives of words.</h2>
+          <p class="hero-lead">
+            Search any word and discover what it used to mean, how it changed across
+            centuries, and why that history still shapes how we read, write, and think today.
+          </p>
 
-  <div class="panel" id="ai-panel">
-    <h2>Explanation</h2>
-    <div id="ai-content"></div>
-  </div>
+          <div class="hero-search">
+            <input
+              type="text"
+              id="search-input"
+              placeholder='Try "awful", "nice", "lord", "silly"…'
+              autocomplete="off"
+              aria-label="Search for a word to explore its history"
+            >
+            <button type="button" onclick="triggerSearch()" aria-label="Explore word">Explore</button>
+            <div id="autocomplete" role="listbox" aria-label="Word suggestions"></div>
+          </div>
 
-  <div class="panel" id="era-browse">
-    <h2>Browse by Era</h2>
-    <div class="era-browse-pills" id="era-pills"></div>
-    <div id="era-word-list"></div>
-  </div>
-</main>
+          <div class="hero-support" aria-hidden="true">
+            <span>Then vs now</span>
+            <span>Meaning shifts by era</span>
+            <span>Borrowing paths</span>
+            <span>Source-backed</span>
+          </div>
 
-<script>
-  const API = '';
-  let currentWord = '';
-  let searchTimer = null;
+          <div class="example-strip" aria-label="Example word searches">
+            <button type="button" class="example-pill" onclick="triggerExampleSearch('awful')">
+              <strong>awful</strong><span>once meant "full of awe"</span>
+            </button>
+            <button type="button" class="example-pill" onclick="triggerExampleSearch('nice')">
+              <strong>nice</strong><span>once meant "foolish"</span>
+            </button>
+            <button type="button" class="example-pill" onclick="triggerExampleSearch('lord')">
+              <strong>lord</strong><span>once meant "bread keeper"</span>
+            </button>
+            <button type="button" class="example-pill" onclick="triggerExampleSearch('silly')">
+              <strong>silly</strong><span>once meant "blessed"</span>
+            </button>
+          </div>
+        </div>
 
-  // ── Safe DOM helpers ──────────────────────────────────────────────────────
-  // All user-facing data from the API goes through esc() or setTextContent
-  // before touching innerHTML, preventing XSS from malformed API responses.
+        <aside class="hero-story" aria-labelledby="wotd-heading">
+          <h3 id="wotd-heading">Word story of the day</h3>
+          <div class="story-card" id="word-of-day">
+            <p class="empty-state">Loading…</p>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-  function esc(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
+    <section aria-labelledby="modes-heading">
+      <div class="section-intro">
+        <h3 id="modes-heading">Three ways into a word.</h3>
+        <p>
+          Start with curiosity, bring it to old texts, or use it to write with sharper
+          feeling. The same word history serves all three.
+        </p>
+      </div>
+      <div class="section-grid">
+        <article class="card mode-card">
+          <h3>Germanic Core</h3>
+          <strong>English begins with words that feel direct and close to the body.</strong>
+          <p>Old English and Germanic words often carry everyday force: home, bread, hand, love, death, lord.</p>
+        </article>
+        <article class="card mode-card">
+          <h3>French and Latin Layers</h3>
+          <strong>Conquest, Church, law, and scholarship changed English vocabulary.</strong>
+          <p>French and Latin words often feel legal, sacred, medical, formal, institutional, or learned.</p>
+        </article>
+        <article class="card mode-card">
+          <h3>Writer's Ear</h3>
+          <strong>Layered synonyms do different work.</strong>
+          <p>Compare kingly, royal, and regal; ask, question, and interrogate; holy, sacred, and consecrated.</p>
+        </article>
+      </div>
+    </section>
 
-  function setTextContent(el, text) {
-    if (el) el.textContent = text;
-  }
+    <!-- Why it matters -->
+    <section id="why-learn" aria-labelledby="why-heading">
+      <div class="section-intro">
+        <h3 id="why-heading">Not just what words mean — how they became themselves.</h3>
+        <p>
+          A dictionary gives you a definition. The Living Lexicon shows you the
+          <em>life</em> of a word across time: its older meanings, its turning points,
+          and the history still hidden inside it.
+        </p>
+      </div>
 
-  // ── Startup ───────────────────────────────────────────────────────────────
+      <div class="section-grid">
+        <article class="card">
+          <h3>Then vs Now</h3>
+          <p>See what a word meant centuries ago, what it means now, and exactly where the shift happened — with attested sources.</p>
+        </article>
+        <article class="card">
+          <h3>Why English Feels Strange</h3>
+          <p>Spelling quirks, borrowed forms, and irregular verbs are not obstacles — they are clues. Etymology explains them all.</p>
+        </article>
+        <article class="card">
+          <h3>Hidden Social History</h3>
+          <p>Religion, class, law, migration, and conquest all reshape ordinary words. The history of a culture lives inside its language.</p>
+        </article>
+      </div>
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const wordParam = params.get('word');
-    if (wordParam) loadWord(wordParam);
-    loadEraBrowsePills();
+      <!-- Stats -->
+      <div class="stats-bar" role="list" aria-label="Vocabulary and language facts">
+        <div class="stat-item" role="listitem">
+          <div class="stat-number">60%</div>
+          <div class="stat-label">of academic vocabulary is decodable via Latin &amp; Greek roots</div>
+        </div>
+        <div class="stat-item" role="listitem">
+          <div class="stat-number">1,000+</div>
+          <div class="stat-label">English words shifted meaning significantly since Shakespeare</div>
+        </div>
+        <div class="stat-item" role="listitem">
+          <div class="stat-number">2×</div>
+          <div class="stat-label">vocabulary-rich students outperform peers in reading comprehension</div>
+        </div>
+        <div class="stat-item" role="listitem">
+          <div class="stat-number">60%</div>
+          <div class="stat-label">of modern English vocabulary traces to Latin or Greek</div>
+        </div>
+      </div>
 
-    const input = document.getElementById('search-input');
-    input.addEventListener('input', e => {
-      clearTimeout(searchTimer);
-      const q = e.target.value.trim();
-      if (q.length < 2) { hideAuto(); return; }
-      searchTimer = setTimeout(() => runAutocomplete(q), 350);
-    });
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { hideAuto(); triggerSearch(); }
-      if (e.key === 'Escape') hideAuto();
-    });
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.search-bar')) hideAuto();
-    });
-  });
+      <div class="section-grid">
+        <article class="card split-card">
+          <h3>Why etymology helps you read older texts</h3>
+          <strong>Words meant different things — and the text depends on it.</strong>
+          <p>
+            In the King James Bible, "charity" does not mean dropping coins in a bucket.
+            It renders the Greek <em>agape</em> — deep, unconditional love. In
+            Shakespeare, "naughty" does not mean mildly disobedient; it means wicked or
+            worthless. Missing these meanings changes what you understand entirely.
+          </p>
+          <ul class="feature-list">
+            <li>Recognize when a familiar word carries an older, sharper meaning.</li>
+            <li>Stop forcing modern definitions onto older texts and authors.</li>
+            <li>Read with the vocabulary the author actually intended.</li>
+          </ul>
+        </article>
+        <article class="card split-card">
+          <h3>Word history makes vocabulary stick</h3>
+          <strong>Roots, relatives, and stories give words shape and memory.</strong>
+          <p>
+            Research in vocabulary acquisition — Beck, McKeown &amp; Kucan; Nation;
+            Graves — consistently shows that understanding the structure and history of
+            words improves both recall and reading comprehension. Stories beat flashcards.
+            Context beats drilling isolated definitions.
+          </p>
+          <ul class="feature-list">
+            <li>One Latin or Greek root can decode twenty unfamiliar words at once.</li>
+            <li>Learn through surprise and narrative, not rote repetition.</li>
+            <li>Etymology is a decoding strategy, not just a curiosity.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
 
-  function triggerSearch() {
-    const q = document.getElementById('search-input').value.trim();
-    if (q) loadWord(q);
-  }
+    <!-- Semantic Shifts Gallery -->
+    <section id="dramatic-shifts" aria-labelledby="shifts-heading">
+      <div class="section-intro">
+        <h3 id="shifts-heading">Words that flipped their meaning.</h3>
+        <p>
+          These are not obscure footnotes — they are everyday words whose history will
+          change how you read older texts. Every entry is traceable to a primary source.
+          Click any card to explore it.
+        </p>
+      </div>
+      <div class="shifts-track" id="shifts-track" role="list" aria-label="Words with dramatic meaning shifts"></div>
+    </section>
 
-  function hideAuto() {
-    document.getElementById('autocomplete').style.display = 'none';
-  }
+    <!-- Etymology Quiz -->
+    <section class="quiz-section" id="quiz-section" aria-labelledby="quiz-heading">
+      <div class="quiz-header">
+        <div>
+          <p class="eyebrow eyebrow-gold">Interactive challenge</p>
+          <h3 id="quiz-heading">Guess the original meaning.</h3>
+          <p>Before modern usage took over, these words meant something very different. How well do you know word history?</p>
+        </div>
+        <div class="quiz-meta">
+          <div class="quiz-score-badge" id="quiz-score-display" aria-live="polite">Score: 0 / 0</div>
+          <button type="button" class="quiz-btn-ghost" onclick="resetQuiz()">Restart</button>
+        </div>
+      </div>
 
-  // ── Autocomplete ──────────────────────────────────────────────────────────
+      <div class="quiz-card" id="quiz-card">
+        <div class="quiz-progress" id="quiz-progress" aria-live="polite">Question 1 of 10</div>
+        <div class="quiz-word" id="quiz-word"></div>
+        <div class="quiz-prompt" id="quiz-prompt"></div>
+        <div class="quiz-choices" id="quiz-choices" role="group" aria-label="Choose the original meaning"></div>
+        <div class="quiz-reveal" id="quiz-reveal" aria-live="polite">
+          <p id="quiz-reveal-text"></p>
+          <div class="quiz-reveal-source" id="quiz-reveal-source"></div>
+        </div>
+        <div class="quiz-actions">
+          <button type="button" class="quiz-btn-primary" id="quiz-next-btn" onclick="nextQuestion()">Next word →</button>
+          <button type="button" class="quiz-explore-btn" id="quiz-explore-btn" onclick="exploreCurrentQuizWord()">Explore this word</button>
+        </div>
+      </div>
 
-  async function runAutocomplete(q) {
-    try {
-      const res = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=5`);
-      const data = await res.json();
-      const box = document.getElementById('autocomplete');
-      if (!data.results || !data.results.length) { hideAuto(); return; }
-      box.innerHTML = '';
-      data.results.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'autocomplete-item';
-        div.addEventListener('click', () => { hideAuto(); loadWord(r.name); });
-        const strong = document.createElement('strong');
-        strong.textContent = r.name;
-        const span = document.createElement('span');
-        span.textContent = ' ' + (r.definition || '').slice(0, 60) + '…';
-        div.appendChild(strong);
-        div.appendChild(span);
-        box.appendChild(div);
-      });
-      box.style.display = 'block';
-    } catch { hideAuto(); }
-  }
+      <div class="quiz-complete" id="quiz-complete" aria-live="polite">
+        <div class="score-big" id="quiz-final-score"></div>
+        <p id="quiz-final-msg"></p>
+        <button type="button" class="quiz-btn-primary show" onclick="resetQuiz()">Play again</button>
+      </div>
+    </section>
 
-  // ── Load Word ─────────────────────────────────────────────────────────────
+    <!-- Interactive Explorer -->
+    <section id="explorer" class="explorer" aria-labelledby="explorer-heading">
+      <div class="explorer-header">
+        <div>
+          <p class="eyebrow eyebrow-explorer">Interactive explorer</p>
+          <h3 id="explorer-heading">Pick a word. Watch it change.</h3>
+        </div>
+        <p>
+          Search a word above, compare its past and present across historical eras, and pull in
+          deeper explanations when you want more than a bare definition.
+        </p>
+      </div>
 
-  async function loadWord(word) {
-    currentWord = word.toLowerCase();
-    document.getElementById('search-input').value = word;
-    history.pushState({}, '', `?word=${encodeURIComponent(currentWord)}`);
-    document.getElementById('ai-panel').style.display = 'none';
+      <div class="explorer-toolbar" aria-label="Explorer controls">
+        <div class="explorer-tabs" role="tablist" aria-label="Word explorer views">
+          <button type="button" class="explorer-tab active" data-tab="story" onclick="switchExplorerTab('story')" role="tab" aria-selected="true">Story</button>
+          <button type="button" class="explorer-tab" data-tab="timeline" onclick="switchExplorerTab('timeline')" role="tab" aria-selected="false">Timeline</button>
+          <button type="button" class="explorer-tab" data-tab="roots" onclick="switchExplorerTab('roots')" role="tab" aria-selected="false">Roots</button>
+          <button type="button" class="explorer-tab" data-tab="text-help" onclick="switchExplorerTab('text-help')" role="tab" aria-selected="false">Text Help</button>
+          <button type="button" class="explorer-tab" data-tab="sources" onclick="switchExplorerTab('sources')" role="tab" aria-selected="false">Sources</button>
+        </div>
+        <div class="reader-levels" aria-label="Reading depth">
+          <button type="button" class="level-btn active" data-level="simple" onclick="setReaderLevel('simple')">Simple</button>
+          <button type="button" class="level-btn" data-level="detailed" onclick="setReaderLevel('detailed')">Detailed</button>
+          <button type="button" class="level-btn" data-level="scholarly" onclick="setReaderLevel('scholarly')">Scholarly</button>
+        </div>
+      </div>
 
-    const [wordRes, cogRes] = await Promise.all([
-      fetch(`${API}/word/${encodeURIComponent(currentWord)}`),
-      fetch(`${API}/word/${encodeURIComponent(currentWord)}/cognates`),
-    ]);
+      <div class="explorer-grid">
+        <div class="panel tab-panel active" id="story-panel" role="tabpanel">
+          <h2>Word Story</h2>
+          <div class="word-actions">
+            <button type="button" class="word-action-btn" onclick="saveCurrentWord()">Save word</button>
+            <button type="button" class="word-action-btn" onclick="shareCurrentWord()">Share</button>
+            <span class="saved-note" id="saved-note" aria-live="polite"></span>
+          </div>
+          <div id="word-content">
+            <p class="empty-state">
+              Search for a word above to see its meaning, root clues, and word family.
+              Try: <strong>prevent</strong>, <strong>charity</strong>, <strong>passion</strong>,
+              <strong>quick</strong>, <strong>naughty</strong>
+            </p>
+          </div>
+        </div>
 
-    if (!wordRes.ok) {
-      document.getElementById('word-content').innerHTML =
-        `<p class="empty-state">Word not found. Try seeding: <code>python -m ingestor.seed_data</code></p>`;
-      document.getElementById('timeline-content').innerHTML = '<p class="empty-state">No data.</p>';
-      return;
+        <div class="panel tab-panel" id="timeline-panel" role="tabpanel">
+          <h2>Timeline of Meaning</h2>
+          <div id="timeline-content">
+            <p class="empty-state">
+              Follow a word across historical eras. Filled dots show documented senses.
+              Hollow dots mark gaps in the historical record. Click an era to hear more.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel tab-panel" id="roots-panel" role="tabpanel">
+          <h2>Roots and Word Family</h2>
+          <div id="roots-content">
+            <p class="empty-state">Search a word to see roots, borrowing paths, and related forms.</p>
+          </div>
+        </div>
+
+        <div class="panel tab-panel" id="text-help-panel" role="tabpanel">
+          <h2>Understand This Text</h2>
+          <div class="text-help-form">
+            <textarea id="text-help-input" maxlength="10000" placeholder="Paste a short sentence or passage: He prevented the dawning of the morning."></textarea>
+            <div class="text-help-controls">
+              <select class="context-select" id="text-era-select" aria-label="Historical era">
+                <option value="Early Modern English">Early Modern English</option>
+                <option value="Middle English">Middle English</option>
+                <option value="Old English">Old English</option>
+                <option value="18th-19th Century English">18th-19th Century English</option>
+                <option value="Modern English">Modern English</option>
+              </select>
+              <button type="button" class="explain-btn" onclick="analyzeTextHelp()">Check older meanings</button>
+            </div>
+            <div id="text-help-results" aria-live="polite">
+              <p class="empty-state">The tool flags familiar words that may have meant something different in the selected era.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel tab-panel" id="sources-panel" role="tabpanel">
+          <h2>Sources and Confidence</h2>
+          <div id="sources-content">
+            <p class="empty-state">Search a word to see source notes, confidence, and whether a claim is attested or reconstructed.</p>
+          </div>
+        </div>
+
+        <div class="panel" id="ai-panel">
+          <h2>Then vs Now — In-depth</h2>
+          <div id="ai-content"></div>
+        </div>
+
+        <div class="panel tab-panel" id="era-browse">
+          <h2>Browse by Era</h2>
+          <div class="era-browse-pills" id="era-pills" role="list" aria-label="Historical eras"></div>
+          <div id="era-word-list" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linguistics Primer -->
+    <section id="linguistics-primer" aria-labelledby="ling-heading">
+      <div class="section-intro">
+        <h3 id="ling-heading">You've seen the shifts. Here's the science behind them.</h3>
+        <p>
+          Etymology told you where words like "silly" and "nice" came from. Linguistics explains
+          <em>why</em> they moved — the same handful of patterns govern meaning, sound, structure,
+          and borrowing across every language on Earth. These are the four tools that make
+          sense of it all.
+        </p>
+      </div>
+
+      <div class="section-grid">
+        <article class="card split-card">
+          <h3>Semantic change — how meanings drift</h3>
+          <strong>Meanings don't wander randomly. They move along well-documented paths.</strong>
+          <p>
+            Linguists group meaning shifts into recurring categories. Spotting which one is at
+            work in a word turns a confusing old usage into a predictable pattern.
+          </p>
+          <ul class="feature-list">
+            <li><strong>Broadening</strong> — "holiday" widened from "holy day" to any day off work.</li>
+            <li><strong>Narrowing</strong> — "meat" once meant any solid food; now only animal flesh.</li>
+            <li><strong>Pejoration</strong> — "silly" sank from "blessed, fortunate" to "foolish."</li>
+            <li><strong>Amelioration</strong> — "nice" rose from "ignorant" to "pleasant, kind."</li>
+          </ul>
+        </article>
+        <article class="card split-card">
+          <h3>Sound change — why spelling looks so strange</h3>
+          <strong>Pronunciation shifts in regular, rule-governed waves across centuries.</strong>
+          <p>
+            English spelling looks chaotic because it freezes pronunciations from different
+            historical moments. Two large-scale sound shifts explain most of the mismatch.
+          </p>
+          <ul class="feature-list">
+            <li><strong>Grimm's Law</strong> — a systematic Proto-Germanic consonant shift; it's why Latin "pater" lines up with English "father" and Latin "piscis" with "fish."</li>
+            <li><strong>The Great Vowel Shift</strong> (c. 1400–1700) — long vowels moved upward in the mouth; it's why "name" rhymed with today's "calm" in Chaucer's English.</li>
+          </ul>
+        </article>
+        <article class="card split-card">
+          <h3>Morphology — words built from parts</h3>
+          <strong>Most English words are assemblies of smaller meaningful pieces.</strong>
+          <p>
+            Once you can see prefixes, roots, and suffixes as separable units, unfamiliar words
+            stop being walls of letters and start being puzzles you can solve on sight.
+          </p>
+          <ul class="feature-list">
+            <li>"Un-" + "believe" + "-able" = three meaningful pieces, one word.</li>
+            <li>The Latin root <em>spect</em> ("to look") alone powers spectator, inspect, prospect, retrospect, and spectacle.</li>
+          </ul>
+        </article>
+        <article class="card split-card">
+          <h3>Language contact — borrowing and blending</h3>
+          <strong>English is, more than most languages, a product of collision and contact.</strong>
+          <p>
+            Each invasion, trade route, and intellectual movement left a layer of vocabulary
+            behind — which is why English so often has three words for one idea.
+          </p>
+          <ul class="feature-list">
+            <li>Old Norse contributed everyday words: "sky," "leg," "they," "knife."</li>
+            <li>Norman French supplied the vocabulary of law, government, and cuisine: "justice," "parliament," "beef."</li>
+            <li>Latin and Greek, borrowed mainly through scholarship, account for roughly 60% of academic English vocabulary.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Who it helps -->
+    <section id="teachers-writers" aria-labelledby="audience-heading">
+      <div class="section-intro">
+        <h3 id="audience-heading">Useful for curious readers. Strong enough for serious work.</h3>
+        <p>
+          The surface is designed to feel inviting for high schoolers discovering etymology for
+          the first time. Underneath it, every word traces to a credible scholarly record.
+        </p>
+      </div>
+
+      <div class="section-grid">
+        <article class="card">
+          <h3>High School Students</h3>
+          <ul class="user-list">
+            <li>Build vocabulary through stories — not rote memorization.</li>
+            <li>Read Shakespeare and historical texts with greater clarity.</li>
+            <li>Understand SAT/ACT vocabulary root patterns and why they work.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Educators</h3>
+          <ul class="user-list">
+            <li>Connect history, literature, and language study in one discussion.</li>
+            <li>Use word history to unlock older texts for students.</li>
+            <li>See semantic drift as context and meaning, not just academic curiosity.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Writers &amp; Readers</h3>
+          <ul class="user-list">
+            <li>Choose words with awareness of register, tone, and history.</li>
+            <li>Understand why some words feel formal, sacred, blunt, or technical.</li>
+            <li>Read older literature with the vocabulary the author actually used.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Credible Sources -->
+    <section id="sources" aria-labelledby="sources-heading">
+      <div class="section-intro">
+        <h3 id="sources-heading">Built on credible sources.</h3>
+        <p>
+          Every etymology on this site traces to a primary scholarly dictionary or a
+          peer-reviewed historical record. We do not invent or speculate.
+        </p>
+      </div>
+      <div class="sources-grid" role="list" aria-label="Source dictionaries">
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">OED</div>
+          <div class="source-card-full">Oxford English Dictionary</div>
+          <div class="source-card-tier">Tier 1 — Primary historical</div>
+        </div>
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">MED</div>
+          <div class="source-card-full">Middle English Dictionary (U. Michigan)</div>
+          <div class="source-card-tier">Tier 1 — Primary historical</div>
+        </div>
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">Bosworth-Toller</div>
+          <div class="source-card-full">Anglo-Saxon Dictionary</div>
+          <div class="source-card-tier">Tier 2 — Authoritative scholarly</div>
+        </div>
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">Skeat</div>
+          <div class="source-card-full">Etymological Dictionary of the English Language</div>
+          <div class="source-card-tier">Tier 2 — Authoritative scholarly</div>
+        </div>
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">Merriam-Webster</div>
+          <div class="source-card-full">Merriam-Webster Unabridged</div>
+          <div class="source-card-tier">Tier 3 — Reference</div>
+        </div>
+        <div class="source-card" role="listitem">
+          <div class="source-card-abbr">Collins</div>
+          <div class="source-card-full">Collins English Dictionary</div>
+          <div class="source-card-tier">Tier 3 — Reference</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Philology Resources: Proto-Indo-European to Modern English -->
+    <section id="philology-resources" aria-labelledby="res-heading">
+      <div class="section-intro">
+        <h3 id="res-heading">The scholarly trail — from Proto-Indo-European to Modern English.</h3>
+        <p>
+          Primary dictionaries, academic databases, and trusted reference works for every era
+          of the language. Free resources are linked directly. Sources requiring institutional
+          access are noted — most are available through any university or public library system.
+        </p>
+      </div>
+
+      <details class="scholar-shelf">
+        <summary>Open the Scholar's Shelf for primary dictionaries, corpora, and research tools.</summary>
+        <div class="scholar-shelf-content">
+
+      <!-- Proto-Indo-European -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">~4500–2500 BCE</span>
+          <div class="resource-era-title">Proto-Indo-European</div>
+          <div class="resource-era-subtitle">The reconstructed ancestor of English, Latin, Greek, Sanskrit, Persian, and most European languages. Spoken before writing; known through comparative reconstruction.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Indogermanisches etymologisches Wörterbuch</div>
+            <div class="resource-card-org">Julius Pokorny, 1959</div>
+            <div class="resource-card-desc">The foundational PIE root dictionary. Still the standard starting point for tracing English words to their Proto-Indo-European origins. Digitized and freely available.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://archive.org/search?query=pokorny+indogermanisches" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Indo-European Roots Appendix</div>
+            <div class="resource-card-org">American Heritage Dictionary</div>
+            <div class="resource-card-desc">An approachable, curated guide to PIE roots with direct links to English words descended from each root. Ideal for classroom use and independent learners.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.ahdictionary.com" target="_blank" rel="noopener noreferrer">Visit AHDictionary.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Leiden Indo-European Etymological Dictionaries</div>
+            <div class="resource-card-org">Brill / Leiden University</div>
+            <div class="resource-card-desc">The current gold-standard series covering individual IE branches — Germanic, Celtic, Greek, Latin, Balto-Slavic, Anatolian, and more. Peer-reviewed by leading specialists.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Library access</span>
+              <span class="resource-link-muted">Search: Leiden IEEDS via Brill</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Proto-Germanic -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">~500 BCE–300 CE</span>
+          <div class="resource-era-title">Proto-Germanic</div>
+          <div class="resource-era-subtitle">The immediate ancestor of English, Dutch, German, Frisian, and the Scandinavian languages. Distinguishable from other IE branches by Grimm's Law consonant shifts.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Online Etymology Dictionary</div>
+            <div class="resource-card-org">Douglas Harper</div>
+            <div class="resource-card-desc">Traces Proto-Germanic roots for most common English words with clear source references. The most accessible free etymological tool available and consistently reliable.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Perseus Digital Library</div>
+            <div class="resource-card-org">Tufts University</div>
+            <div class="resource-card-desc">Classical and Germanic texts with built-in morphological analysis. Essential for tracing Latin and Greek borrowings through primary sources, and for comparative Germanic study.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.perseus.tufts.edu" target="_blank" rel="noopener noreferrer">Visit Perseus.Tufts.edu →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Old English -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">450–1150 CE</span>
+          <div class="resource-era-title">Old English (Anglo-Saxon)</div>
+          <div class="resource-era-subtitle">The Germanic language of <em>Beowulf</em> and the Anglo-Saxon Chronicle. English's core vocabulary — bread, water, hand, earth, love, death — comes from this era.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Bosworth-Toller Anglo-Saxon Dictionary</div>
+            <div class="resource-card-org">Joseph Bosworth &amp; T. Northcote Toller, 1898</div>
+            <div class="resource-card-desc">The authoritative dictionary of Old English. Comprehensive coverage of Anglo-Saxon vocabulary with original textual citations from manuscripts. Fully digitized and freely searchable.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://bosworthtoller.com" target="_blank" rel="noopener noreferrer">Visit BosworthToller.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Dictionary of Old English (DOE)</div>
+            <div class="resource-card-org">University of Toronto</div>
+            <div class="resource-card-desc">The modern scholarly successor to Bosworth-Toller, based on the complete Old English corpus. Letters A–I are freely searchable; the remainder requires institutional access.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Partial free / Library</span>
+              <span class="resource-link-muted">Search: Dictionary of Old English, U of Toronto</span>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Internet Archive — Anglo-Saxon Texts</div>
+            <div class="resource-card-org">Archive.org</div>
+            <div class="resource-card-desc">Freely digitized editions of Sweet's Anglo-Saxon Primer, Ælfric's Grammar, the Anglo-Saxon Chronicle, and <em>Beowulf</em> in original and translated form.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://archive.org/search?query=old+english+anglo+saxon+grammar" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Middle English -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">1150–1500 CE</span>
+          <div class="resource-era-title">Middle English</div>
+          <div class="resource-era-subtitle">The language of Chaucer, Langland, and Wycliffe. Norman French conquest reshaped English vocabulary, class register, and spelling across two centuries.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Middle English Dictionary (MED)</div>
+            <div class="resource-card-org">University of Michigan</div>
+            <div class="resource-card-desc">The definitive reference for Middle English vocabulary, 1100–1500. Every entry includes dateable citations from period manuscripts. One of the finest historical dictionaries ever compiled.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://quod.lib.umich.edu/m/middle-english-dictionary/" target="_blank" rel="noopener noreferrer">Visit MED Online →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Project Gutenberg — Middle English Texts</div>
+            <div class="resource-card-org">Project Gutenberg</div>
+            <div class="resource-card-desc">Free digitized editions of Chaucer's <em>Canterbury Tales</em>, Langland's <em>Piers Plowman</em>, and <em>Sir Gawain and the Green Knight</em> — the essential primary reading for this period.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.gutenberg.org/ebooks/search/?query=middle+english" target="_blank" rel="noopener noreferrer">Search Gutenberg.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Early English Books Online (EEBO)</div>
+            <div class="resource-card-org">ProQuest</div>
+            <div class="resource-card-desc">Digitized scans of virtually every book printed in England between 1475 and 1700. Invaluable for reading words in the exact historical contexts in which they appeared.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Library access</span>
+              <span class="resource-link-muted">Available via most university libraries</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Early Modern English -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">1500–1700 CE</span>
+          <div class="resource-era-title">Early Modern English</div>
+          <div class="resource-era-subtitle">Shakespeare, the King James Bible, and Francis Bacon. Spelling was not yet standardized. Latin and Greek borrowings flooded in through the Renaissance. The first English dictionaries appeared.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Oxford English Dictionary — Historical Citations</div>
+            <div class="resource-card-org">Oxford University Press</div>
+            <div class="resource-card-desc">Unmatched for this period: quotations from 1500–1700 show exactly how words were used in context. The single most important scholarly tool for Early Modern English vocabulary.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Library access</span>
+              <a class="resource-link" href="https://www.oed.com" target="_blank" rel="noopener noreferrer">Visit OED.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Etymological Dictionary of the English Language</div>
+            <div class="resource-card-org">Walter W. Skeat, 1882</div>
+            <div class="resource-card-desc">Skeat's landmark work traces English words with exceptional historical depth. Especially strong on Early Modern forms and Latin borrowings. Fully digitized and free on Archive.org.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://archive.org/search?query=skeat+etymological+dictionary+english" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Project Gutenberg — Early Modern Texts</div>
+            <div class="resource-card-org">Project Gutenberg</div>
+            <div class="resource-card-desc">Free access to Shakespeare, the King James Bible (1611), Francis Bacon, and Marlowe. Reading these texts alongside a historical dictionary shows the language in motion.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.gutenberg.org" target="_blank" rel="noopener noreferrer">Visit Gutenberg.org →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Late Modern & Contemporary -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge">1700 CE – Present</span>
+          <div class="resource-era-title">Late Modern &amp; Contemporary English</div>
+          <div class="resource-era-subtitle">Standardized spelling, the rise of dictionaries, global spread of English, and the rapid semantic drift of the industrial and digital eras.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Oxford English Dictionary (OED)</div>
+            <div class="resource-card-org">Oxford University Press</div>
+            <div class="resource-card-desc">The definitive record of the English language. Over 600,000 words with dateable first citations and historical quotations spanning 1150 to today. The final authority on English vocabulary.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Library access</span>
+              <a class="resource-link" href="https://www.oed.com" target="_blank" rel="noopener noreferrer">Visit OED.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Merriam-Webster Unabridged</div>
+            <div class="resource-card-org">Merriam-Webster</div>
+            <div class="resource-card-desc">The authoritative American English reference, tracing a direct line from Webster's 1828 original. Clear etymology notes and usage history across Modern American English.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free (core)</span>
+              <a class="resource-link" href="https://www.merriam-webster.com" target="_blank" rel="noopener noreferrer">Visit Merriam-Webster.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Google Books Ngram Viewer</div>
+            <div class="resource-card-org">Google Research</div>
+            <div class="resource-card-desc">Charts word frequency across millions of books from 1800–2019. An extraordinary tool for visualizing semantic drift, word adoption patterns, and vocabulary rise and fall over time.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://books.google.com/ngrams" target="_blank" rel="noopener noreferrer">Visit Google Ngrams →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Cross-Era Reference -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge era-sage">All Eras</span>
+          <div class="resource-era-title">Cross-Era Etymology Reference</div>
+          <div class="resource-era-subtitle">Resources that trace words across the full historical arc — from reconstructed root to living English.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">Online Etymology Dictionary</div>
+            <div class="resource-card-org">Douglas Harper</div>
+            <div class="resource-card-desc">The best free cross-era etymology reference. Covers most English words from PIE through modern usage with clear sourcing. The recommended first stop for any word investigation.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">British Library — Digitized Manuscripts</div>
+            <div class="resource-card-org">British Library</div>
+            <div class="resource-card-desc">Free access to the <em>Beowulf</em> manuscript, the Lindisfarne Gospels, Magna Carta, and hundreds of primary documents of English linguistic history across all eras.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.bl.uk" target="_blank" rel="noopener noreferrer">Visit BL.uk →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Internet Archive — Scholarly Philology</div>
+            <div class="resource-card-org">Archive.org</div>
+            <div class="resource-card-desc">Out-of-copyright works freely available: Skeat, Bosworth, Sweet's Anglo-Saxon Primer, the original OED fascicles, and core philological texts from the 19th and early 20th centuries.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://archive.org/search?query=english+philology+etymology" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Encyclopaedia Britannica — Language History</div>
+            <div class="resource-card-org">Encyclopaedia Britannica</div>
+            <div class="resource-card-desc">Expert-reviewed articles on the history of English, Indo-European languages, and philology. Peer-reviewed by academic specialists. Reliable for high school and undergraduate research.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free (core articles)</span>
+              <a class="resource-link" href="https://www.britannica.com" target="_blank" rel="noopener noreferrer">Visit Britannica.com →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- General Linguistics -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge era-sage">Linguistics</span>
+          <div class="resource-era-title">General Linguistics — Beyond Word History</div>
+          <div class="resource-era-subtitle">Etymology explains where words came from. These resources explain the broader science of how language itself works — sound systems, grammar, and the world's language families.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">MIT OpenCourseWare — Linguistics</div>
+            <div class="resource-card-org">Massachusetts Institute of Technology</div>
+            <div class="resource-card-desc">Full university-level course materials on introductory and historical linguistics, free and self-paced. A rigorous next step for anyone who wants to go beyond word trivia into the underlying science.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://ocw.mit.edu" target="_blank" rel="noopener noreferrer">Visit OCW.mit.edu →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">International Phonetic Association</div>
+            <div class="resource-card-org">IPA</div>
+            <div class="resource-card-desc">Home of the International Phonetic Alphabet — the standard system linguists use to transcribe the sounds of any language precisely, independent of spelling conventions.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.internationalphoneticassociation.org" target="_blank" rel="noopener noreferrer">Visit the IPA →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Glottolog</div>
+            <div class="resource-card-org">Max Planck Institute for Evolutionary Anthropology</div>
+            <div class="resource-card-desc">A comprehensive, scholarly catalog of the world's languages and language families, with bibliographic references. Useful for seeing English's place within Indo-European and beyond.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://glottolog.org" target="_blank" rel="noopener noreferrer">Visit Glottolog.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Ethnologue — Languages of the World</div>
+            <div class="resource-card-org">SIL International</div>
+            <div class="resource-card-desc">A widely cited reference on the world's living languages — their families, distribution, and number of speakers. Useful context for understanding how English fits into the global language landscape.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Partial free / Subscription</span>
+              <a class="resource-link" href="https://www.ethnologue.com" target="_blank" rel="noopener noreferrer">Visit Ethnologue.com →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- Academic Research -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge era-night">Research</span>
+          <div class="resource-era-title">Academic Journals &amp; Databases</div>
+          <div class="resource-era-subtitle">Peer-reviewed scholarship on historical linguistics, semantic change, and English philology.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">JSTOR — Linguistics</div>
+            <div class="resource-card-org">JSTOR</div>
+            <div class="resource-card-desc">Thousands of peer-reviewed articles on historical linguistics, semantic change, and English language history. Free registration provides limited monthly article access.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge library">Partial free / Library</span>
+              <a class="resource-link" href="https://jstor.org" target="_blank" rel="noopener noreferrer">Visit JSTOR.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Linguistic Society of America</div>
+            <div class="resource-card-org">LSA</div>
+            <div class="resource-card-desc">The leading U.S. professional organization for linguistics. Its journal <em>Language</em> publishes foundational papers on historical and comparative linguistics. Educational resources available free.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free resources</span>
+              <a class="resource-link" href="https://www.linguisticsociety.org" target="_blank" rel="noopener noreferrer">Visit LinguisticSociety.org →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Perseus Digital Library</div>
+            <div class="resource-card-org">Tufts University</div>
+            <div class="resource-card-desc">Primary Greek and Latin texts with morphological analysis. Essential for tracing the Latin and Greek borrowings that account for roughly 60% of the English academic vocabulary.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.perseus.tufts.edu" target="_blank" rel="noopener noreferrer">Visit Perseus.Tufts.edu →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="resource-divider">
+
+      <!-- For Students -->
+      <div class="resource-era-row">
+        <div class="resource-era-label">
+          <span class="resource-era-badge era-gold">Students</span>
+          <div class="resource-era-title">For High School Students &amp; Curious Readers</div>
+          <div class="resource-era-subtitle">Approachable, accurate, and engaging starting points for exploring the history of English — no prior linguistics knowledge required.</div>
+        </div>
+        <div class="resource-cards-grid">
+          <div class="resource-card">
+            <div class="resource-card-name">The History of English Podcast</div>
+            <div class="resource-card-org">Kevin Stroud</div>
+            <div class="resource-card-desc">A free, chronological audio journey from Proto-Indo-European to Modern English. Exceptionally accurate and engaging — widely regarded as one of the best introductions to English language history available.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.historyofenglishpodcast.com" target="_blank" rel="noopener noreferrer">Visit HistoryOfEnglishPodcast.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Online Etymology Dictionary</div>
+            <div class="resource-card-org">Douglas Harper</div>
+            <div class="resource-card-desc">The best single free tool for curious word investigators. Type any word and trace it through centuries of change — clear explanations, reliable sourcing, and no jargon required.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Google Books Ngram Viewer</div>
+            <div class="resource-card-org">Google Research</div>
+            <div class="resource-card-desc">An interactive visualization tool showing how word frequency shifts across 200 years of published writing. Excellent for classroom demonstrations of semantic drift and vocabulary change.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://books.google.com/ngrams" target="_blank" rel="noopener noreferrer">Visit Google Ngrams →</a>
+            </div>
+          </div>
+          <div class="resource-card">
+            <div class="resource-card-name">Project Gutenberg</div>
+            <div class="resource-card-org">Project Gutenberg</div>
+            <div class="resource-card-desc">Free access to over 70,000 texts including Shakespeare, the King James Bible (1611), Chaucer, and Beowulf in translation. Primary sources make etymology real rather than abstract.</div>
+            <div class="resource-card-footer">
+              <span class="access-badge free">Free</span>
+              <a class="resource-link" href="https://www.gutenberg.org" target="_blank" rel="noopener noreferrer">Visit Gutenberg.org →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="closing-banner" aria-label="Call to action">
+      <div>
+        <h3>Every word has a past life.</h3>
+        <p>Look up a word. Uncover a history. Read language with new eyes.</p>
+      </div>
+      <button type="button" class="cta-inline" onclick="document.getElementById('search-input').focus(); document.getElementById('search-input').scrollIntoView({behavior:'smooth',block:'center'})">
+        Start with a word
+      </button>
+    </section>
+
+    <footer class="site-footer">
+      <div>
+        Etymology data sourced from the Oxford English Dictionary, Middle English Dictionary,
+        Bosworth-Toller Anglo-Saxon Dictionary, and other peer-reviewed scholarly references.
+      </div>
+      <div>PensiveApe &mdash; The Living Lexicon.</div>
+    </footer>
+
+  </div><!-- .site-shell -->
+
+  <script>
+    'use strict';
+    const API = window.LIVING_LEXICON_API_BASE ||
+      (location.hostname === 'pensiveape.com' || location.hostname === 'www.pensiveape.com'
+        ? 'https://api.pensiveape.com'
+        : '');
+    let currentWord = '';
+    let currentWordData = null;
+    let currentTimeline = [];
+    let readerLevel = 'simple';
+    let searchTimer = null;
+    let currentQuizWord = '';
+
+    /* ── UTILITY ── */
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    const wordData = await wordRes.json();
-    const cogData = cogRes.ok ? await cogRes.json() : { cognates: [] };
-    renderWordCard(wordData, cogData.cognates || []);
-    loadEraTimeline(currentWord);
-  }
-
-  function renderWordCard(data, cognates) {
-    const container = document.getElementById('word-content');
-    container.innerHTML = '';
-
-    const nameEl = document.createElement('div');
-    nameEl.id = 'word-name';
-    nameEl.textContent = data.name || '';
-
-    const defEl = document.createElement('div');
-    defEl.id = 'word-definition';
-    defEl.textContent = data.definition || 'No definition on record';
-
-    container.appendChild(nameEl);
-    container.appendChild(defEl);
-
-    if (data.root) {
-      const rootBox = document.createElement('div');
-      rootBox.className = 'root-box';
-      rootBox.innerHTML =
-        `<div class="root-label">Ancestral Root</div>` +
-        `<div><span class="root-text">${esc(data.root)}</span>` +
-        ` &mdash; <span>${esc(data.root_origin || '')}</span>:` +
-        ` "<em>${esc(data.root_meaning || '')}</em>"</div>`;
-      container.appendChild(rootBox);
-    }
-
-    if (cognates.length) {
-      const label = document.createElement('div');
-      label.className = 'section-label';
-      label.textContent = 'Word Family (same root)';
-      const pills = document.createElement('div');
-      pills.className = 'pills';
-      cognates.forEach(c => {
-        const pill = document.createElement('span');
-        pill.className = 'pill';
-        pill.textContent = c.name;
-        pill.addEventListener('click', () => loadWord(c.name));
-        pills.appendChild(pill);
-      });
-      container.appendChild(label);
-      container.appendChild(pills);
-    }
-
-    const controls = document.createElement('div');
-    controls.className = 'drift-controls';
-    controls.innerHTML =
-      `<select class="context-select" id="context-select">
-        <option value="">No context</option>
-        <option value="biblical">Biblical text</option>
-        <option value="literary">Shakespeare / literary</option>
-        <option value="legal">Legal document</option>
-        <option value="medical">Medical text</option>
-      </select>
-      <button class="explain-btn" onclick="requestDriftExplanation()">Explain it to me</button>`;
-    container.appendChild(controls);
-  }
-
-  // ── Era Timeline ──────────────────────────────────────────────────────────
-
-  async function loadEraTimeline(word) {
-    setTextContent(document.getElementById('timeline-content'), 'Loading timeline…');
-    try {
-      const res = await fetch(`${API}/word/${encodeURIComponent(word)}/era-timeline`);
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      renderTimeline(data.timeline);
-    } catch {
-      document.getElementById('timeline-content').innerHTML = '<p class="empty-state">Timeline not available.</p>';
-    }
-  }
-
-  function renderTimeline(timeline) {
-    const container = document.getElementById('timeline-content');
-    container.innerHTML = '';
-    if (!timeline || !timeline.length) {
-      container.innerHTML = '<p class="empty-state">No era data available.</p>';
-      return;
-    }
-
-    const div = document.createElement('div');
-    div.className = 'timeline';
-
-    // Show newest era first (most familiar to modern reader)
-    [...timeline].reverse().forEach((e, i) => {
-      const id = `era-${i}`;
-      const entry = document.createElement('div');
-      entry.className = 'era-entry';
-
-      const dot = document.createElement('div');
-      dot.className = 'era-dot' + (e.meaning ? ' filled' : '');
-
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'era-name';
-      nameSpan.textContent = e.era_name;
-
-      const yearsSpan = document.createElement('span');
-      yearsSpan.className = 'era-years';
-      yearsSpan.textContent = ` (${e.era_start}–${e.era_end})`;
-
-      entry.appendChild(dot);
-      entry.appendChild(nameSpan);
-      entry.appendChild(yearsSpan);
-
-      if (e.meaning) {
-        const meaning = document.createElement('div');
-        meaning.className = 'era-meaning';
-        meaning.textContent = '“' + e.meaning + '”';
-        entry.appendChild(meaning);
-        if (e.usage_example) {
-          const ex = document.createElement('div');
-          ex.className = 'era-example';
-          ex.textContent = e.usage_example;
-          entry.appendChild(ex);
-        }
-      } else {
-        const empty = document.createElement('div');
-        empty.className = 'era-empty';
-        empty.textContent = 'no documented meaning';
-        entry.appendChild(empty);
-      }
-
-      const aiBox = document.createElement('div');
-      aiBox.className = 'era-ai-inline';
-      aiBox.id = `${id}-ai`;
-      entry.appendChild(aiBox);
-
-      entry.addEventListener('click', () => toggleEraExplanation(id, e.era_name));
-      div.appendChild(entry);
-    });
-
-    container.appendChild(div);
-  }
-
-  async function toggleEraExplanation(id, eraName) {
-    const box = document.getElementById(`${id}-ai`);
-    if (box.style.display === 'block') { box.style.display = 'none'; return; }
-    box.style.display = 'block';
-    box.textContent = 'Asking the historian…';
-    try {
-      const res = await fetch(
-        `${API}/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`
-      );
-      const data = await res.json();
-      box.textContent = data.ai_explanation || 'No explanation available.';
-    } catch { box.textContent = 'Could not load explanation.'; }
-  }
-
-  // ── Drift Explanation ─────────────────────────────────────────────────────
-
-  async function requestDriftExplanation() {
-    const context = document.getElementById('context-select')?.value || '';
-    const btn = document.querySelector('.explain-btn');
-    const panel = document.getElementById('ai-panel');
-    const content = document.getElementById('ai-content');
-
-    btn.disabled = true;
-    btn.textContent = 'Consulting the historian…';
-    panel.style.display = 'block';
-    content.innerHTML = '<div class="ai-loading">Analyzing… 10–30 seconds with a local LLM.</div>';
-
-    try {
-      const url = `${API}/word/${encodeURIComponent(currentWord)}/drift${context ? `?context=${context}` : ''}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      renderDriftExplanation(data.explanation || '');
-    } catch {
-      content.innerHTML = '<div class="ai-loading">Error — is Ollama running?</div>';
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Explain it to me';
-    }
-  }
-
-  function renderDriftExplanation(text) {
-    const content = document.getElementById('ai-content');
-    content.innerHTML = '';
-
-    const sections = [
-      { key: 'THEN vs NOW',          label: 'Then vs Now' },
-      { key: 'THE TURNING POINT',    label: 'The Turning Point' },
-      { key: 'THE ANALOGY',          label: 'The Analogy' },
-      { key: 'THE WORD FAMILY CLUE', label: 'The Word Family Clue' },
+    /* ── FACT TICKER ── */
+    const FACTS = [
+      { text: '"Awful" originally meant "inspiring awe or reverence" — the same root as "awesome". The negative drift happened slowly over centuries as everyday language weakened the word.', source: 'OED' },
+      { text: '"Nice" comes from Latin nescius (ignorant). In Middle English it meant "foolish." It took nearly 500 years to drift toward "pleasant" and "kind."', source: 'OED / MED' },
+      { text: '"Lord" derives from Old English hlāford — literally the "loaf-guardian," the person who kept and distributed bread in a household.', source: 'Bosworth-Toller' },
+      { text: '"Lady" comes from Old English hlæfdige, meaning "loaf-kneader" — the woman who shaped the bread. Power and bread were once the same word.', source: 'OED' },
+      { text: '"Silly" once meant "blessed" or "happy" in Old English (sælig). It drifted through "innocent" → "simple" → "easy to deceive" → "foolish."', source: 'OED' },
+      { text: '"Naughty" once meant "possessing nothing." From naught (nothing), it shifted to mean "wicked," then softened to its modern mild sense.', source: 'MED / OED' },
+      { text: '"Prevent" comes from Latin praevenire — to come before, to anticipate. In the KJV, "I prevented the dawning of the morning" simply means "I was up before dawn."', source: 'OED' },
+      { text: 'About 60% of Modern English vocabulary traces to Latin or Greek — meaning root knowledge can decode thousands of unfamiliar words without a dictionary.', source: 'Nation, 2001' },
+      { text: '"Charity" in early Bible translations rendered the Greek agape — a deep, unconditional love — not mere financial generosity.', source: 'OED / KJV scholarship' },
+      { text: '"Bless" derives from Old English blēdsian — originally meaning "to mark with blood" in pre-Christian ritual. Christianity gave it an entirely new register.', source: 'OED' },
+      { text: '"Girl" in Middle English meant a young person of either sex. The word became gender-specific only in the Late Modern English period.', source: 'MED / OED' },
+      { text: '"Hussy" once simply meant "housewife" (Old English hūswīf). Its meaning narrowed and shifted pejoratively with changing social attitudes over three centuries.', source: 'OED' },
+      { text: '"Disaster" comes from Italian dis-astro: "bad star." It entered English from astrology — a catastrophe was an event occurring under a malign stellar alignment.', source: 'OED' },
     ];
 
-    let found = false;
-    sections.forEach((s, i) => {
-      const next = sections[i + 1]?.key;
-      const re = next
-        ? new RegExp(s.key + '[:\\s]*([\\s\\S]*?)(?=' + next + ')', 'i')
-        : new RegExp(s.key + '[:\\s]*([\\s\\S]*)', 'i');
-      const m = text.match(re);
-      if (m) {
-        found = true;
-        const body = m[1].replace(/^\d+\.\s*/, '').trim();
-        const sec = document.createElement('div');
-        sec.className = 'ai-section';
-        const lbl = document.createElement('div');
-        lbl.className = 'ai-section-label';
-        lbl.textContent = s.label;
-        const bd = document.createElement('div');
-        bd.className = 'ai-section-body';
-        bd.textContent = body;
-        sec.appendChild(lbl);
-        sec.appendChild(bd);
-        content.appendChild(sec);
-      }
-    });
-
-    if (!found) {
-      const raw = document.createElement('div');
-      raw.className = 'ai-raw';
-      raw.textContent = text;
-      content.appendChild(raw);
+    let factIndex = 0;
+    function rotateFact() {
+      const textEl = document.getElementById('fact-text');
+      const srcEl = document.getElementById('fact-source');
+      if (!textEl) return;
+      textEl.classList.add('fading');
+      setTimeout(() => {
+        factIndex = (factIndex + 1) % FACTS.length;
+        textEl.textContent = FACTS[factIndex].text;
+        srcEl.textContent = FACTS[factIndex].source;
+        textEl.classList.remove('fading');
+      }, 400);
     }
-  }
 
-  // ── Browse by Era ─────────────────────────────────────────────────────────
+    function initFactTicker() {
+      factIndex = Math.floor(Math.random() * FACTS.length);
+      const textEl = document.getElementById('fact-text');
+      const srcEl = document.getElementById('fact-source');
+      if (textEl) textEl.textContent = FACTS[factIndex].text;
+      if (srcEl) srcEl.textContent = FACTS[factIndex].source;
+      setInterval(rotateFact, 8000);
+    }
 
-  function loadEraBrowsePills() {
-    const eras = [
-      'Early Modern English','Middle English','Classical Latin',
-      'Old English','18th-19th Century English','Modern English',
+    /* ── WORD OF THE DAY ── */
+    const WORD_STORIES = [
+      {
+        word: 'nice', summary: 'A familiar word with an unexpectedly strange past.',
+        then: 'From Latin nescius (ignorant), it moved through Old French as "foolish," then "fussy," then "precise."',
+        turn: 'Politeness norms of the 18th century pulled it steadily toward social approval.',
+        now: 'A mild compliment so ordinary its original meaning is nearly invisible.',
+      },
+      {
+        word: 'awful', summary: 'Once the highest form of reverence. Now almost always negative.',
+        then: 'Old English āwful: "inspiring awe" — the awe felt before God, nature, or a king.',
+        turn: 'As everyday language weakened, "awe" itself became less reverential, and "awful" followed it downward.',
+        now: 'A blunt negative intensifier — almost the opposite of its origin.',
+      },
+      {
+        word: 'lord', summary: 'Power dressed in bread. The word for authority was the word for food.',
+        then: 'Old English hlāford — "loaf-guardian." The one who kept and distributed bread to a household.',
+        turn: 'As feudal hierarchy formalized, the word attached to rank and land, losing its domestic sense.',
+        now: 'A title of nobility or divine address, with no visible trace of the bakehouse.',
+      },
+      {
+        word: 'silly', summary: 'What we call foolish was once the highest blessing.',
+        then: 'Old English sælig: "blessed, happy, fortunate." Related to German selig (blissful).',
+        turn: 'Being "blessed" often implied simplicity or innocence, which shaded into being easy to deceive, then weak, then foolish.',
+        now: 'Lightly mocking — barely a shadow of its original sense of divine grace.',
+      },
     ];
-    const container = document.getElementById('era-pills');
-    container.innerHTML = '';
-    eras.forEach(e => {
-      const pill = document.createElement('span');
-      pill.className = 'era-browse-pill';
-      pill.textContent = e;
-      pill.addEventListener('click', () => browseEra(e));
-      container.appendChild(pill);
+
+    function initWordOfDay() {
+      const container = document.getElementById('word-of-day');
+      if (!container) return;
+      const s = WORD_STORIES[Math.floor(Math.random() * WORD_STORIES.length)];
+      container.innerHTML =
+        `<div class="story-word">${esc(s.word)}</div>` +
+        `<p>${esc(s.summary)}</p>` +
+        `<div class="story-stages">` +
+        `<div class="story-stage"><strong>Then</strong>${esc(s.then)}</div>` +
+        `<div class="story-stage"><strong>The turn</strong>${esc(s.turn)}</div>` +
+        `<div class="story-stage"><strong>Now</strong>${esc(s.now)}</div>` +
+        `</div>` +
+        `<button class="story-button" onclick="triggerExampleSearch('${esc(s.word)}')">Open in the explorer</button>`;
+    }
+
+    /* ── SHIFTS GALLERY ── */
+    const SHIFTS = [
+      { word: 'awful',    era: 'Old English',   then: 'Inspiring awe / reverence',           now: 'Terrible',                    source: 'OED' },
+      { word: 'nice',     era: 'Middle English', then: 'Foolish / ignorant',                  now: 'Pleasant / kind',             source: 'OED / MED' },
+      { word: 'silly',    era: 'Old English',   then: 'Blessed / happy (sælig)',              now: 'Foolish / trivial',           source: 'OED' },
+      { word: 'naughty',  era: 'Middle English', then: 'Possessing nothing / destitute',      now: 'Mildly disobedient',          source: 'MED / OED' },
+      { word: 'lord',     era: 'Old English',   then: 'Bread-guardian (hlāford)',             now: 'Noble title / divine address',source: 'Bosworth-Toller' },
+      { word: 'lady',     era: 'Old English',   then: 'Loaf-kneader (hlæfdige)',             now: 'Woman of rank',               source: 'OED' },
+      { word: 'hussy',    era: 'Early Modern',  then: 'Housewife (hūswīf)',                  now: 'Disreputable woman',          source: 'OED' },
+      { word: 'girl',     era: 'Middle English', then: 'Young person of either sex',          now: 'Young female',                source: 'MED / OED' },
+      { word: 'prevent',  era: 'Early Modern',  then: 'To come before / to anticipate',      now: 'To stop / to hinder',         source: 'OED' },
+      { word: 'charity',  era: 'Middle English', then: 'Deep, unconditional love (agape)',    now: 'Generous giving',             source: 'OED' },
+      { word: 'bless',    era: 'Old English',   then: 'Mark with blood (blēdsian)',          now: 'Give divine favor',           source: 'OED' },
+      { word: 'disaster', era: 'Early Modern',  then: 'Under a bad star (dis-astro)',        now: 'A catastrophe',               source: 'OED' },
+    ];
+
+    function initShiftsGallery() {
+      const track = document.getElementById('shifts-track');
+      if (!track) return;
+      SHIFTS.forEach((s) => {
+        const card = document.createElement('article');
+        card.className = 'shift-card';
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `${s.word}: originally "${s.then}", now "${s.now}"`);
+        card.innerHTML =
+          `<div class="shift-word">${esc(s.word)}</div>` +
+          `<div class="shift-era">${esc(s.era)}</div>` +
+          `<div class="shift-meaning-then">"${esc(s.then)}"</div>` +
+          `<div class="shift-arrow">→ now</div>` +
+          `<div class="shift-meaning-now">"${esc(s.now)}"</div>` +
+          `<div class="shift-source">Source: ${esc(s.source)}</div>`;
+        card.addEventListener('click', () => triggerExampleSearch(s.word));
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') triggerExampleSearch(s.word); });
+        track.appendChild(card);
+      });
+    }
+
+    /* ── QUIZ ── */
+    const QUIZ_DATA = [
+      {
+        word: 'awful', prompt: 'In Old English, "awful" described something that made you feel…',
+        correct: 'Awe and reverential fear',
+        wrong: ['Physical pain and sickness', 'Ordinary boredom', 'Quiet satisfaction'],
+        explanation: '"Awful" comes from Old English āwful, meaning "inspiring awe or reverential fear." It described God, great kings, and nature\'s spectacles. The negative drift happened as "awe" itself weakened in everyday speech over centuries.',
+        source: 'Oxford English Dictionary (OED)',
+      },
+      {
+        word: 'nice', prompt: 'When "nice" entered English via Old French, it meant…',
+        correct: 'Foolish or ignorant',
+        wrong: ['Pleasant and agreeable', 'Sharp and clever', 'Warmly generous'],
+        explanation: '"Nice" traces to Latin nescius (not knowing). In Old French and early Middle English it meant "foolish." Over 500 years it drifted through "wanton," "lascivious," "fussy," "precise," and finally into the positive sense we use today.',
+        source: 'Oxford English Dictionary (OED)',
+      },
+      {
+        word: 'lord', prompt: 'The Old English word behind "lord" (hlāford) literally meant…',
+        correct: 'Loaf-guardian — keeper of the bread',
+        wrong: ['Sworn sword-bearer', 'High-born warrior', 'Sky-father'],
+        explanation: '"Lord" descends from Old English hlāford, a compound of hlāf (loaf, bread) and weard (guardian). The head of a household was the one who kept and distributed bread. As feudal society formalized, the word migrated from domestic provider to rank and title.',
+        source: 'Bosworth-Toller Anglo-Saxon Dictionary',
+      },
+      {
+        word: 'silly', prompt: 'In Old English, the word that became "silly" (sælig) meant…',
+        correct: 'Blessed and spiritually happy',
+        wrong: ['Simple-minded', 'Playfully carefree', 'Carelessly lazy'],
+        explanation: '"Silly" derives from Old English sælig, "blessed, happy, fortunate." Related to German selig (blissful). The path ran: "blessed" → "innocent" (the blessed are simple) → "easy to deceive" → "weak" → "foolish."',
+        source: 'Oxford English Dictionary (OED)',
+      },
+      {
+        word: 'naughty', prompt: 'In Middle English, "naughty" described someone who was…',
+        correct: 'Possessing nothing — destitute',
+        wrong: ['Misbehaving at table', 'Proud and boastful', 'Cunningly clever'],
+        explanation: '"Naughty" comes from naught (nothing). In Middle English it meant "having nothing" or "of no worth." From worthless, it shifted to morally worthless (wicked), and only softened to its modern light sense — mischievous rather than evil — in the 19th century.',
+        source: 'Middle English Dictionary (MED) / OED',
+      },
+      {
+        word: 'prevent', prompt: 'The original Latin sense of "prevent" (praevenire) was…',
+        correct: 'To come before — to anticipate',
+        wrong: ['To block by force', 'To warn loudly', 'To prohibit by law'],
+        explanation: '"Prevent" comes from Latin praevenire: prae (before) + venire (to come). Early English preserved this sense — in the KJV Psalms, "I prevented the dawning of the morning" simply means "I was up before dawn." The sense of actively hindering developed later.',
+        source: 'Oxford English Dictionary (OED)',
+      },
+      {
+        word: 'charity', prompt: 'In early Bible translations, "charity" rendered the Greek agape, meaning…',
+        correct: 'Deep, unconditional love',
+        wrong: ['Coin-giving to the poor', 'A civic obligation', 'Religious sacrifice'],
+        explanation: 'The KJV uses "charity" where modern translations use "love" — especially 1 Corinthians 13. Latin caritas (from carus, dear) captured agape\'s sense of profound, selfless love. As organized giving became the dominant form of caritas, the word narrowed to financial generosity.',
+        source: 'OED / KJV Translation History',
+      },
+      {
+        word: 'girl', prompt: 'In Middle English, "girl" (gyrle / gerle) referred to…',
+        correct: 'A young person of either sex',
+        wrong: ['Only young females', 'A servant of any age', 'A betrothed woman'],
+        explanation: 'In Middle English, gyrle/girle meant simply a young person, male or female. Young males were sometimes called "knave girls." The word narrowed to exclusively female only in the Late Modern English period — a relatively recent development.',
+        source: 'Middle English Dictionary (MED) / OED',
+      },
+      {
+        word: 'disaster', prompt: 'The original meaning of "disaster" drew on belief in…',
+        correct: 'The malign influence of the stars',
+        wrong: ['The wrath of a volcano deity', 'A collapse of civic order', 'Divine punishment for sin'],
+        explanation: '"Disaster" comes from Italian disastro: dis (bad, away) + astro (star). It entered English from astrology — a catastrophe was an event under a bad or unfavorable stellar alignment. We still say things "are written in the stars," but we forget that "disaster" is literally a bad-star event.',
+        source: 'Oxford English Dictionary (OED)',
+      },
+      {
+        word: 'hussy', prompt: 'Originally, "hussy" was simply a contracted form of…',
+        correct: 'Housewife (hūswīf)',
+        wrong: ['A hussar\'s female companion', 'A house-servant', 'A noisy gossip'],
+        explanation: '"Hussy" is a phonological shortening of "housewife" (hūswīf in Old English). It meant the woman who ran a household. By the 17th–18th century it acquired a derogatory tone, and by the 19th it described a woman of loose morals — a complete inversion of its domestic origin.',
+        source: 'Oxford English Dictionary (OED)',
+      },
+    ];
+
+    let quizOrder = [];
+    let quizIndex = 0;
+    let quizScore = 0;
+    let quizAnswered = false;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function initQuiz() {
+      quizOrder = shuffle(QUIZ_DATA.map((_, i) => i));
+      quizIndex = 0; quizScore = 0; quizAnswered = false;
+      document.getElementById('quiz-complete').classList.remove('show');
+      document.getElementById('quiz-card').style.display = 'block';
+      updateScore();
+      renderQuestion();
+    }
+
+    function resetQuiz() { initQuiz(); }
+
+    function updateScore() {
+      const el = document.getElementById('quiz-score-display');
+      if (el) el.textContent = `Score: ${quizScore} / ${quizIndex}`;
+    }
+
+    function renderQuestion() {
+      const q = QUIZ_DATA[quizOrder[quizIndex]];
+      currentQuizWord = q.word;
+      quizAnswered = false;
+
+      document.getElementById('quiz-progress').textContent = `Question ${quizIndex + 1} of ${quizOrder.length}`;
+      document.getElementById('quiz-word').textContent = q.word;
+      document.getElementById('quiz-prompt').textContent = q.prompt;
+
+      document.getElementById('quiz-reveal').classList.remove('show');
+      document.getElementById('quiz-next-btn').classList.remove('show');
+      document.getElementById('quiz-explore-btn').classList.remove('show');
+
+      const choicesEl = document.getElementById('quiz-choices');
+      choicesEl.innerHTML = '';
+
+      shuffle([q.correct, ...q.wrong]).forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-choice';
+        btn.textContent = choice;
+        btn.addEventListener('click', () => handleChoice(btn, choice, q));
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    function handleChoice(btn, choice, q) {
+      if (quizAnswered) return;
+      quizAnswered = true;
+
+      document.getElementById('quiz-choices').querySelectorAll('.quiz-choice').forEach((b) => {
+        b.disabled = true;
+        if (b.textContent === q.correct) b.classList.add('correct');
+      });
+
+      const correct = choice === q.correct;
+      if (!correct) btn.classList.add('wrong');
+      if (correct) quizScore++;
+      quizIndex++;
+      updateScore();
+
+      document.getElementById('quiz-reveal-text').textContent = q.explanation;
+      document.getElementById('quiz-reveal-source').textContent = `Source: ${q.source}`;
+      document.getElementById('quiz-reveal').classList.add('show');
+      document.getElementById('quiz-next-btn').classList.add('show');
+      document.getElementById('quiz-explore-btn').classList.add('show');
+    }
+
+    function nextQuestion() {
+      if (quizIndex >= quizOrder.length) { showComplete(); return; }
+      renderQuestion();
+    }
+
+    function exploreCurrentQuizWord() {
+      triggerExampleSearch(currentQuizWord);
+    }
+
+    function showComplete() {
+      document.getElementById('quiz-card').style.display = 'none';
+      document.getElementById('quiz-complete').classList.add('show');
+      document.getElementById('quiz-final-score').textContent = `${quizScore}/${quizOrder.length}`;
+      const pct = quizScore / quizOrder.length;
+      let msg = '';
+      if (pct === 1) msg = 'Perfect score — you already think like an etymologist.';
+      else if (pct >= 0.7) msg = 'Strong result. You have good instincts for historical meaning. A few of the shifts are genuinely surprising even to experts.';
+      else if (pct >= 0.4) msg = 'Not bad — these are real surprises. Most people assume words always meant what they mean now. You are starting to see differently.';
+      else msg = 'Words are stranger than they look. These shifts surprise nearly everyone. Explore the words in the gallery below — the patterns will start to click.';
+      document.getElementById('quiz-final-msg').textContent = msg;
+    }
+
+    /* ── SEARCH & AUTOCOMPLETE ── */
+    window.addEventListener('DOMContentLoaded', () => {
+      initFactTicker();
+      initWordOfDay();
+      initShiftsGallery();
+      initQuiz();
+      loadEraBrowsePills();
+
+      const params = new URLSearchParams(window.location.search);
+      const pathMatch = window.location.pathname.match(/^\/word\/([^/?#]+)/);
+      const wordParam = pathMatch ? decodeURIComponent(pathMatch[1]) : params.get('word');
+      if (wordParam) loadWord(wordParam, false);
+
+      const input = document.getElementById('search-input');
+      input.addEventListener('input', (e) => {
+        clearTimeout(searchTimer);
+        const q = e.target.value.trim();
+        if (q.length < 2) { hideAuto(); return; }
+        searchTimer = setTimeout(() => runAutocomplete(q), 350);
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { hideAuto(); triggerSearch(); }
+        if (e.key === 'Escape') hideAuto();
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.hero-search')) hideAuto();
+      });
     });
-  }
 
-  async function browseEra(eraName) {
-    const listDiv = document.getElementById('era-word-list');
-    listDiv.style.display = 'block';
-    listDiv.innerHTML = '';
-    const h3 = document.createElement('h3');
-    h3.textContent = `Loading words from ${eraName}…`;
-    listDiv.appendChild(h3);
+    function triggerSearch() {
+      const q = document.getElementById('search-input').value.trim();
+      if (q) loadWord(q, true);
+    }
 
-    try {
-      const res = await fetch(`${API}/era/${encodeURIComponent(eraName)}/words?limit=20`);
-      const data = await res.json();
-      listDiv.innerHTML = '';
+    function triggerExampleSearch(word) {
+      document.getElementById('search-input').value = word;
+      loadWord(word, true);
+    }
 
-      if (!data.words || !data.words.length) {
-        const h = document.createElement('h3');
-        h.textContent = `No words documented for ${eraName} yet. Run: python -m ingestor.seed_data`;
-        listDiv.appendChild(h);
+    function hideAuto() { document.getElementById('autocomplete').style.display = 'none'; }
+
+    function switchExplorerTab(tab) {
+      document.querySelectorAll('.explorer-tab').forEach((btn) => {
+        const active = btn.dataset.tab === tab;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      document.querySelectorAll('.tab-panel').forEach((panel) => {
+        panel.classList.toggle('active', panel.id === `${tab}-panel`);
+      });
+    }
+
+    function setReaderLevel(level) {
+      readerLevel = level;
+      document.querySelectorAll('.level-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.level === level);
+      });
+      if (currentWordData) renderWordCard(currentWordData, []);
+    }
+
+    function wordPageUrl(word) {
+      const clean = encodeURIComponent(String(word || '').toLowerCase());
+      const base = `${location.origin}`;
+      if (location.hostname === 'pensiveape.com' || location.hostname === 'www.pensiveape.com') {
+        return `${base}/word/${clean}`;
+      }
+      return `${base}${location.pathname}?word=${clean}`;
+    }
+
+    function updateWordUrl(word) {
+      const url = wordPageUrl(word);
+      history.pushState({}, '', url);
+    }
+
+    function getSavedWords() {
+      try { return JSON.parse(localStorage.getItem('livingLexiconSavedWords') || '[]'); }
+      catch { return []; }
+    }
+
+    function saveCurrentWord() {
+      if (!currentWord) return;
+      const saved = getSavedWords();
+      if (!saved.includes(currentWord)) saved.unshift(currentWord);
+      localStorage.setItem('livingLexiconSavedWords', JSON.stringify(saved.slice(0, 50)));
+      const note = document.getElementById('saved-note');
+      if (note) note.textContent = `Saved ${currentWord}`;
+    }
+
+    async function shareCurrentWord() {
+      if (!currentWord) return;
+      const url = wordPageUrl(currentWord);
+      const note = document.getElementById('saved-note');
+      try {
+        await navigator.clipboard.writeText(url);
+        if (note) note.textContent = 'Share link copied';
+      } catch {
+        if (note) note.textContent = url;
+      }
+    }
+
+    function firstMeaning(timeline) {
+      const documented = [...(timeline || [])].filter((e) => e.meaning);
+      documented.sort((a, b) => (a.start_year ?? a.era_start ?? 9999) - (b.start_year ?? b.era_start ?? 9999));
+      return documented[0] || null;
+    }
+
+    function latestMeaning(timeline) {
+      const documented = [...(timeline || [])].filter((e) => e.meaning);
+      documented.sort((a, b) => (b.end_year ?? b.era_end ?? 0) - (a.end_year ?? a.era_end ?? 0));
+      return documented[0] || null;
+    }
+
+    function plainShiftLabel(raw) {
+      const value = String(raw || '').toLowerCase();
+      if (value.includes('pejor')) return 'meaning became more negative';
+      if (value.includes('amelior')) return 'meaning became more positive';
+      if (value.includes('narrow')) return 'meaning became more specific';
+      if (value.includes('broad')) return 'meaning became broader';
+      if (value.includes('metaphor')) return 'meaning moved by metaphor';
+      if (value.includes('metonym')) return 'meaning moved by association';
+      return 'meaning shifted across use';
+    }
+
+    function originText(data) {
+      return [
+        data.origin_language,
+        data.language_family,
+        data.etymology_root,
+        data.historical_context,
+        data.literal_meaning,
+        data.definition,
+      ].join(' ').toLowerCase();
+    }
+
+    function classifyOriginLayer(data) {
+      const text = originText(data);
+      if (/old norse|norse|scandinavian/.test(text)) {
+        return {
+          label: 'Old Norse',
+          status: 'borrowed Germanic layer',
+          effect: 'often direct, everyday, legal, seafaring, or bodily',
+          note: 'Old Norse is a Germanic cousin of English, so these borrowings often feel native rather than foreign.',
+        };
+      }
+      if (/anglo[- ]?norman|old french|middle french|norman|french/.test(text)) {
+        return {
+          label: 'Anglo-Norman / Old French',
+          status: 'borrowed Romance layer',
+          effect: 'often legal, aristocratic, culinary, institutional, or polished',
+          note: 'French entered English heavily after 1066, especially through law, court, class, cuisine, and government.',
+        };
+      }
+      if (/church latin|ecclesiastical latin|medieval latin|vulgate/.test(text)) {
+        return {
+          label: 'Medieval / Church Latin',
+          status: 'learned or religious borrowing',
+          effect: 'often sacred, legal, scholastic, institutional, or moral',
+          note: 'Medieval Latin carried Church, law, school, and administration into English vocabulary.',
+        };
+      }
+      if (/classical latin|latin|italic/.test(text)) {
+        return {
+          label: 'Classical Latin',
+          status: 'learned or Romance-mediated borrowing',
+          effect: 'often formal, legal, medical, scholarly, or technical',
+          note: 'Latin roots often entered through French, the Church, law, medicine, or later scholarly coinage.',
+        };
+      }
+      if (/ancient greek|greek|hellenic/.test(text)) {
+        return {
+          label: 'Ancient Greek',
+          status: 'learned borrowing',
+          effect: 'often scientific, medical, philosophical, rhetorical, or technical',
+          note: 'Greek forms usually reach English through scholarship, medicine, science, theology, or Latin mediation.',
+        };
+      }
+      if (/italian|spanish|portuguese|romance|catalan|provençal|provencal/.test(text)) {
+        return {
+          label: 'Later Romance',
+          status: 'borrowed Romance layer',
+          effect: 'often artistic, culinary, musical, political, maritime, or trade-related',
+          note: 'Later Romance borrowings often carry the cultural domain through which English received them.',
+        };
+      }
+      if (/old english|anglo-saxon|proto-germanic|germanic|west germanic|inherited/.test(text)) {
+        return {
+          label: 'Inherited Germanic',
+          status: 'core English layer',
+          effect: 'often basic, bodily, emotional, domestic, blunt, or direct',
+          note: 'These words belong to the inherited Germanic core of English, even when their meanings later drift.',
+        };
+      }
+      if (/proto-indo-european|pie|\*/.test(text)) {
+        return {
+          label: 'Reconstructed Indo-European',
+          status: 'reconstructed ancestry',
+          effect: 'comparative, scholarly, and not directly attested in English',
+          note: 'Reconstructed roots are useful scholarly hypotheses; they should not be treated as direct historical citations.',
+        };
+      }
+      return {
+        label: 'Other borrowings',
+        status: 'uncertain or mixed layer',
+        effect: 'context-dependent',
+        note: 'This entry needs a clearer source path before making a strong origin claim.',
+      };
+    }
+
+    function sourcePath(data, layer) {
+      const word = data.word || data.name || 'English word';
+      const root = data.etymology_root || data.root;
+      const origin = data.origin_language || data.root_origin;
+      const context = data.historical_context || data.literal_meaning || '';
+      const fromContext = context.match(/(?:Origin:|From|from)\s*([^.;]+)/i)?.[1];
+      if (fromContext) return `${fromContext.trim()} → English ${word}`;
+      if (origin && root) return `${origin} ${root} → English ${word}`;
+      if (origin) return `${origin} source layer → English ${word}`;
+      return `${layer.label} → English ${word}`;
+    }
+
+    function layerComparisonFor(data) {
+      const text = `${data.word || ''} ${data.definition || ''} ${data.historical_context || ''}`.toLowerCase();
+      if (/king|royal|regal/.test(text)) {
+        return [
+          ['kingly', 'Germanic: direct, native, bodily/political'],
+          ['royal', 'French: courtly, institutional, aristocratic'],
+          ['regal', 'Latin: elevated, formal, ceremonial'],
+        ];
+      }
+      if (/ask|question|interrogat/.test(text)) {
+        return [
+          ['ask', 'Germanic: plain and direct'],
+          ['question', 'French/Latin: formal inquiry'],
+          ['interrogate', 'Latin: official, legal, forceful'],
+        ];
+      }
+      if (/holy|sacred|consecrat|church|god|divine|charity/.test(text)) {
+        return [
+          ['holy', 'Germanic: native religious feeling'],
+          ['sacred', 'Latin/French: formal religious register'],
+          ['consecrated', 'Latin: ritual, institutional, theological'],
+        ];
+      }
+      if (/help|aid|assist|succor|succour/.test(text)) {
+        return [
+          ['help', 'Germanic: everyday and direct'],
+          ['aid', 'French: formal or institutional support'],
+          ['assist', 'Latin/French: professional or procedural help'],
+        ];
+      }
+      return [
+        ['core English', 'Germanic words often feel direct, bodily, domestic, or emotional'],
+        ['French layer', 'French words often feel legal, courtly, culinary, or institutional'],
+        ['Latin/Greek layer', 'Latin and Greek words often feel scholarly, medical, religious, or technical'],
+      ];
+    }
+
+    function inferRegister(data) {
+      const text = [
+        data.word, data.definition, data.definition_source_slug, data.origin_language,
+        data.historical_context, data.literal_meaning, data.figurative_meaning,
+      ].join(' ').toLowerCase();
+      const tags = [];
+      if (/god|divine|bless|charity|grace|sacred|bible|church/.test(text)) tags.push('sacred');
+      if (/law|legal|court|justice|contract|parliament/.test(text)) tags.push('legal');
+      if (/poet|literary|shakespeare|chaucer|metaphor/.test(text)) tags.push('literary');
+      if (/latin|greek|medical|science|technical/.test(text)) tags.push('technical');
+      if (/old english|germanic|norse/.test(text)) tags.push('inherited/core English');
+      if (/french|latin|greek/.test(text)) tags.push('borrowed layer');
+      return tags.length ? tags : ['general usage'];
+    }
+
+    function buildInsight(data, timeline) {
+      const old = firstMeaning(timeline);
+      if (old?.meaning && data.definition) {
+        return `${data.word || data.name} once carried "${old.meaning}" before settling into "${data.definition}".`;
+      }
+      if (data.etymology_root) {
+        return `${data.word || data.name} still carries a clue from ${data.origin_language || 'an older language'}: ${data.etymology_root}.`;
+      }
+      return 'Every word has older layers; this entry is ready for source-backed expansion.';
+    }
+
+    async function runAutocomplete(q) {
+      try {
+        const res = await fetch(`${API}/pg/words/search?q=${encodeURIComponent(q)}&limit=5`);
+        const data = await res.json();
+        const results = Array.isArray(data) ? data : (data.results || []);
+        const box = document.getElementById('autocomplete');
+        if (!results.length) { hideAuto(); return; }
+        box.innerHTML = '';
+        results.forEach((r) => {
+          const div = document.createElement('div');
+          div.className = 'autocomplete-item';
+          div.setAttribute('role', 'option');
+          const resultWord = r.name || r.word;
+          div.addEventListener('click', () => { hideAuto(); loadWord(resultWord, true); });
+          const strong = document.createElement('strong');
+          strong.textContent = resultWord;
+          const span = document.createElement('span');
+          span.textContent = ' ' + (r.definition || '').slice(0, 72) + '…';
+          div.appendChild(strong);
+          div.appendChild(span);
+          box.appendChild(div);
+        });
+        box.style.display = 'block';
+      } catch { hideAuto(); }
+    }
+
+    /* ── WORD LOADER ── */
+    async function loadWord(word, scrollIntoView = true) {
+      currentWord = word.toLowerCase();
+      document.getElementById('search-input').value = word;
+      updateWordUrl(currentWord);
+      document.getElementById('ai-panel').style.display = 'none';
+
+      if (scrollIntoView) {
+        document.getElementById('explorer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      const wordRes = await fetch(`${API}/pg/word/${encodeURIComponent(currentWord)}`);
+
+      if (!wordRes.ok) {
+        currentWordData = null;
+        currentTimeline = [];
+        document.getElementById('word-content').innerHTML =
+          '<p class="empty-state">Word not found in the production lexicon yet.</p>';
+        document.getElementById('timeline-content').innerHTML =
+          '<p class="empty-state">No timeline available for that search yet.</p>';
+        document.getElementById('roots-content').innerHTML =
+          '<p class="empty-state">No root data available for that search yet.</p>';
+        document.getElementById('sources-content').innerHTML =
+          '<p class="empty-state">No source data available for that search yet.</p>';
         return;
       }
 
-      const heading = document.createElement('h3');
-      heading.textContent = `Words with documented meanings in ${eraName}`;
-      listDiv.appendChild(heading);
-
-      data.words.forEach(w => {
-        const row = document.createElement('div');
-        row.className = 'era-word-item';
-        row.addEventListener('click', () => loadWord(w.name));
-        const strong = document.createElement('strong');
-        strong.textContent = w.name;
-        const span = document.createElement('span');
-        span.textContent =
-          `Then: "${w.historical_meaning || ''}"  →  ` +
-          `Now: "${(w.modern_definition || '').slice(0, 50)}"`;
-        row.appendChild(strong);
-        row.appendChild(span);
-        listDiv.appendChild(row);
-      });
-    } catch {
-      listDiv.innerHTML = '<h3>Could not load era words.</h3>';
+      const wordData = await wordRes.json();
+      currentWordData = wordData;
+      currentTimeline = Array.isArray(wordData.semantic_drift_history) ? wordData.semantic_drift_history : [];
+      renderWordCard(wordData, []);
+      if (Array.isArray(wordData.semantic_drift_history) && wordData.semantic_drift_history.length) {
+        renderTimeline(wordData.semantic_drift_history);
+      } else {
+        loadEraTimeline(currentWord);
+      }
     }
-  }
-</script>
+
+    function renderWordCard(data, cognates) {
+      const container = document.getElementById('word-content');
+      container.innerHTML = '';
+      const timeline = currentTimeline || [];
+      const old = firstMeaning(timeline);
+      const recent = latestMeaning(timeline);
+      const sourceSlug = data.source_slug || data.definition_source_slug;
+      const root = data.root || data.etymology_root;
+      const rootOrigin = data.root_origin || data.origin_language;
+      const rootMeaning = data.root_meaning || data.literal_meaning || data.historical_context;
+      const registers = inferRegister(data);
+      const layer = classifyOriginLayer(data);
+      const path = sourcePath(data, layer);
+
+      const nameEl = document.createElement('div');
+      nameEl.id = 'word-name';
+      nameEl.textContent = data.name || data.word || '';
+
+      const defEl = document.createElement('div');
+      defEl.id = 'word-definition';
+      defEl.textContent = data.definition || 'No definition on record';
+
+      container.appendChild(nameEl);
+      container.appendChild(defEl);
+
+      const insight = document.createElement('div');
+      insight.className = 'word-insight';
+      insight.textContent = buildInsight(data, timeline);
+      container.appendChild(insight);
+
+      const story = document.createElement('div');
+      story.className = 'story-grid';
+      story.innerHTML = `
+        <article class="story-block">
+          <h3>What it means now</h3>
+          <p>${esc(data.definition || 'No modern definition has been loaded yet.')}</p>
+        </article>
+        <article class="story-block">
+          <h3>What it used to mean</h3>
+          <p>${esc(old?.meaning || data.literal_meaning || 'No older attested meaning has been loaded yet.')}</p>
+        </article>
+        <article class="story-block">
+          <h3>The turning point</h3>
+          <p>${esc(old?.era_name ? `${old.era_name}${old.start_year || old.era_start ? ` (${old.start_year ?? old.era_start} onward)` : ''}` : data.historical_context || 'Timeline evidence will appear here as this entry is enriched.')}</p>
+        </article>
+        <article class="story-block">
+          <h3>Origin layer</h3>
+          <p>${esc(layer.label)} — ${esc(layer.status)}. ${esc(layer.effect)}.</p>
+        </article>
+        <article class="story-block full">
+          <h3>Source path</h3>
+          <p>${esc(path)}</p>
+        </article>
+        <article class="story-block full">
+          <h3>Use it when reading/writing</h3>
+          <p>${esc(registers.includes('sacred') ? 'Watch for religious or elevated force; modern casual usage may flatten it.' : registers.includes('legal') ? 'Expect legal or institutional weight; the word may sound more formal than its everyday cousins.' : registers.includes('borrowed layer') ? 'Its borrowed ancestry can make it feel formal, learned, technical, or literary.' : layer.effect ? `This layer often feels ${layer.effect}.` : 'Use the history to hear register, tone, and older associations before choosing it.')}</p>
+        </article>
+      `;
+      container.appendChild(story);
+
+      const trustRow = document.createElement('div');
+      trustRow.className = 'trust-row';
+      const trustLabels = [
+        sourceSlug ? sourceSlug.toUpperCase().replace(/-/g, ' ') : 'SOURCE NEEDED',
+        data.reconstruction_level ? data.reconstruction_level.replace(/_/g, ' ') : 'attested when sourced',
+        layer.label,
+        ...registers.slice(0, 3),
+      ];
+      trustLabels.forEach((label) => {
+        const badge = document.createElement('span');
+        badge.className = 'source-badge';
+        badge.textContent = label;
+        trustRow.appendChild(badge);
+      });
+      container.appendChild(trustRow);
+
+      if (readerLevel !== 'simple') {
+        const detail = document.createElement('details');
+        detail.className = 'source-details';
+        detail.open = readerLevel === 'scholarly';
+        detail.innerHTML = `
+          <summary>${readerLevel === 'scholarly' ? 'Scholarly note' : 'More detail'}</summary>
+          <p>${esc(root ? `Root or older form: ${root}${rootOrigin ? `, from ${rootOrigin}` : ''}${rootMeaning ? `, "${rootMeaning}"` : ''}.` : 'No root analysis has been loaded for this entry yet.')}</p>
+          <p>${esc(`Origin layer: ${layer.label}. Source path: ${path}.`)}</p>
+          <p>${esc(recent?.meaning ? `Latest timeline sense: "${recent.meaning}".` : 'Timeline senses will appear as attested evidence is added.')}</p>
+          <p>${esc(`Plain-language drift label: ${plainShiftLabel(data.change_type || data.semantic_change_type)}.`)}</p>
+        `;
+        container.appendChild(detail);
+      }
+
+      if (cognates.length) {
+        const label = document.createElement('div');
+        label.className = 'section-label';
+        label.textContent = 'Related words';
+        label.style.marginTop = '0.5rem';
+        const pills = document.createElement('div');
+        pills.className = 'pills';
+        pills.style.marginTop = '0.4rem';
+        cognates.forEach((c) => {
+          const pill = document.createElement('span');
+          pill.className = 'pill';
+          pill.setAttribute('tabindex', '0');
+          pill.textContent = c.name;
+          pill.addEventListener('click', () => loadWord(c.name, true));
+          pill.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadWord(c.name, true); });
+          pills.appendChild(pill);
+        });
+        container.appendChild(label);
+        container.appendChild(pills);
+      }
+
+      const controls = document.createElement('div');
+      controls.className = 'drift-controls';
+      controls.innerHTML =
+        `<select class="context-select" id="context-select" aria-label="Reading context">
+          <option value="">Read it plainly</option>
+          <option value="biblical">As biblical language</option>
+          <option value="literary">As literary language</option>
+          <option value="legal">As legal language</option>
+          <option value="medical">As medical language</option>
+        </select>
+        <button class="explain-btn" onclick="requestDriftExplanation()">Explain the shift</button>`;
+      container.appendChild(controls);
+
+      renderRootsPanel(data);
+      renderSourcesPanel(data);
+    }
+
+    function renderRootsPanel(data) {
+      const container = document.getElementById('roots-content');
+      if (!container) return;
+      const root = data.root || data.etymology_root;
+      const origin = data.root_origin || data.origin_language;
+      const meaning = data.root_meaning || data.literal_meaning || data.historical_context;
+      const registers = inferRegister(data);
+      const layer = classifyOriginLayer(data);
+      const path = sourcePath(data, layer);
+      const comparisons = layerComparisonFor(data);
+
+      container.innerHTML = `
+        <div class="story-grid">
+          <article class="story-block">
+            <h3>Older form or root</h3>
+            <p>${esc(root || 'No root has been loaded for this entry yet.')}</p>
+          </article>
+          <article class="story-block">
+            <h3>Language layer</h3>
+            <p>${esc(layer.label)} — ${esc(origin || 'specific source language pending')}</p>
+          </article>
+          <article class="story-block full">
+            <h3>Source path</h3>
+            <p>${esc(path)}</p>
+            <div class="layer-note">${esc(layer.note)}</div>
+          </article>
+          <article class="story-block full">
+            <h3>Why this matters</h3>
+            <p>${esc(meaning || 'Roots help readers see whether a word belongs to inherited Germanic vocabulary, later French/Latin borrowing, learned Greek/Latin formation, or another contact layer.')}</p>
+          </article>
+          <article class="story-block full">
+            <h3>Register clues</h3>
+            <p>${esc(registers.join(', '))}</p>
+          </article>
+          <article class="story-block full">
+            <h3>Word family by layer</h3>
+            <div class="layer-comparison">
+              ${comparisons.map(([word, note]) => `<div class="layer-row"><strong>${esc(word)}</strong><span>${esc(note)}</span></div>`).join('')}
+            </div>
+          </article>
+        </div>
+      `;
+    }
+
+    function renderSourcesPanel(data) {
+      const container = document.getElementById('sources-content');
+      if (!container) return;
+      const sourceSlug = data.source_slug || data.definition_source_slug;
+      const sourceName = data.definition_source_name || sourceSlug || 'Source pending';
+      const reconstruction = data.reconstruction_level || 'attested when backed by citation';
+      const license = data.definition_license || 'License/source note pending';
+      const layer = classifyOriginLayer(data);
+      const path = sourcePath(data, layer);
+
+      container.innerHTML = `
+        <div class="story-grid">
+          <article class="story-block">
+            <h3>Main source</h3>
+            <p>${esc(sourceName)}</p>
+          </article>
+          <article class="story-block">
+            <h3>Confidence</h3>
+            <p>${esc(sourceSlug ? 'Source-backed entry' : 'Needs explicit source before publication-quality use')}</p>
+          </article>
+          <article class="story-block">
+            <h3>Evidence status</h3>
+            <p>${esc(reconstruction.replace(/_/g, ' '))}</p>
+          </article>
+          <article class="story-block">
+            <h3>License</h3>
+            <p>${esc(license)}</p>
+          </article>
+          <article class="story-block">
+            <h3>Origin layer</h3>
+            <p>${esc(layer.label)} — ${esc(layer.status)}</p>
+          </article>
+          <article class="story-block">
+            <h3>Source path</h3>
+            <p>${esc(path)}</p>
+          </article>
+          <article class="story-block full">
+            <h3>Scholarly guardrail</h3>
+            <p>Attested meanings should be treated as stronger than reconstructed roots. Direct borrowing, inherited cognacy, calques, and reconstructed Proto-Indo-European forms should be labeled separately before they appear as teaching claims.</p>
+          </article>
+        </div>
+      `;
+    }
+
+    async function analyzeTextHelp() {
+      const text = document.getElementById('text-help-input')?.value.trim();
+      const era = document.getElementById('text-era-select')?.value || 'Early Modern English';
+      const results = document.getElementById('text-help-results');
+      if (!results) return;
+      if (!text) {
+        results.innerHTML = '<p class="empty-state">Paste a short passage first.</p>';
+        return;
+      }
+
+      results.innerHTML = '<p class="empty-state">Checking older meanings…</p>';
+      try {
+        const res = await fetch(`${API}/pg/word/era-check`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, era_name: era }),
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (!data.flagged || !data.flagged.length) {
+          results.innerHTML = `<p class="empty-state">No obvious historical false friends found for ${esc(era)}. That does not prove the passage is simple; it means the current corpus did not flag a mismatch.</p>`;
+          return;
+        }
+        results.innerHTML = `<div class="section-label">${data.flagged_count || data.flagged.length} word${(data.flagged_count || data.flagged.length) === 1 ? '' : 's'} worth checking</div>`;
+        data.flagged.forEach((item) => {
+          const div = document.createElement('div');
+          div.className = 'flagged-word';
+          div.innerHTML = `
+            <strong>${esc(item.word)}</strong>
+            <p>In ${esc(era)}: ${esc(item.era_definition || 'older meaning unavailable')}</p>
+            <p>Modern sense: ${esc(item.modern_definition || 'modern definition unavailable')}</p>
+          `;
+          results.appendChild(div);
+        });
+      } catch {
+        results.innerHTML = '<p class="empty-state">Could not check that passage yet. Try a shorter sentence or confirm the API is running.</p>';
+      }
+    }
+
+    async function loadEraTimeline(word) {
+      document.getElementById('timeline-content').textContent = 'Loading timeline…';
+      try {
+        const res = await fetch(`${API}/word/${encodeURIComponent(word)}/era-timeline`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        currentTimeline = data.timeline || [];
+        renderTimeline(data.timeline);
+        if (currentWordData) renderWordCard(currentWordData, []);
+      } catch {
+        document.getElementById('timeline-content').innerHTML =
+          '<p class="empty-state">Timeline not available.</p>';
+      }
+    }
+
+    function renderTimeline(timeline) {
+      const container = document.getElementById('timeline-content');
+      container.innerHTML = '';
+      if (!timeline || !timeline.length) {
+        container.innerHTML = '<p class="empty-state">No era data available.</p>';
+        return;
+      }
+
+      const div = document.createElement('div');
+      div.className = 'timeline';
+
+      [...timeline].reverse().forEach((e, i) => {
+        const id = `era-${i}`;
+        const entry = document.createElement('div');
+        entry.className = 'era-entry';
+        entry.setAttribute('tabindex', '0');
+
+        const dot = document.createElement('div');
+        dot.className = 'era-dot' + (e.meaning ? ' filled' : '');
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'era-name';
+        nameSpan.textContent = e.era_name;
+
+        const yearsSpan = document.createElement('span');
+        yearsSpan.className = 'era-years';
+        const eraStart = e.era_start ?? e.start_year ?? '';
+        const eraEnd = e.era_end ?? e.end_year ?? '';
+        yearsSpan.textContent = eraStart || eraEnd ? ` (${eraStart}–${eraEnd})` : '';
+
+        entry.appendChild(dot);
+        entry.appendChild(nameSpan);
+        entry.appendChild(yearsSpan);
+
+        if (e.meaning) {
+          const meaning = document.createElement('div');
+          meaning.className = 'era-meaning';
+          meaning.textContent = '"' + e.meaning + '"';
+          entry.appendChild(meaning);
+          if (e.usage_example) {
+            const ex = document.createElement('div');
+            ex.className = 'era-example';
+            ex.textContent = e.usage_example;
+            entry.appendChild(ex);
+          }
+        } else {
+          const empty = document.createElement('div');
+          empty.className = 'era-empty';
+          empty.textContent = 'no documented meaning';
+          entry.appendChild(empty);
+        }
+
+        const aiBox = document.createElement('div');
+        aiBox.className = 'era-ai-inline';
+        aiBox.id = `${id}-ai`;
+        entry.appendChild(aiBox);
+
+        const toggle = () => toggleEraExplanation(id, e.era_name);
+        entry.addEventListener('click', toggle);
+        entry.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') toggle(); });
+        div.appendChild(entry);
+      });
+
+      container.appendChild(div);
+    }
+
+    async function toggleEraExplanation(id, eraName) {
+      const box = document.getElementById(`${id}-ai`);
+      if (box.style.display === 'block') { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      box.textContent = 'Asking the historian…';
+      try {
+        const res = await fetch(`${API}/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
+        const data = await res.json();
+        box.textContent = data.ai_explanation || 'No explanation available.';
+      } catch {
+        box.textContent = 'Could not load explanation.';
+      }
+    }
+
+    async function requestDriftExplanation() {
+      const context = document.getElementById('context-select')?.value || '';
+      const btn = document.querySelector('.explain-btn');
+      const panel = document.getElementById('ai-panel');
+      const content = document.getElementById('ai-content');
+
+      btn.disabled = true;
+      btn.textContent = 'Consulting the historian…';
+      panel.style.display = 'block';
+      content.innerHTML = '<div class="ai-loading">Analyzing… 10–30 seconds with a local LLM.</div>';
+
+      try {
+        const url = `${API}/word/${encodeURIComponent(currentWord)}/drift${context ? `?context=${context}` : ''}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        renderDriftExplanation(data.explanation || '');
+      } catch {
+        content.innerHTML = '<div class="ai-loading">Error — is Ollama running?</div>';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Explain the shift';
+      }
+    }
+
+    function renderDriftExplanation(text) {
+      const content = document.getElementById('ai-content');
+      content.innerHTML = '';
+
+      const sections = [
+        { key: 'THEN vs NOW', label: 'Then vs Now' },
+        { key: 'THE TURNING POINT', label: 'The Turning Point' },
+        { key: 'THE ANALOGY', label: 'The Analogy' },
+        { key: 'THE WORD FAMILY CLUE', label: 'The Word Family Clue' },
+      ];
+
+      let found = false;
+      sections.forEach((s, i) => {
+        const next = sections[i + 1]?.key;
+        const re = next
+          ? new RegExp(s.key + '[:\\s]*([\\s\\S]*?)(?=' + next + ')', 'i')
+          : new RegExp(s.key + '[:\\s]*([\\s\\S]*)', 'i');
+        const m = text.match(re);
+        if (m) {
+          found = true;
+          const body = m[1].replace(/^\d+\.\s*/, '').trim();
+          const sec = document.createElement('div');
+          sec.className = 'ai-section';
+          const lbl = document.createElement('div');
+          lbl.className = 'ai-section-label';
+          lbl.textContent = s.label;
+          const bd = document.createElement('div');
+          bd.className = 'ai-section-body';
+          bd.textContent = body;
+          sec.appendChild(lbl);
+          sec.appendChild(bd);
+          content.appendChild(sec);
+        }
+      });
+
+      if (!found) {
+        const raw = document.createElement('div');
+        raw.className = 'ai-raw';
+        raw.textContent = text;
+        content.appendChild(raw);
+      }
+    }
+
+    function loadEraBrowsePills() {
+      const eras = [
+        'Early Modern English', 'Middle English', 'Classical Latin',
+        'Old English', '18th-19th Century English', 'Modern English',
+      ];
+      const container = document.getElementById('era-pills');
+      container.innerHTML = '';
+      eras.forEach((e) => {
+        const pill = document.createElement('span');
+        pill.className = 'era-browse-pill';
+        pill.setAttribute('role', 'listitem');
+        pill.setAttribute('tabindex', '0');
+        pill.textContent = e;
+        pill.addEventListener('click', () => browseEra(e));
+        pill.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') browseEra(e); });
+        container.appendChild(pill);
+      });
+    }
+
+    async function browseEra(eraName) {
+      const listDiv = document.getElementById('era-word-list');
+      listDiv.style.display = 'block';
+      listDiv.innerHTML = `<h3>Loading words from ${esc(eraName)}…</h3>`;
+
+      try {
+        const res = await fetch(`${API}/era/${encodeURIComponent(eraName)}/words?limit=20`);
+        const data = await res.json();
+        listDiv.innerHTML = '';
+
+        if (!data.words || !data.words.length) {
+          listDiv.innerHTML = `<h3>No words documented for ${esc(eraName)} yet.</h3>`;
+          return;
+        }
+
+        const heading = document.createElement('h3');
+        heading.textContent = `Words with documented meanings in ${eraName}`;
+        listDiv.appendChild(heading);
+
+        data.words.forEach((w) => {
+          const row = document.createElement('div');
+          row.className = 'era-word-item';
+          row.setAttribute('tabindex', '0');
+          row.addEventListener('click', () => loadWord(w.name, true));
+          row.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadWord(w.name, true); });
+          const strong = document.createElement('strong');
+          strong.textContent = w.name;
+          const span = document.createElement('span');
+          span.textContent =
+            `Then: "${w.historical_meaning || ''}" → Now: "${(w.modern_definition || '').slice(0, 58)}"`;
+          row.appendChild(strong);
+          row.appendChild(span);
+          listDiv.appendChild(row);
+        });
+      } catch {
+        listDiv.innerHTML = '<h3>Could not load era words.</h3>';
+      }
+    }
+  </script>
 </body>
 </html>
