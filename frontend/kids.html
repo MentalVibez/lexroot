@@ -239,6 +239,7 @@
     }
 
     .quiz-section,
+    .friendly-section,
     .grownups,
     .word-sheet {
       margin-top: 1.2rem;
@@ -258,6 +259,7 @@
     }
 
     .quiz-header h3,
+    .friendly-section h3,
     .word-sheet h3,
     .grownups h3 {
       color: var(--leaf-deep);
@@ -408,6 +410,85 @@
       margin-top: 0.8rem;
     }
 
+    .reflection,
+    .try-panel {
+      margin-top: 0.9rem;
+      background: rgba(255, 253, 247, 0.86);
+      border: 1px solid rgba(37, 86, 63, 0.12);
+      border-radius: var(--radius);
+      padding: 0.9rem;
+    }
+
+    .mini-heading {
+      display: block;
+      color: var(--berry-deep);
+      font-family: var(--ui);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .reflection p,
+    .try-card p {
+      color: var(--muted);
+    }
+
+    .reflection-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.75rem;
+    }
+
+    .reflection-chip {
+      min-height: 2.7rem;
+      border: 1px solid rgba(37, 86, 63, 0.18);
+      border-radius: 999px;
+      background: #fff8df;
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.5rem 0.78rem;
+    }
+
+    .reflection-chip:hover,
+    .reflection-chip:focus-visible {
+      border-color: var(--berry);
+      outline: none;
+    }
+
+    .reflection-chip.selected {
+      background: #e5f8e9;
+      border-color: var(--leaf);
+    }
+
+    .reflection-chip.strongest {
+      box-shadow: inset 0 0 0 2px rgba(61, 122, 91, 0.28);
+    }
+
+    .reflection-note {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      margin-top: 0.65rem;
+    }
+
+    .try-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.65rem;
+    }
+
+    .try-card {
+      background: var(--paper);
+      border: 1px solid rgba(37, 86, 63, 0.12);
+      border-radius: var(--radius);
+      padding: 0.8rem;
+    }
+
     .quiz-actions {
       display: flex;
       gap: 0.75rem;
@@ -424,6 +505,100 @@
     }
 
     .finish-card.show { display: block; }
+
+    .friendly-section {
+      background:
+        linear-gradient(135deg, rgba(255, 253, 247, 0.94), rgba(255, 248, 223, 0.92));
+    }
+
+    .friendly-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .friendly-section > p,
+    .friendly-header p {
+      color: var(--muted);
+      max-width: 62rem;
+      margin-top: 0.55rem;
+    }
+
+    .friendly-groups {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .friendly-group {
+      border-top: 1px solid rgba(37, 86, 63, 0.12);
+      padding-top: 1rem;
+    }
+
+    .friendly-group h4 {
+      color: var(--leaf-deep);
+      font-size: 1.25rem;
+      line-height: 1.1;
+      margin-bottom: 0.7rem;
+    }
+
+    .friendly-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .friendly-card {
+      background: var(--paper);
+      border: 1px solid rgba(37, 86, 63, 0.13);
+      border-radius: var(--radius);
+      padding: 0.85rem;
+      min-height: 13.8rem;
+      display: grid;
+      gap: 0.55rem;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .friendly-card.highlight {
+      border-color: var(--berry);
+      box-shadow: 0 12px 28px rgba(131, 35, 51, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .friendly-card h5 {
+      color: var(--berry-deep);
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    .friendly-card p {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .nearby {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .example-toggle {
+      justify-self: start;
+      min-height: 2.55rem;
+      border: 1px solid rgba(37, 86, 63, 0.18);
+      border-radius: var(--radius);
+      background: #e5f8e9;
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.45rem 0.65rem;
+    }
+
+    .friendly-extra[hidden] {
+      display: none;
+    }
 
     .word-sheet {
       display: grid;
@@ -463,6 +638,7 @@
     @media (max-width: 780px) {
       .shell { width: min(100% - 1rem, 1120px); }
       .topbar,
+      .friendly-header,
       .quiz-header,
       .word-sheet {
         flex-direction: column;
@@ -473,7 +649,9 @@
       .hero { grid-template-columns: 1fr; padding: 1rem; }
       h2 { max-width: 9ch; }
       .choices,
-      .reveal-grid {
+      .reveal-grid,
+      .try-grid,
+      .friendly-grid {
         grid-template-columns: 1fr;
       }
       .choice-btn {
@@ -486,6 +664,7 @@
       .topbar,
       .hero,
       .quiz-section,
+      .friendly-section,
       .grownups,
       .secondary-btn {
         display: none !important;
@@ -557,6 +736,12 @@
             <span>Word secret waiting...</span>
           </div>
           <p class="question" id="question">Long ago, what did "nice" mean?</p>
+          <noscript>
+            <p class="source-note">
+              JavaScript is off, so the quiz cannot reveal answers here. The printable word sheet,
+              privacy note, and vocabulary cards below still work as a reading activity.
+            </p>
+          </noscript>
           <div class="choices" id="choices" role="group" aria-label="Choose the old meaning">
             <button type="button" class="choice-btn">
               <span class="choice-icon">A</span>
@@ -578,7 +763,25 @@
               <div class="reveal-block"><strong>Then</strong><p id="then">Nice once meant foolish or ignorant.</p></div>
               <div class="reveal-block"><strong>Now</strong><p id="now">Now it means pleasant, kind, or agreeable.</p></div>
               <div class="reveal-block"><strong>Imagine this</strong><p id="imagine">A medieval teacher calling a careless student "nice" was not giving a compliment.</p></div>
-              <div class="reveal-block"><strong>Word piece clue</strong><p id="word-piece">It comes from Latin nescius: not knowing.</p></div>
+              <div class="reveal-block"><strong>How it changed</strong><p id="change-pattern">A sharp word softened into a polite compliment.</p></div>
+              <div class="reveal-block"><strong>Word family clue</strong><p id="word-piece">It comes from Latin nescius: not knowing.</p></div>
+            </div>
+            <div class="reflection">
+              <strong class="mini-heading">Think like a word detective</strong>
+              <p>Why do you think the meaning changed?</p>
+              <div class="reflection-choices" id="reflection-choices" role="group" aria-label="Choose a meaning-change clue">
+                <button type="button" class="reflection-chip">People used it more politely</button>
+                <button type="button" class="reflection-chip">The word moved into stories</button>
+                <button type="button" class="reflection-chip">It named a new invention</button>
+              </div>
+              <p class="reflection-note" id="reflection-note">Pick a clue after you read the story.</p>
+            </div>
+            <div class="try-panel">
+              <strong class="mini-heading">Try it two ways</strong>
+              <div class="try-grid">
+                <div class="try-card"><strong class="mini-heading">Older meaning</strong><p id="try-old">Write: "The nice student needed help understanding the riddle."</p></div>
+                <div class="try-card"><strong class="mini-heading">Modern meaning</strong><p id="try-now">Write: "The nice student shared their pencils."</p></div>
+              </div>
             </div>
             <p class="source-note" id="source">Source: OED / MED</p>
           </div>
@@ -591,6 +794,68 @@
           <div class="finish-card" id="finish" aria-live="polite">
             <p class="feedback">You found every word secret in this set.</p>
             <p>Play again, or print the word of the week for a classroom or kitchen-table challenge.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="friendly-section" aria-labelledby="friendly-heading">
+        <div class="friendly-header">
+          <div>
+            <p class="eyebrow">Build your word treasure</p>
+            <h3 id="friendly-heading">Family-Friendly Vocabulary</h3>
+            <p>
+              These words are safe for home, library, and classroom use. Try one
+              in a sentence today, or notice it the next time you read.
+            </p>
+          </div>
+          <button type="button" class="secondary-btn" id="try-word-btn">Try one today</button>
+        </div>
+
+        <div class="friendly-groups" id="friendly-word-list">
+          <div class="friendly-group">
+            <h4>Kind Words</h4>
+            <div class="friendly-grid">
+              <article class="friendly-card"><h5>generous</h5><p>Ready to give, share, or help more than expected.</p><p class="nearby">Nearby words: giving, helpful, open-handed</p><p><strong>Example:</strong> Lina was generous with her art supplies.</p><p><strong>Use it when:</strong> someone shares time, care, or things.</p></article>
+              <article class="friendly-card"><h5>patient</h5><p>Able to wait calmly or keep trying without rushing.</p><p class="nearby">Nearby words: calm, steady, unhurried</p><p><strong>Example:</strong> Omar was patient while his little brother learned the game.</p><p><strong>Use it when:</strong> waiting takes effort.</p></article>
+              <article class="friendly-card"><h5>gentle</h5><p>Kind, careful, and not rough.</p><p class="nearby">Nearby words: soft, careful, tender</p><p><strong>Example:</strong> The coach gave a gentle reminder before practice.</p><p><strong>Use it when:</strong> strength is used carefully.</p></article>
+              <article class="friendly-card"><h5>grateful</h5><p>Feeling thankful for help, kindness, or a good moment.</p><p class="nearby">Nearby words: thankful, glad, appreciative</p><p><strong>Example:</strong> I felt grateful for the warm soup after the hike.</p><p><strong>Use it when:</strong> you notice a gift or kindness.</p></article>
+            </div>
+          </div>
+          <div class="friendly-group">
+            <h4>Brave Words</h4>
+            <div class="friendly-grid">
+              <article class="friendly-card"><h5>courage</h5><p>The strength to do something even when it feels hard or scary.</p><p class="nearby">Nearby words: bravery, heart, nerve</p><p><strong>Example:</strong> It took courage to read the poem aloud.</p><p><strong>Use it when:</strong> someone faces a fear.</p></article>
+              <article class="friendly-card"><h5>steady</h5><p>Calm, balanced, and not easily shaken.</p><p class="nearby">Nearby words: firm, calm, reliable</p><p><strong>Example:</strong> Her steady voice helped the group focus.</p><p><strong>Use it when:</strong> someone keeps going calmly.</p></article>
+              <article class="friendly-card"><h5>bold</h5><p>Brave, clear, and willing to stand out.</p><p class="nearby">Nearby words: daring, bright, confident</p><p><strong>Example:</strong> The poster used bold colors and a bold idea.</p><p><strong>Use it when:</strong> a choice feels brave or noticeable.</p></article>
+              <article class="friendly-card"><h5>resilient</h5><p>Able to bounce back after trouble or change.</p><p class="nearby">Nearby words: strong, flexible, recovering</p><p><strong>Example:</strong> The resilient team tried again after the first plan failed.</p><p><strong>Use it when:</strong> someone recovers and keeps learning.</p></article>
+            </div>
+          </div>
+          <div class="friendly-group">
+            <h4>Thinking Words</h4>
+            <div class="friendly-grid">
+              <article class="friendly-card"><h5>curious</h5><p>Eager to ask, look, and learn more.</p><p class="nearby">Nearby words: wondering, interested, questioning</p><p><strong>Example:</strong> Mia was curious about why the moon changes shape.</p><p><strong>Use it when:</strong> a question pulls you forward.</p></article>
+              <article class="friendly-card"><h5>notice</h5><p>To see, hear, or become aware of something.</p><p class="nearby">Nearby words: spot, observe, catch</p><p><strong>Example:</strong> Did you notice the tiny footprints near the door?</p><p><strong>Use it when:</strong> careful attention finds a detail.</p></article>
+              <article class="friendly-card"><h5>wonder</h5><p>To feel curious or amazed, or to ask yourself a question.</p><p class="nearby">Nearby words: ask, imagine, marvel</p><p><strong>Example:</strong> I wonder how old that oak tree is.</p><p><strong>Use it when:</strong> a mystery makes your mind open.</p></article>
+              <article class="friendly-card"><h5>reason</h5><p>To think carefully and use clues to decide something.</p><p class="nearby">Nearby words: think, explain, solve</p><p><strong>Example:</strong> We used reason to choose the safest path.</p><p><strong>Use it when:</strong> clues help you make a smart choice.</p></article>
+            </div>
+          </div>
+          <div class="friendly-group">
+            <h4>Nature Words</h4>
+            <div class="friendly-grid">
+              <article class="friendly-card"><h5>meadow</h5><p>An open field where grass and wildflowers can grow.</p><p class="nearby">Nearby words: field, grassland, clearing</p><p><strong>Example:</strong> Butterflies drifted across the sunny meadow.</p><p><strong>Use it when:</strong> describing an open, grassy place.</p></article>
+              <article class="friendly-card"><h5>brook</h5><p>A small stream of water.</p><p class="nearby">Nearby words: stream, creek, rivulet</p><p><strong>Example:</strong> The brook made a soft sound over the stones.</p><p><strong>Use it when:</strong> water is small and moving gently.</p></article>
+              <article class="friendly-card"><h5>bloom</h5><p>To flower, grow, or become bright with life.</p><p class="nearby">Nearby words: flower, blossom, flourish</p><p><strong>Example:</strong> The garden began to bloom after the rain.</p><p><strong>Use it when:</strong> something opens, grows, or shines.</p></article>
+              <article class="friendly-card"><h5>harvest</h5><p>The time or act of gathering crops or good results.</p><p class="nearby">Nearby words: gather, crop, collect</p><p><strong>Example:</strong> The class held a harvest of ideas after reading.</p><p><strong>Use it when:</strong> people gather what has grown.</p></article>
+            </div>
+          </div>
+          <div class="friendly-group">
+            <h4>Story Words</h4>
+            <div class="friendly-grid">
+              <article class="friendly-card"><h5>quest</h5><p>A search or journey with an important goal.</p><p class="nearby">Nearby words: journey, mission, search</p><p><strong>Example:</strong> The friends began a quest to find the lost map.</p><p><strong>Use it when:</strong> a search feels important or adventurous.</p></article>
+              <article class="friendly-card"><h5>mystery</h5><p>Something unknown that invites questions.</p><p class="nearby">Nearby words: puzzle, secret, riddle</p><p><strong>Example:</strong> The locked drawer became the story's biggest mystery.</p><p><strong>Use it when:</strong> nobody knows the answer yet.</p></article>
+              <article class="friendly-card"><h5>discover</h5><p>To find or learn something new.</p><p class="nearby">Nearby words: find, uncover, learn</p><p><strong>Example:</strong> We discovered a hidden note inside the old book.</p><p><strong>Use it when:</strong> a new fact or place appears.</p></article>
+              <article class="friendly-card"><h5>clue</h5><p>A detail that helps solve a question or mystery.</p><p class="nearby">Nearby words: hint, sign, evidence</p><p><strong>Example:</strong> The muddy shoeprint was the first clue.</p><p><strong>Use it when:</strong> one detail points toward an answer.</p></article>
+            </div>
           </div>
         </div>
       </section>
@@ -622,8 +887,10 @@
           or save progress on a server.
         </p>
         <ul>
+          <li>The learning loop is prediction, surprise, story, connection, and sentence practice.</li>
           <li>The starter set is hand-picked from safer, concrete word histories.</li>
           <li>Each reveal keeps the source label visible for teachers and parents.</li>
+          <li>Family-friendly vocabulary cards are selected for safe home and classroom use.</li>
           <li>The full adult lexicon search stays on the main PensiveApe explorer.</li>
         </ul>
       </section>
@@ -641,6 +908,13 @@
         now: 'Now it means pleasant, kind, or agreeable.',
         imagine: 'A medieval teacher calling a careless student "nice" was not giving a compliment.',
         wordPiece: 'It comes from Latin nescius: not knowing.',
+        changePattern: 'A sharp word softened into a polite compliment.',
+        reflectionChoices: ['People used it more politely', 'It named a new invention', 'It became a weather word'],
+        reflectionAnswer: 'People used it more politely',
+        reflectionNote: 'The strongest clue is that "nice" moved from blame to careful, agreeable, and then kind.',
+        familyClue: 'Nescius means "not knowing." Nearby clue: science is about knowing.',
+        tryOld: 'Write: "The nice explorer packed no map and got lost."',
+        tryNow: 'Write: "The nice explorer shared the map with everyone."',
         source: 'OED / MED',
       },
       {
@@ -652,6 +926,13 @@
         now: 'Now it usually means foolish, playful, or not serious.',
         imagine: 'A person called "silly" long ago might have been lucky, not ridiculous.',
         wordPiece: 'It is related to old words for happiness and blessing.',
+        changePattern: 'A gentle word slid from lucky to innocent to foolish.',
+        reflectionChoices: ['The feeling became less serious', 'It turned into a number', 'It named a tool'],
+        reflectionAnswer: 'The feeling became less serious',
+        reflectionNote: 'The strongest clue is that the word passed through ideas like harmless and innocent before foolish.',
+        familyClue: 'This is a meaning-change family: lucky -> innocent -> foolish. Words can step from one idea to the next.',
+        tryOld: 'Write: "The silly traveler found shelter before the storm."',
+        tryNow: 'Write: "The silly joke made the whole table laugh."',
         source: 'OED',
       },
       {
@@ -663,6 +944,13 @@
         now: 'Now it usually means very bad.',
         imagine: 'A mountain, storm, or king could be called awful because people felt amazed and small.',
         wordPiece: 'Awe means a mix of wonder, respect, and fear.',
+        changePattern: 'A powerful feeling narrowed toward the scary or unpleasant side.',
+        reflectionChoices: ['One part of the feeling grew stronger', 'The word became a color', 'People forgot how to spell it'],
+        reflectionAnswer: 'One part of the feeling grew stronger',
+        reflectionNote: 'The strongest clue is that awe can include fear, and that fearful side became the everyday meaning.',
+        familyClue: 'Awe hides inside awful and awesome. One went mostly negative; the other often stayed positive.',
+        tryOld: 'Write: "The awful waterfall thundered in the valley."',
+        tryNow: 'Write: "The awful noise made everyone cover their ears."',
         source: 'OED',
       },
       {
@@ -674,6 +962,13 @@
         now: 'Now lord can mean a noble title or a respectful title.',
         imagine: 'Picture the person in charge of sharing bread with the whole household.',
         wordPiece: 'Loaf plus guardian became a word for the person who protected and gave out bread.',
+        changePattern: 'A household job became a title for rank and leadership.',
+        reflectionChoices: ['The job showed power in a household', 'It was always about dragons', 'It began as a color word'],
+        reflectionAnswer: 'The job showed power in a household',
+        reflectionNote: 'The strongest clue is that controlling food in a household could show authority.',
+        familyClue: 'Loaf is the bread clue. A guardian protects or keeps something important.',
+        tryOld: 'Write: "The lord made sure every guest received bread."',
+        tryNow: 'Write: "The story mentioned a lord who owned a castle."',
         source: 'Bosworth-Toller / OED',
       },
       {
@@ -685,6 +980,13 @@
         now: 'Now lady can mean a woman, a polite title, or a woman of rank.',
         imagine: 'In an old household, bread work could be important enough to leave a mark inside a title.',
         wordPiece: 'The old word connects loaf and kneading.',
+        changePattern: 'A household role became a respectful title.',
+        reflectionChoices: ['Important work became a title', 'It changed because of machines', 'It was borrowed from space talk'],
+        reflectionAnswer: 'Important work became a title',
+        reflectionNote: 'The strongest clue is that bread work mattered deeply in a household and could become part of status language.',
+        familyClue: 'Lady and lord both carry old bread clues: kneading bread and guarding bread.',
+        tryOld: 'Write: "The lady prepared loaves for the busy household."',
+        tryNow: 'Write: "The lady at the desk gave clear directions."',
         source: 'OED',
       },
       {
@@ -696,6 +998,13 @@
         now: 'Now it usually means a young female person.',
         imagine: 'A medieval writer could use a word like "girl" in a way that would surprise modern readers.',
         wordPiece: 'Some words narrow over time: they start wide, then point to a smaller group.',
+        changePattern: 'A broad word narrowed to a smaller group.',
+        reflectionChoices: ['The word became more specific', 'The word became a food name', 'The word turned into a place name'],
+        reflectionAnswer: 'The word became more specific',
+        reflectionNote: 'The strongest clue is narrowing: the old meaning covered more people, and the modern meaning points to fewer.',
+        familyClue: 'Narrowing happens when a word starts wide and later points to a smaller set.',
+        tryOld: 'Write: "The village girls hurried to hear the storyteller."',
+        tryNow: 'Write: "The girl carried three library books home."',
         source: 'MED / OED',
       },
       {
@@ -707,6 +1016,13 @@
         now: 'Now it means to stop something from happening.',
         imagine: 'If you woke before sunrise, an older writer might say you prevented the morning.',
         wordPiece: 'Pre- means before. Venire means come.',
+        changePattern: 'Coming before something became stopping it before it happens.',
+        reflectionChoices: ['Acting early can stop a problem', 'It became a musical note', 'It was shortened from a name'],
+        reflectionAnswer: 'Acting early can stop a problem',
+        reflectionNote: 'The strongest clue is the time idea: if you come before trouble, you may be able to stop it.',
+        familyClue: 'Pre- means before. You can see it in preview, predict, preheat, and prepare.',
+        tryOld: 'Write: "The messenger prevented the king at the gate."',
+        tryNow: 'Write: "A helmet can prevent a serious injury."',
         source: 'OED',
       },
       {
@@ -718,8 +1034,38 @@
         now: 'Now it means a terrible event or big failure.',
         imagine: 'Long ago, some people thought the stars could explain why something went wrong.',
         wordPiece: 'Dis- can mean bad or apart. Aster means star.',
+        changePattern: 'An old sky explanation became a general word for trouble.',
+        reflectionChoices: ['People used an old belief as a picture', 'It started as a candy name', 'It was invented for computers'],
+        reflectionAnswer: 'People used an old belief as a picture',
+        reflectionNote: 'The strongest clue is the star picture: an unlucky star became a way to talk about any terrible event.',
+        familyClue: 'Aster means star. It appears in asteroid, asterisk, and astronomy-related words.',
+        tryOld: 'Write: "The sailors feared a disaster written in the stars."',
+        tryNow: 'Write: "Forgetting the map was a disaster for the picnic."',
         source: 'OED',
       },
+    ];
+
+    const FRIENDLY_WORDS = [
+      { group: 'Kind Words', word: 'generous', meaning: 'Ready to give, share, or help more than expected.', example: 'Lina was generous with her art supplies.', useWhen: 'Use it when someone shares time, care, or things.', nearbyWords: ['giving', 'helpful', 'open-handed'] },
+      { group: 'Kind Words', word: 'patient', meaning: 'Able to wait calmly or keep trying without rushing.', example: 'Omar was patient while his little brother learned the game.', useWhen: 'Use it when waiting takes effort.', nearbyWords: ['calm', 'steady', 'unhurried'] },
+      { group: 'Kind Words', word: 'gentle', meaning: 'Kind, careful, and not rough.', example: 'The coach gave a gentle reminder before practice.', useWhen: 'Use it when strength is used carefully.', nearbyWords: ['soft', 'careful', 'tender'] },
+      { group: 'Kind Words', word: 'grateful', meaning: 'Feeling thankful for help, kindness, or a good moment.', example: 'I felt grateful for the warm soup after the hike.', useWhen: 'Use it when you notice a gift or kindness.', nearbyWords: ['thankful', 'glad', 'appreciative'] },
+      { group: 'Brave Words', word: 'courage', meaning: 'The strength to do something even when it feels hard or scary.', example: 'It took courage to read the poem aloud.', useWhen: 'Use it when someone faces a fear.', nearbyWords: ['bravery', 'heart', 'nerve'] },
+      { group: 'Brave Words', word: 'steady', meaning: 'Calm, balanced, and not easily shaken.', example: 'Her steady voice helped the group focus.', useWhen: 'Use it when someone keeps going calmly.', nearbyWords: ['firm', 'calm', 'reliable'] },
+      { group: 'Brave Words', word: 'bold', meaning: 'Brave, clear, and willing to stand out.', example: 'The poster used bold colors and a bold idea.', useWhen: 'Use it when a choice feels brave or noticeable.', nearbyWords: ['daring', 'bright', 'confident'] },
+      { group: 'Brave Words', word: 'resilient', meaning: 'Able to bounce back after trouble or change.', example: 'The resilient team tried again after the first plan failed.', useWhen: 'Use it when someone recovers and keeps learning.', nearbyWords: ['strong', 'flexible', 'recovering'] },
+      { group: 'Thinking Words', word: 'curious', meaning: 'Eager to ask, look, and learn more.', example: 'Mia was curious about why the moon changes shape.', useWhen: 'Use it when a question pulls you forward.', nearbyWords: ['wondering', 'interested', 'questioning'] },
+      { group: 'Thinking Words', word: 'notice', meaning: 'To see, hear, or become aware of something.', example: 'Did you notice the tiny footprints near the door?', useWhen: 'Use it when careful attention finds a detail.', nearbyWords: ['spot', 'observe', 'catch'] },
+      { group: 'Thinking Words', word: 'wonder', meaning: 'To feel curious or amazed, or to ask yourself a question.', example: 'I wonder how old that oak tree is.', useWhen: 'Use it when a mystery makes your mind open.', nearbyWords: ['ask', 'imagine', 'marvel'] },
+      { group: 'Thinking Words', word: 'reason', meaning: 'To think carefully and use clues to decide something.', example: 'We used reason to choose the safest path.', useWhen: 'Use it when clues help you make a smart choice.', nearbyWords: ['think', 'explain', 'solve'] },
+      { group: 'Nature Words', word: 'meadow', meaning: 'An open field where grass and wildflowers can grow.', example: 'Butterflies drifted across the sunny meadow.', useWhen: 'Use it when describing an open, grassy place.', nearbyWords: ['field', 'grassland', 'clearing'] },
+      { group: 'Nature Words', word: 'brook', meaning: 'A small stream of water.', example: 'The brook made a soft sound over the stones.', useWhen: 'Use it when water is small and moving gently.', nearbyWords: ['stream', 'creek', 'rivulet'] },
+      { group: 'Nature Words', word: 'bloom', meaning: 'To flower, grow, or become bright with life.', example: 'The garden began to bloom after the rain.', useWhen: 'Use it when something opens, grows, or shines.', nearbyWords: ['flower', 'blossom', 'flourish'] },
+      { group: 'Nature Words', word: 'harvest', meaning: 'The time or act of gathering crops or good results.', example: 'The class held a harvest of ideas after reading.', useWhen: 'Use it when people gather what has grown.', nearbyWords: ['gather', 'crop', 'collect'] },
+      { group: 'Story Words', word: 'quest', meaning: 'A search or journey with an important goal.', example: 'The friends began a quest to find the lost map.', useWhen: 'Use it when a search feels important or adventurous.', nearbyWords: ['journey', 'mission', 'search'] },
+      { group: 'Story Words', word: 'mystery', meaning: 'Something unknown that invites questions.', example: 'The locked drawer became the story\'s biggest mystery.', useWhen: 'Use it when nobody knows the answer yet.', nearbyWords: ['puzzle', 'secret', 'riddle'] },
+      { group: 'Story Words', word: 'discover', meaning: 'To find or learn something new.', example: 'We discovered a hidden note inside the old book.', useWhen: 'Use it when a new fact or place appears.', nearbyWords: ['find', 'uncover', 'learn'] },
+      { group: 'Story Words', word: 'clue', meaning: 'A detail that helps solve a question or mystery.', example: 'The muddy shoeprint was the first clue.', useWhen: 'Use it when one detail points toward an answer.', nearbyWords: ['hint', 'sign', 'evidence'] },
     ];
 
     let currentIndex = 0;
@@ -738,6 +1084,8 @@
       byId('next-btn').textContent = currentIndex >= KIDS_WORDS.length - 1 ? 'Finish quest' : 'Next word';
       byId('reveal').classList.remove('show');
       byId('feedback').textContent = 'Pick an answer to unlock the story.';
+      byId('reflection-note').textContent = 'Pick a clue after you read the story.';
+      byId('reflection-choices').innerHTML = '';
       byId('finish').classList.remove('show');
 
       const choices = byId('choices');
@@ -769,9 +1117,100 @@
       byId('then').textContent = item.then;
       byId('now').textContent = item.now;
       byId('imagine').textContent = item.imagine;
-      byId('word-piece').textContent = item.wordPiece;
+      byId('change-pattern').textContent = item.changePattern;
+      byId('word-piece').textContent = item.familyClue;
+      byId('try-old').textContent = item.tryOld;
+      byId('try-now').textContent = item.tryNow;
       byId('source').textContent = `Source: ${item.source}`;
+      renderReflection(item);
       byId('reveal').classList.add('show');
+    }
+
+    function renderReflection(item) {
+      const reflectionChoices = byId('reflection-choices');
+      reflectionChoices.innerHTML = '';
+      byId('reflection-note').textContent = 'Pick the clue that seems strongest.';
+
+      item.reflectionChoices.forEach((reflectionChoice) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'reflection-chip';
+        chip.textContent = reflectionChoice;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.reflection-chip').forEach((btn) => {
+            btn.classList.remove('selected', 'strongest');
+            if (btn.textContent === item.reflectionAnswer) btn.classList.add('strongest');
+          });
+          chip.classList.add('selected');
+          byId('reflection-note').textContent = reflectionChoice === item.reflectionAnswer
+            ? `That's the strongest clue. ${item.reflectionNote}`
+            : `Good thinking. Historians would lean on this clue: ${item.reflectionNote}`;
+        });
+        reflectionChoices.appendChild(chip);
+      });
+    }
+
+    function makeText(tagName, className, text) {
+      const element = document.createElement(tagName);
+      if (className) element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function renderFriendlyWords() {
+      const list = byId('friendly-word-list');
+      const groups = [...new Set(FRIENDLY_WORDS.map((item) => item.group))];
+      list.innerHTML = '';
+
+      groups.forEach((groupName) => {
+        const group = document.createElement('div');
+        group.className = 'friendly-group';
+        group.appendChild(makeText('h4', '', groupName));
+
+        const grid = document.createElement('div');
+        grid.className = 'friendly-grid';
+
+        FRIENDLY_WORDS.filter((item) => item.group === groupName).forEach((item) => {
+          const card = document.createElement('article');
+          card.className = 'friendly-card';
+          card.dataset.word = item.word;
+
+          card.appendChild(makeText('h5', '', item.word));
+          card.appendChild(makeText('p', '', item.meaning));
+          card.appendChild(makeText('p', 'nearby', `Nearby words: ${item.nearbyWords.join(', ')}`));
+
+          const extra = document.createElement('div');
+          extra.className = 'friendly-extra';
+          extra.hidden = true;
+          extra.appendChild(makeText('p', '', `Example: ${item.example}`));
+          extra.appendChild(makeText('p', '', item.useWhen));
+
+          const toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'example-toggle';
+          toggle.textContent = 'Show example';
+          toggle.addEventListener('click', () => {
+            extra.hidden = !extra.hidden;
+            toggle.textContent = extra.hidden ? 'Show example' : 'Hide example';
+          });
+
+          card.appendChild(toggle);
+          card.appendChild(extra);
+          grid.appendChild(card);
+        });
+
+        group.appendChild(grid);
+        list.appendChild(group);
+      });
+    }
+
+    function highlightFriendlyWord() {
+      const cards = Array.from(document.querySelectorAll('.friendly-card'));
+      if (!cards.length) return;
+      cards.forEach((card) => card.classList.remove('highlight'));
+      const card = cards[Math.floor(Math.random() * cards.length)];
+      card.classList.add('highlight');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function nextWord() {
@@ -800,6 +1239,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       byId('next-btn').addEventListener('click', nextWord);
       byId('restart-btn').addEventListener('click', restartQuiz);
+      byId('try-word-btn').addEventListener('click', highlightFriendlyWord);
+      renderFriendlyWords();
       renderWord();
     });
   </script>
