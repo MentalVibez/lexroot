@@ -1,0 +1,103 @@
+priority_tier,word,theme,reason_to_curate,primary_era,source_priority_1,source_priority_2,source_priority_3,status
+1,awful,semantic-drift,Classic high-impact shift from awe to strongly negative,Middle English,MED,OED,Wiktionary,curated
+1,nice,semantic-drift,Common modern compliment with famously alien earlier senses,Middle English,MED,OED,Wiktionary,curated
+1,prevent,semantic-drift,Essential demo word for older-reading value,Middle English,MED,OED,Wiktionary,curated
+1,charity,religion-to-secular,Shows narrowing from theological love to donation,Middle English,MED,OED,Wiktionary,curated
+1,silly,semantic-drift,High-frequency word with striking pejorative drift,Middle English,MED,OED,Wiktionary,curated
+1,naughty,semantic-drift,Common word with older sense tied to poverty and worthlessness,Middle English,MED,OED,Wiktionary,curated
+1,quick,everyday-words,Useful because older English often means alive rather than fast,Middle English,MED,OED,Wiktionary,curated
+1,passion,religion-to-secular,Shows pain and suffering developing into strong feeling,Middle English,MED,OED,Wiktionary,curated
+1,conversation,social-history,Important for older prose where it often means manner of life or social intercourse,Early Modern English,OED,EEBO,Wiktionary,curated
+1,suffer,older-reading-value,Key older-text word where allow/endure matters,Middle English,MED,OED,Wiktionary,curated
+1,let,older-reading-value,Common reading trap because older senses often mean hinder,Old English,OED,DOE,Wiktionary,curated
+1,presently,semantic-drift,Common adverb with strong diachronic shift in timing,Early Modern English,OED,EEBO,Wiktionary,curated
+1,fond,semantic-drift,Common adjective with older foolish sense,Middle English,MED,OED,Wiktionary,curated
+1,villain,social-history,Excellent for class and moral pejoration,Middle English,MED,OED,Wiktionary,curated
+1,lust,religion-to-secular,Common modern narrowing from broad desire to sexual desire,Old English,OED,DOE,Wiktionary,curated
+1,office,institutions,Useful for legal, church, and administrative reading,Middle English,MED,OED,Wiktionary,curated
+1,discover,older-reading-value,Common word whose older uses matter in historical prose,Early Modern English,OED,EEBO,Wiktionary,candidate
+1,issue,institutions,High-frequency institutional word with branching senses,Middle English,OED,MED,Wiktionary,candidate
+1,grace,religion-to-secular,Core Christian and social word with broad historical payoff,Middle English,MED,OED,Wiktionary,curated
+1,mercy,religion-to-secular,Common moral and religious word with strong textual payoff,Middle English,MED,OED,Wiktionary,curated
+2,resent,semantic-drift,Good modern misunderstanding because older sense is more neutral or positive,Early Modern English,OED,EEBO,Wiktionary,candidate
+2,peculiar,semantic-drift,Common adjective with older sense of belonging especially to,Early Modern English,OED,EEBO,Wiktionary,candidate
+2,simple,semantic-drift,High-frequency word with strong drift through social and moral evaluation,Middle English,MED,OED,Wiktionary,curated
+2,crafty,semantic-drift,Useful for skill-to-deceit drift,Old English,OED,DOE,Wiktionary,candidate
+2,jealous,emotion,Important emotion word with older zeal coloring,Middle English,MED,OED,Wiktionary,candidate
+2,pity,emotion,Common emotional and religious word with broad cultural range,Middle English,MED,OED,Wiktionary,curated
+2,meek,religion-to-secular,Common biblical-reading payoff word,Middle English,MED,OED,Wiktionary,candidate
+2,temptation,religion-to-secular,Common church word with modern generalization,Middle English,MED,OED,Wiktionary,candidate
+2,edify,religion-to-secular,Clear theological-to-general uplift path,Middle English,MED,OED,Wiktionary,candidate
+2,virtue,religion-to-secular,Important older word with force, efficacy, and moral senses,Middle English,MED,OED,Wiktionary,curated
+2,courtesy,social-history,Helpful for medieval and early modern social reading,Middle English,MED,OED,Wiktionary,candidate
+2,gentle,social-history,Class and temperament histories meet in one common word,Middle English,MED,OED,Wiktionary,candidate
+2,common,social-history,Useful for status and shared-use meanings,Middle English,MED,OED,Wiktionary,candidate
+2,civil,social-history,Register and political history in a common adjective,Early Modern English,OED,EEBO,Wiktionary,candidate
+2,honest,social-history,Very common older-text word with broader older moral senses,Middle English,MED,OED,Wiktionary,curated
+2,frank,social-history,Social status history and honesty meaning path,Middle English,MED,OED,Wiktionary,candidate
+2,vulgar,social-history,Strong class and register history,Middle English,MED,OED,Wiktionary,candidate
+2,fancy,register,Useful for feeling, imagination, and taste drift,Middle English,MED,OED,Wiktionary,candidate
+2,elegant,register,Common register word that helps explain tone and prestige,Early Modern English,OED,EEBO,Wiktionary,candidate
+2,noble,social-history,Rank and moral evaluation overlap in useful ways,Middle English,MED,OED,Wiktionary,candidate
+3,humble,religion-to-secular,Common moral word with religious and class dimensions,Middle English,MED,OED,Wiktionary,candidate
+3,bless,religion-to-secular,High-frequency verb with strong religious history,Old English,OED,DOE,Wiktionary,candidate
+3,saint,religion-to-secular,Useful religious and secular metaphorical shift,Middle English,MED,OED,Wiktionary,candidate
+3,minister,institutions,Church and government overlap makes this valuable,Middle English,MED,OED,Wiktionary,candidate
+3,priest,religion-to-secular,Core religious lexicon for historical reading,Old English,OED,DOE,Wiktionary,candidate
+3,church,religion-to-secular,Foundational cultural word with wide utility,Old English,OED,DOE,Wiktionary,candidate
+3,gospel,religion-to-secular,Good for religious and figurative extension,Old English,OED,DOE,Wiktionary,candidate
+3,convert,religion-to-secular,Useful for religious and general change senses,Middle English,MED,OED,Wiktionary,candidate
+3,devotion,religion-to-secular,Good overlap of piety and secular dedication,Middle English,MED,OED,Wiktionary,candidate
+3,creature,religion-to-secular,Older senses matter in theology and literature,Middle English,MED,OED,Wiktionary,candidate
+3,wit,older-reading-value,Common older prose word whose historical senses still matter,Old English,OED,DOE,Wiktionary,candidate
+3,conceit,older-reading-value,Useful for literary and older evaluative prose,Early Modern English,OED,EEBO,Wiktionary,candidate
+3,curious,semantic-drift,Common positive modern word with older cautionary uses,Middle English,MED,OED,Wiktionary,candidate
+3,artificial,semantic-drift,Helpful for craft versus fake distinctions,Early Modern English,OED,EEBO,Wiktionary,candidate
+3,wanton,semantic-drift,Common older word with broader undisciplined senses,Middle English,MED,OED,Wiktionary,candidate
+3,buxom,semantic-drift,Memorable shift with strong teaching value,Middle English,MED,OED,Wiktionary,candidate
+3,sad,semantic-drift,Important common word with earlier serious or firm senses,Old English,OED,DOE,Wiktionary,candidate
+3,gay,semantic-drift,High-value but modernly sensitive drift case,Middle English,OED,Wiktionary,candidate
+3,doom,semantic-drift,Older judgment sense makes older texts clearer,Old English,OED,DOE,Wiktionary,candidate
+3,merry,semantic-drift,Older senses broader than cheerful only,Old English,OED,DOE,Wiktionary,candidate
+4,execute,institutions,Strong legal history and modern narrowing,Middle English,OED,EEBO,Wiktionary,candidate
+4,demise,institutions,Useful legal inheritance word with modern death reading,Middle English,OED,EEBO,Wiktionary,candidate
+4,sentence,institutions,Legal and grammatical divergence adds teaching value,Middle English,MED,OED,Wiktionary,candidate
+4,authority,institutions,Common abstract noun with church and state value,Middle English,MED,OED,Wiktionary,candidate
+4,license,institutions,Useful for legal, moral, and modern permission senses,Middle English,MED,OED,Wiktionary,candidate
+4,preventive,institutions,Good family extension once prevent is done,Early Modern English,OED,EEBO,Wiktionary,candidate
+4,port,trade-and-travel,Already partly curated and valuable for semantic branching,Middle English,MED,OED,Wiktionary,candidate
+4,traffic,trade-and-travel,Useful commercial and moral history word,Early Modern English,OED,EEBO,Wiktionary,candidate
+4,commerce,trade-and-travel,Common institutional word with good historical reach,Early Modern English,OED,EEBO,Wiktionary,candidate
+4,policy,institutions,Good governance word with semantic broadening,Middle English,OED,EEBO,Wiktionary,candidate
+4,constitution,institutions,Important legal and bodily-history overlap,Early Modern English,OED,EEBO,Wiktionary,candidate
+4,estate,institutions,Class, property, and condition all matter historically,Middle English,MED,OED,Wiktionary,candidate
+4,condition,institutions,Useful older-text word with state and agreement senses,Middle English,MED,OED,Wiktionary,candidate
+4,contract,institutions,Good legal and linguistic overlap,Early Modern English,OED,EEBO,Wiktionary,candidate
+4,interest,institutions,Common economic and personal-history word,Middle English,MED,OED,Wiktionary,candidate
+4,venture,trade-and-travel,Useful for risk, commerce, and exploration histories,Middle English,MED,OED,Wiktionary,candidate
+5,broadcast,technology,Common word with concrete agricultural origin,Modern English,OED,COHA,Wiktionary,candidate
+5,computer,technology,Excellent modern semantic narrowing example,Modern English,OED,COHA,Wiktionary,candidate
+5,engine,technology,Useful for ingenuity-to-machine shift,Middle English,MED,OED,Wiktionary,candidate
+5,manufacture,technology,Good institutional and industrial history word,Early Modern English,OED,EEBO,Wiktionary,candidate
+5,industry,technology,Strong diligence-to-economic-sector shift,Middle English,MED,OED,Wiktionary,candidate
+5,science,technology,Common prestige word with historical range,Middle English,MED,OED,Wiktionary,candidate
+5,medicine,technology,Everyday institutional word with deep historical payoff,Middle English,MED,OED,Wiktionary,candidate
+5,doctor,technology,Good for learned-title and profession history,Middle English,MED,OED,Wiktionary,candidate
+5,patient,technology,Double-use word with medical and moral senses,Middle English,MED,OED,Wiktionary,curated
+5,nervous,body-and-mind,Common modern adjective with important historical shift,Early Modern English,OED,COHA,Wiktionary,candidate
+5,melancholy,body-and-mind,Excellent for humoral and emotional history,Middle English,MED,OED,Wiktionary,candidate
+5,humor,body-and-mind,Classic body-fluid to comedy drift case,Middle English,MED,OED,Wiktionary,candidate
+5,temper,body-and-mind,Useful for bodily and emotional regulation senses,Middle English,MED,OED,Wiktionary,candidate
+5,complexion,body-and-mind,Strong humoral-history term with modern residue,Middle English,MED,OED,Wiktionary,candidate
+5,spirit,body-and-mind,Highly versatile word with strong historical layering,Middle English,MED,OED,Wiktionary,candidate
+5,imagination,body-and-mind,Common mental word with literary and philosophical payoff,Middle English,MED,OED,Wiktionary,candidate
+6,kind,social-history,Everyday adjective with kinship and nature history,Old English,OED,DOE,Wiktionary,candidate
+6,nature,social-history,Common abstract noun with major philosophical and cultural layering,Middle English,MED,OED,Wiktionary,candidate
+6,art,register,Everyday prestige word with strong older breadth,Old English,OED,DOE,Wiktionary,candidate
+6,craft,register,Skill word with later deception and specialization associations,Old English,OED,DOE,Wiktionary,candidate
+6,riot,social-history,Good legal and social disorder history word,Middle English,MED,OED,Wiktionary,candidate
+6,luxury,social-history,Strong moral-to-consumer drift case,Middle English,MED,OED,Wiktionary,candidate
+6,liberal,social-history,Important but politically layered drift case,Middle English,OED,Wiktionary,candidate
+6,radical,social-history,Common political word with technical and root senses,Modern English,OED,COHA,Wiktionary,candidate
+6,awesome,semantic-drift,Modern counterpart to awful with inverse connotation drift,Modern English,OED,COHA,Wiktionary,candidate
+6,terrific,semantic-drift,Clear frightening-to-positive intensity shift,Early Modern English,OED,COHA,Wiktionary,candidate

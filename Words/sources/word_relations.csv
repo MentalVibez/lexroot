@@ -16,14 +16,14 @@ naughty,well-behaved,antonym,Late Modern English,oed,high,
 silly,foolish,synonym,Late Modern English,oed,high,
 silly,absurd,synonym,Late Modern English,oed,high,
 silly,wise,antonym,Late Modern English,oed,high,
-import,export,antonym,,oed,high,Directional antonyms via Latin in- vs ex- prefix on shared root portare
-import,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-export,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-transport,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-portable,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-report,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-support,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
-deport,port,derived_from,Old English,oed,high,Latin portare (to carry) via Norman French
+import,export,antonym,,oed-2e,high,Directional antonyms via Latin in- vs ex- prefix on shared root portare
+import,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+export,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+transport,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+portable,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+report,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+support,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
+deport,port,derived_from,Middle English,oed-2e,high,Latin portare (to carry) via Old French/Anglo-Norman borrowing; not inherited Old English
 port,import,root_of,,oed,high,
 port,export,root_of,,oed,high,
 port,transport,root_of,,oed,high,

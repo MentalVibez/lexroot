@@ -28,6 +28,23 @@ from ingestor.sources_catalog import ALL_SOURCES
 ETYMOLOGY_DB_SOURCE_SLUG = "etymology-db"
 _WORD = re.compile(r"^[a-z][a-z'\-]{1,79}$")
 
+# English is Germanic at its core. Prefer inherited English/Germanic sources
+# over Latin/French when the source dataset offers multiple possible roots.
+ROOT_SOURCE_PRIORITY = {
+    "English": 0,
+    "Old English": 1,
+    "Middle English": 2,
+    "Proto-Germanic": 3,
+    "Old Norse": 4,
+    "German": 5,
+    "Dutch": 6,
+    "Proto-Indo-European": 20,
+    "Classical Latin": 30,
+    "Old French": 31,
+    "French": 32,
+    "Ancient Greek": 33,
+}
+
 SOURCE_WORD_KEYS = ["source_term", "source_word", "source", "from_term", "from_word", "parent_term", "term1"]
 SOURCE_LANG_KEYS = ["source_lang", "source_language", "from_lang", "from_language", "parent_lang", "lang1"]
 TARGET_WORD_KEYS = ["target_term", "target_word", "target", "to_term", "to_word", "child_term", "term2", "term", "word"]
@@ -160,16 +177,8 @@ def load_etymology_db_entries(path: str | Path, limit: int | None = 5000) -> lis
             break
 
     entries: list[WordEntry] = []
-    priority = {
-        "Proto-Indo-European": 0,
-        "Classical Latin": 1,
-        "Ancient Greek": 2,
-        "Old English": 3,
-        "Middle English": 4,
-        "Old French": 5,
-    }
     for word, roots in roots_by_word.items():
-        best = min(roots, key=lambda item: priority.get(item["language"], 99))
+        best = min(roots, key=lambda item: ROOT_SOURCE_PRIORITY.get(item["language"], 99))
         entries.append(WordEntry(
             name=word,
             language="English",

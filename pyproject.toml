@@ -30,6 +30,7 @@ testpaths = [
     "test_shipley_importer.py",
     "test_senses_importer.py",
     "test_data_quality_validator.py",
+    "test_germanic_origin_priority.py",
 ]
 
 [tool.setuptools.packages.find]

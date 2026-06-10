@@ -5,6 +5,10 @@ for querying how words changed meaning across time. Built for PhD linguists who 
 citable evidence, educators who need step-by-step etymology paths, and developers who
 need an embeddable historical word API.
 
+English is modeled as a **Germanic language with heavy borrowing**, not as a
+Romance language. The data model distinguishes inherited Old English/Germanic
+core vocabulary from later French, Latin, Greek, and other borrowings.
+
 Sits between three existing markets without competing in any:
 - Dictionary apps (static, consumer, not programmable)
 - Corpus linguistics tools (academic, expensive, not developer-friendly)

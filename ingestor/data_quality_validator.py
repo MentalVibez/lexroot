@@ -299,6 +299,15 @@ def validate(
     attestations_path: Path = DEFAULT_ATTESTATIONS,
     spelling_history_path: Path = DEFAULT_SPELLING_HISTORY,
 ) -> dict[str, Any]:
+    path = Path(path)
+    if path != DEFAULT_INPUT:
+        if Path(senses_path) == DEFAULT_SENSES:
+            senses_path = path.parent / "__no_default_senses.csv"
+        if Path(attestations_path) == DEFAULT_ATTESTATIONS:
+            attestations_path = path.parent / "__no_default_attestations.csv"
+        if Path(spelling_history_path) == DEFAULT_SPELLING_HISTORY:
+            spelling_history_path = path.parent / "__no_default_spelling_history.csv"
+
     counters: Counter[str] = Counter()
     entry_types: Counter[str] = Counter()
     confidence_counts: Counter[str] = Counter()
