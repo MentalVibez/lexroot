@@ -7,6 +7,10 @@
   <meta name="description" content="A concise guide to trusted dictionaries, corpora, and tools for exploring the history of English.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#f7f2e8">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="canonical" href="https://pensiveape.com/resources.html">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="PensiveApe">
@@ -79,6 +83,13 @@
       letter-spacing: 0.12em; text-transform: uppercase;
     }
     .topbar a { color: var(--clay-deep); }
+    .resource-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     .hero {
       padding: clamp(2rem, 5vw, 4rem) 0 2rem;
       border-bottom: 1px solid var(--line);
@@ -141,7 +152,7 @@
       .shell { width: min(100% - 1rem, 1060px); padding-top: 0.75rem; }
       .topbar { align-items: flex-start; gap: 0.8rem; }
       .brand h1 { font-size: 0.86rem; }
-      .topbar > a:last-child {
+      .resource-nav a {
         border: 1px solid var(--line);
         border-radius: 999px;
         padding: 0.45rem 0.7rem;
@@ -156,7 +167,8 @@
     }
     @media (max-width: 430px) {
       .topbar { flex-direction: column; }
-      .topbar > a:last-child { width: 100%; justify-content: center; display: inline-flex; }
+      .resource-nav { width: 100%; }
+      .resource-nav a { flex: 1; justify-content: center; display: inline-flex; }
     }
   </style>
 </head>
@@ -167,7 +179,11 @@
         <span class="brand-mark" aria-hidden="true"></span>
         <span><h1>PensiveApe</h1></span>
       </a>
-      <a href="/">Back to explorer</a>
+      <nav class="resource-nav" aria-label="Site links">
+        <a href="/kids.html">Kids</a>
+        <a href="/methodology.html">Methodology</a>
+        <a href="/">Back to explorer</a>
+      </nav>
     </header>
 
     <main>

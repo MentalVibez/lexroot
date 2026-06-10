@@ -7,6 +7,10 @@
   <meta name="description" content="Discover the hidden histories of everyday words. Search any word and see how its meaning evolved across centuries — sourced from the OED, MED, and leading scholarly dictionaries.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#f7f2e8">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="canonical" href="https://pensiveape.com/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PensiveApe">
@@ -416,38 +420,6 @@
 
     .section-intro p { max-width: 38rem; color: var(--muted); font-size: 1rem; }
 
-    /* Keep the homepage focused: deeper learning lives on the resources page. */
-    #why-learn,
-    #linguistics-primer,
-    #teachers-writers,
-    #philology-resources {
-      display: none;
-    }
-
-    /* ── STATS BAR ── */
-    .stats-bar {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem; margin: 1.6rem 0;
-    }
-
-    .stat-item {
-      background: var(--cream);
-      border: 1px solid rgba(34, 38, 31, 0.08);
-      border-radius: var(--radius); padding: 1.2rem 1.3rem;
-      box-shadow: var(--shadow-sm); text-align: center;
-    }
-
-    .stat-number {
-      font-size: clamp(2rem, 4vw, 2.8rem); color: var(--clay-deep);
-      line-height: 1; margin-bottom: 0.3rem;
-    }
-
-    .stat-label {
-      font-family: var(--ui-font); font-size: 0.78rem;
-      text-transform: uppercase; letter-spacing: 0.09em;
-      color: var(--muted); line-height: 1.4;
-    }
-
     /* ── SEMANTIC SHIFTS GALLERY ── */
     .shifts-track {
       display: grid;
@@ -699,7 +671,22 @@
     }
 
     #word-name { font-size: 2.2rem; color: var(--clay-deep); margin-bottom: 0.3rem; line-height: 1; }
-    #word-definition { color: var(--muted); font-style: italic; margin-bottom: 1.2rem; font-size: 1rem; }
+    #word-definition {
+      color: var(--ink);
+      margin-bottom: 0.65rem;
+      font-size: 1.08rem;
+      line-height: 1.6;
+    }
+
+    .definition-label {
+      display: block;
+      font-family: var(--ui-font);
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.18rem;
+    }
 
     .story-grid {
       display: grid;
@@ -821,6 +808,37 @@
       color: var(--clay-deep);
       font-family: var(--ui-font);
       font-weight: 700;
+    }
+
+    .citation-list {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 0.55rem;
+    }
+
+    .citation-item {
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: 0.8rem;
+      padding: 0.75rem;
+      background: rgba(255,253,248,0.72);
+    }
+
+    .citation-item strong {
+      color: var(--clay-deep);
+      font-family: var(--ui-font);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .citation-item p { margin-top: 0.3rem; }
+
+    .citation-raw {
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      color: var(--night);
+      line-height: 1.5;
     }
 
     .pills, .era-browse-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -969,141 +987,6 @@
       color: var(--sage); text-transform: uppercase; letter-spacing: 0.08em;
     }
 
-    .scholar-shelf {
-      margin-top: 1rem;
-      border: 1px solid rgba(34, 38, 31, 0.1);
-      border-radius: var(--radius);
-      background: rgba(255,253,248,0.8);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    .scholar-shelf summary {
-      cursor: pointer;
-      list-style: none;
-      padding: 1rem 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      align-items: center;
-      color: var(--night);
-      font-family: var(--ui-font);
-      font-weight: 700;
-    }
-
-    .scholar-shelf summary::-webkit-details-marker { display: none; }
-    .scholar-shelf summary::after { content: "Open"; color: var(--clay-deep); }
-    .scholar-shelf[open] summary::after { content: "Close"; }
-
-    .scholar-shelf-content { padding: 0 1.2rem 1.2rem; }
-
-    /* ── SCHOLARLY RESOURCES ── */
-    .resource-era-row {
-      display: grid;
-      grid-template-columns: 15rem 1fr;
-      gap: 1.4rem;
-      margin-bottom: 2rem;
-      align-items: start;
-    }
-
-    .resource-era-label { position: sticky; top: 1.2rem; }
-
-    .resource-era-badge {
-      display: inline-block;
-      padding: 0.32rem 0.75rem;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--clay), var(--clay-deep));
-      color: #fff8ef;
-      font-family: var(--ui-font);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.55rem;
-    }
-
-    .resource-era-badge.era-sage {
-      background: linear-gradient(135deg, var(--sage), #3a5244);
-    }
-
-    .resource-era-badge.era-night {
-      background: linear-gradient(135deg, #2a3d47, var(--night));
-    }
-
-    .resource-era-badge.era-gold {
-      background: linear-gradient(135deg, var(--gold), #b8882a);
-      color: var(--night);
-    }
-
-    .resource-era-title {
-      font-size: 1.15rem; color: var(--night);
-      margin-bottom: 0.3rem; line-height: 1.25;
-    }
-
-    .resource-era-subtitle {
-      font-family: var(--ui-font); font-size: 0.8rem;
-      color: var(--muted); line-height: 1.45;
-    }
-
-    .resource-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 0.85rem;
-    }
-
-    .resource-card {
-      background: var(--cream);
-      border: 1px solid rgba(34, 38, 31, 0.08);
-      border-radius: var(--radius);
-      padding: 1rem 1.1rem;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    .resource-card-name { font-size: 0.97rem; color: var(--night); line-height: 1.3; }
-
-    .resource-card-org {
-      font-family: var(--ui-font); font-size: 0.73rem;
-      text-transform: uppercase; letter-spacing: 0.09em;
-      color: var(--clay-deep);
-    }
-
-    .resource-card-desc {
-      color: var(--muted); font-size: 0.87rem;
-      line-height: 1.5; flex: 1; margin-top: 0.1rem;
-    }
-
-    .resource-card-footer {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 0.5rem;
-      margin-top: 0.55rem; padding-top: 0.55rem;
-      border-top: 1px solid rgba(34, 38, 31, 0.08);
-      flex-wrap: wrap;
-    }
-
-    .access-badge {
-      font-family: var(--ui-font); font-size: 0.68rem;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      padding: 0.2rem 0.5rem; border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .access-badge.free {
-      background: rgba(85,107,93,0.12); color: var(--sage);
-      border: 1px solid rgba(85,107,93,0.2);
-    }
-
-    .access-badge.library {
-      background: rgba(213,169,79,0.12); color: #7a5010;
-      border: 1px solid rgba(213,169,79,0.3);
-    }
-
-    .access-badge.subscription {
-      background: rgba(29,44,53,0.08); color: var(--night);
-      border: 1px solid rgba(29,44,53,0.15);
-    }
-
     .resource-link {
       font-family: var(--ui-font); font-size: 0.8rem;
       color: var(--clay-deep); white-space: nowrap;
@@ -1116,17 +999,6 @@
       font-family: var(--ui-font); font-size: 0.78rem;
       color: var(--muted); white-space: nowrap;
       font-style: italic;
-    }
-
-    .resource-divider {
-      border: none;
-      border-top: 1px solid rgba(34, 38, 31, 0.09);
-      margin: 0 0 2rem;
-    }
-
-    @media (max-width: 820px) {
-      .resource-era-row { grid-template-columns: 1fr; }
-      .resource-era-label { position: static; }
     }
 
     /* ── CLOSING / FOOTER ── */
@@ -1211,7 +1083,7 @@
       .example-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.2rem; -webkit-overflow-scrolling: touch; }
       .example-pill { flex: 0 0 auto; }
       .card, .split-card { grid-column: span 12; }
-      .section-grid, .stats-bar, .shifts-track { gap: 0.75rem; }
+      .section-grid, .shifts-track { gap: 0.75rem; }
       .section-intro h3 { font-size: clamp(1.75rem, 10vw, 2.35rem); }
       .quiz-section, .explorer { border-radius: 1.25rem; padding: 1rem; }
       .quiz-header { align-items: flex-start; }
@@ -1265,8 +1137,8 @@
       </div>
       <nav class="top-links" aria-label="Page sections">
         <a href="#explorer">Explorer</a>
-        <a href="#quiz-section">Quiz</a>
-        <a href="#explorer" onclick="switchExplorerTab('text-help')">Text help</a>
+        <a href="/kids.html">Kids</a>
+        <a href="/methodology.html">Methodology</a>
         <a href="/resources.html">Resources</a>
       </nav>
     </header>
@@ -1327,165 +1199,16 @@
         <aside class="hero-story" aria-labelledby="wotd-heading">
           <h3 id="wotd-heading">Word story of the day</h3>
           <div class="story-card" id="word-of-day">
-            <p class="empty-state">Loading…</p>
+            <div class="story-word">nice</div>
+            <p>A familiar compliment with an unexpectedly strange past.</p>
+            <div class="story-stages">
+              <div class="story-stage"><strong>Then</strong>From Latin <em>nescius</em>, it first meant ignorant or foolish.</div>
+              <div class="story-stage"><strong>The turn</strong>It moved through fussy, precise, and socially careful meanings.</div>
+              <div class="story-stage"><strong>Now</strong>A mild word for pleasant, kind, or agreeable.</div>
+            </div>
+            <button class="story-button" onclick="triggerExampleSearch('nice')">Open in the explorer</button>
           </div>
         </aside>
-      </div>
-    </section>
-
-    <section aria-labelledby="modes-heading">
-      <div class="section-intro">
-        <h3 id="modes-heading">Three ways into a word.</h3>
-        <p>
-          Start with curiosity, bring it to old texts, or use it to write with sharper
-          feeling. The same word history serves all three.
-        </p>
-      </div>
-      <div class="section-grid">
-        <article class="card mode-card">
-          <h3>Germanic Core</h3>
-          <strong>English begins with words that feel direct and close to the body.</strong>
-          <p>Old English and Germanic words often carry everyday force: home, bread, hand, love, death, lord.</p>
-        </article>
-        <article class="card mode-card">
-          <h3>French and Latin Layers</h3>
-          <strong>Conquest, Church, law, and scholarship changed English vocabulary.</strong>
-          <p>French and Latin words often feel legal, sacred, medical, formal, institutional, or learned.</p>
-        </article>
-        <article class="card mode-card">
-          <h3>Writer's Ear</h3>
-          <strong>Layered synonyms do different work.</strong>
-          <p>Compare kingly, royal, and regal; ask, question, and interrogate; holy, sacred, and consecrated.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- Why it matters -->
-    <section id="why-learn" aria-labelledby="why-heading">
-      <div class="section-intro">
-        <h3 id="why-heading">Not just what words mean — how they became themselves.</h3>
-        <p>
-          A dictionary gives you a definition. The Living Lexicon shows you the
-          <em>life</em> of a word across time: its older meanings, its turning points,
-          and the history still hidden inside it.
-        </p>
-      </div>
-
-      <div class="section-grid">
-        <article class="card">
-          <h3>Then vs Now</h3>
-          <p>See what a word meant centuries ago, what it means now, and exactly where the shift happened — with attested sources.</p>
-        </article>
-        <article class="card">
-          <h3>Why English Feels Strange</h3>
-          <p>Spelling quirks, borrowed forms, and irregular verbs are not obstacles — they are clues. Etymology explains them all.</p>
-        </article>
-        <article class="card">
-          <h3>Hidden Social History</h3>
-          <p>Religion, class, law, migration, and conquest all reshape ordinary words. The history of a culture lives inside its language.</p>
-        </article>
-      </div>
-
-      <!-- Stats -->
-      <div class="stats-bar" role="list" aria-label="Vocabulary and language facts">
-        <div class="stat-item" role="listitem">
-          <div class="stat-number">60%</div>
-          <div class="stat-label">of academic vocabulary is decodable via Latin &amp; Greek roots</div>
-        </div>
-        <div class="stat-item" role="listitem">
-          <div class="stat-number">1,000+</div>
-          <div class="stat-label">English words shifted meaning significantly since Shakespeare</div>
-        </div>
-        <div class="stat-item" role="listitem">
-          <div class="stat-number">2×</div>
-          <div class="stat-label">vocabulary-rich students outperform peers in reading comprehension</div>
-        </div>
-        <div class="stat-item" role="listitem">
-          <div class="stat-number">60%</div>
-          <div class="stat-label">of modern English vocabulary traces to Latin or Greek</div>
-        </div>
-      </div>
-
-      <div class="section-grid">
-        <article class="card split-card">
-          <h3>Why etymology helps you read older texts</h3>
-          <strong>Words meant different things — and the text depends on it.</strong>
-          <p>
-            In the King James Bible, "charity" does not mean dropping coins in a bucket.
-            It renders the Greek <em>agape</em> — deep, unconditional love. In
-            Shakespeare, "naughty" does not mean mildly disobedient; it means wicked or
-            worthless. Missing these meanings changes what you understand entirely.
-          </p>
-          <ul class="feature-list">
-            <li>Recognize when a familiar word carries an older, sharper meaning.</li>
-            <li>Stop forcing modern definitions onto older texts and authors.</li>
-            <li>Read with the vocabulary the author actually intended.</li>
-          </ul>
-        </article>
-        <article class="card split-card">
-          <h3>Word history makes vocabulary stick</h3>
-          <strong>Roots, relatives, and stories give words shape and memory.</strong>
-          <p>
-            Research in vocabulary acquisition — Beck, McKeown &amp; Kucan; Nation;
-            Graves — consistently shows that understanding the structure and history of
-            words improves both recall and reading comprehension. Stories beat flashcards.
-            Context beats drilling isolated definitions.
-          </p>
-          <ul class="feature-list">
-            <li>One Latin or Greek root can decode twenty unfamiliar words at once.</li>
-            <li>Learn through surprise and narrative, not rote repetition.</li>
-            <li>Etymology is a decoding strategy, not just a curiosity.</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <!-- Semantic Shifts Gallery -->
-    <section id="dramatic-shifts" aria-labelledby="shifts-heading">
-      <div class="section-intro">
-        <h3 id="shifts-heading">Words that flipped their meaning.</h3>
-        <p>
-          These are not obscure footnotes — they are everyday words whose history will
-          change how you read older texts. Every entry is traceable to a primary source.
-          Click any card to explore it.
-        </p>
-      </div>
-      <div class="shifts-track" id="shifts-track" role="list" aria-label="Words with dramatic meaning shifts"></div>
-    </section>
-
-    <!-- Etymology Quiz -->
-    <section class="quiz-section" id="quiz-section" aria-labelledby="quiz-heading">
-      <div class="quiz-header">
-        <div>
-          <p class="eyebrow eyebrow-gold">Interactive challenge</p>
-          <h3 id="quiz-heading">Guess the original meaning.</h3>
-          <p>Before modern usage took over, these words meant something very different. How well do you know word history?</p>
-        </div>
-        <div class="quiz-meta">
-          <div class="quiz-score-badge" id="quiz-score-display" aria-live="polite">Score: 0 / 0</div>
-          <button type="button" class="quiz-btn-ghost" onclick="resetQuiz()">Restart</button>
-        </div>
-      </div>
-
-      <div class="quiz-card" id="quiz-card">
-        <div class="quiz-progress" id="quiz-progress" aria-live="polite">Question 1 of 10</div>
-        <div class="quiz-word" id="quiz-word"></div>
-        <div class="quiz-prompt" id="quiz-prompt"></div>
-        <div class="quiz-choices" id="quiz-choices" role="group" aria-label="Choose the original meaning"></div>
-        <div class="quiz-reveal" id="quiz-reveal" aria-live="polite">
-          <p id="quiz-reveal-text"></p>
-          <div class="quiz-reveal-source" id="quiz-reveal-source"></div>
-        </div>
-        <div class="quiz-actions">
-          <button type="button" class="quiz-btn-primary" id="quiz-next-btn" onclick="nextQuestion()">Next word →</button>
-          <button type="button" class="quiz-explore-btn" id="quiz-explore-btn" onclick="exploreCurrentQuizWord()">Explore this word</button>
-        </div>
-      </div>
-
-      <div class="quiz-complete" id="quiz-complete" aria-live="polite">
-        <div class="score-big" id="quiz-final-score"></div>
-        <p id="quiz-final-msg"></p>
-        <button type="button" class="quiz-btn-primary show" onclick="resetQuiz()">Play again</button>
       </div>
     </section>
 
@@ -1591,107 +1314,97 @@
       </div>
     </section>
 
-    <!-- Linguistics Primer -->
-    <section id="linguistics-primer" aria-labelledby="ling-heading">
+    <!-- Semantic Shifts Gallery -->
+    <section id="dramatic-shifts" aria-labelledby="shifts-heading">
       <div class="section-intro">
-        <h3 id="ling-heading">You've seen the shifts. Here's the science behind them.</h3>
+        <h3 id="shifts-heading">Words that flipped their meaning.</h3>
         <p>
-          Etymology told you where words like "silly" and "nice" came from. Linguistics explains
-          <em>why</em> they moved — the same handful of patterns govern meaning, sound, structure,
-          and borrowing across every language on Earth. These are the four tools that make
-          sense of it all.
+          These are not obscure footnotes — they are everyday words whose history will
+          change how you read older texts. Every entry is traceable to a primary source.
+          Click any card to explore it.
         </p>
       </div>
-
-      <div class="section-grid">
-        <article class="card split-card">
-          <h3>Semantic change — how meanings drift</h3>
-          <strong>Meanings don't wander randomly. They move along well-documented paths.</strong>
-          <p>
-            Linguists group meaning shifts into recurring categories. Spotting which one is at
-            work in a word turns a confusing old usage into a predictable pattern.
-          </p>
-          <ul class="feature-list">
-            <li><strong>Broadening</strong> — "holiday" widened from "holy day" to any day off work.</li>
-            <li><strong>Narrowing</strong> — "meat" once meant any solid food; now only animal flesh.</li>
-            <li><strong>Pejoration</strong> — "silly" sank from "blessed, fortunate" to "foolish."</li>
-            <li><strong>Amelioration</strong> — "nice" rose from "ignorant" to "pleasant, kind."</li>
-          </ul>
+      <div class="shifts-track" id="shifts-track" role="list" aria-label="Words with dramatic meaning shifts">
+        <article class="shift-card" role="listitem">
+          <div class="shift-word">awful</div>
+          <div class="shift-era">Old English</div>
+          <div class="shift-meaning-then">"Inspiring awe / reverence"</div>
+          <div class="shift-arrow">→ now</div>
+          <div class="shift-meaning-now">"Terrible"</div>
+          <div class="shift-source">Source: OED</div>
         </article>
-        <article class="card split-card">
-          <h3>Sound change — why spelling looks so strange</h3>
-          <strong>Pronunciation shifts in regular, rule-governed waves across centuries.</strong>
-          <p>
-            English spelling looks chaotic because it freezes pronunciations from different
-            historical moments. Two large-scale sound shifts explain most of the mismatch.
-          </p>
-          <ul class="feature-list">
-            <li><strong>Grimm's Law</strong> — a systematic Proto-Germanic consonant shift; it's why Latin "pater" lines up with English "father" and Latin "piscis" with "fish."</li>
-            <li><strong>The Great Vowel Shift</strong> (c. 1400–1700) — long vowels moved upward in the mouth; it's why "name" rhymed with today's "calm" in Chaucer's English.</li>
-          </ul>
-        </article>
-        <article class="card split-card">
-          <h3>Morphology — words built from parts</h3>
-          <strong>Most English words are assemblies of smaller meaningful pieces.</strong>
-          <p>
-            Once you can see prefixes, roots, and suffixes as separable units, unfamiliar words
-            stop being walls of letters and start being puzzles you can solve on sight.
-          </p>
-          <ul class="feature-list">
-            <li>"Un-" + "believe" + "-able" = three meaningful pieces, one word.</li>
-            <li>The Latin root <em>spect</em> ("to look") alone powers spectator, inspect, prospect, retrospect, and spectacle.</li>
-          </ul>
-        </article>
-        <article class="card split-card">
-          <h3>Language contact — borrowing and blending</h3>
-          <strong>English is, more than most languages, a product of collision and contact.</strong>
-          <p>
-            Each invasion, trade route, and intellectual movement left a layer of vocabulary
-            behind — which is why English so often has three words for one idea.
-          </p>
-          <ul class="feature-list">
-            <li>Old Norse contributed everyday words: "sky," "leg," "they," "knife."</li>
-            <li>Norman French supplied the vocabulary of law, government, and cuisine: "justice," "parliament," "beef."</li>
-            <li>Latin and Greek, borrowed mainly through scholarship, account for roughly 60% of academic English vocabulary.</li>
-          </ul>
+        <article class="shift-card" role="listitem">
+          <div class="shift-word">silly</div>
+          <div class="shift-era">Old English</div>
+          <div class="shift-meaning-then">"Blessed / happy"</div>
+          <div class="shift-arrow">→ now</div>
+          <div class="shift-meaning-now">"Foolish / trivial"</div>
+          <div class="shift-source">Source: OED</div>
         </article>
       </div>
     </section>
 
-    <!-- Who it helps -->
-    <section id="teachers-writers" aria-labelledby="audience-heading">
-      <div class="section-intro">
-        <h3 id="audience-heading">Useful for curious readers. Strong enough for serious work.</h3>
-        <p>
-          The surface is designed to feel inviting for high schoolers discovering etymology for
-          the first time. Underneath it, every word traces to a credible scholarly record.
-        </p>
+    <!-- Etymology Quiz -->
+    <section class="quiz-section" id="quiz-section" aria-labelledby="quiz-heading">
+      <div class="quiz-header">
+        <div>
+          <p class="eyebrow eyebrow-gold">Interactive challenge</p>
+          <h3 id="quiz-heading">Guess the original meaning.</h3>
+          <p>Before modern usage took over, these words meant something very different. How well do you know word history?</p>
+        </div>
+        <div class="quiz-meta">
+          <div class="quiz-score-badge" id="quiz-score-display" aria-live="polite">Score: 0 / 0</div>
+          <button type="button" class="quiz-btn-ghost" onclick="resetQuiz()">Restart</button>
+        </div>
       </div>
 
+      <div class="quiz-card" id="quiz-card">
+        <div class="quiz-progress" id="quiz-progress" aria-live="polite">Question 1 of 10</div>
+        <div class="quiz-word" id="quiz-word">awful</div>
+        <div class="quiz-prompt" id="quiz-prompt">In Old English, "awful" described something that made you feel…</div>
+        <div class="quiz-choices" id="quiz-choices" role="group" aria-label="Choose the original meaning">
+          <button type="button" class="quiz-choice">Awe and reverential fear</button>
+          <button type="button" class="quiz-choice">Physical pain and sickness</button>
+          <button type="button" class="quiz-choice">Ordinary boredom</button>
+          <button type="button" class="quiz-choice">Quiet satisfaction</button>
+        </div>
+        <div class="quiz-reveal" id="quiz-reveal" aria-live="polite">
+          <p id="quiz-reveal-text"></p>
+          <div class="quiz-reveal-source" id="quiz-reveal-source"></div>
+        </div>
+        <div class="quiz-actions">
+          <button type="button" class="quiz-btn-primary" id="quiz-next-btn" onclick="nextQuestion()">Next word →</button>
+          <button type="button" class="quiz-explore-btn" id="quiz-explore-btn" onclick="exploreCurrentQuizWord()">Explore this word</button>
+        </div>
+      </div>
+
+      <div class="quiz-complete" id="quiz-complete" aria-live="polite">
+        <div class="score-big" id="quiz-final-score"></div>
+        <p id="quiz-final-msg"></p>
+        <button type="button" class="quiz-btn-primary show" onclick="resetQuiz()">Play again</button>
+      </div>
+    </section>
+
+    <!-- Deeper Learning -->
+    <section id="learn-more" aria-labelledby="learn-heading">
+      <div class="section-intro">
+        <h3 id="learn-heading">Want the linguistics behind the shifts?</h3>
+        <p>
+          Keep the homepage focused on the word explorer. The deeper lessons on semantic
+          change, sound change, morphology, and language contact now live with the research
+          resources instead of standing between visitors and the tool.
+        </p>
+      </div>
       <div class="section-grid">
         <article class="card">
-          <h3>High School Students</h3>
-          <ul class="user-list">
-            <li>Build vocabulary through stories — not rote memorization.</li>
-            <li>Read Shakespeare and historical texts with greater clarity.</li>
-            <li>Understand SAT/ACT vocabulary root patterns and why they work.</li>
-          </ul>
+          <h3>Learn the Patterns</h3>
+          <p>Study broadening, narrowing, pejoration, amelioration, sound change, roots, and borrowing paths after you have explored a word.</p>
+          <a class="resource-link" href="/resources.html">Open learning resources -></a>
         </article>
         <article class="card">
-          <h3>Educators</h3>
-          <ul class="user-list">
-            <li>Connect history, literature, and language study in one discussion.</li>
-            <li>Use word history to unlock older texts for students.</li>
-            <li>See semantic drift as context and meaning, not just academic curiosity.</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>Writers &amp; Readers</h3>
-          <ul class="user-list">
-            <li>Choose words with awareness of register, tone, and history.</li>
-            <li>Understand why some words feel formal, sacred, blunt, or technical.</li>
-            <li>Read older literature with the vocabulary the author actually used.</li>
-          </ul>
+          <h3>Follow the Sources</h3>
+          <p>Use dictionaries, corpora, and primary texts to check whether a meaning is attested, reconstructed, or still uncertain.</p>
+          <a class="resource-link" href="#sources">See source standards -></a>
         </article>
       </div>
     </section>
@@ -1701,8 +1414,9 @@
       <div class="section-intro">
         <h3 id="sources-heading">Built on credible sources.</h3>
         <p>
-          Every etymology on this site traces to a primary scholarly dictionary or a
-          peer-reviewed historical record. We do not invent or speculate.
+          PensiveApe is a learning tool first: use it to find the claim, source trail,
+          and confidence label. For publication or scholarship, check the exact source
+          citation shown on each word entry.
         </p>
       </div>
       <div class="sources-grid" role="list" aria-label="Source dictionaries">
@@ -1737,431 +1451,6 @@
           <div class="source-card-tier">Tier 3 — Reference</div>
         </div>
       </div>
-    </section>
-
-    <!-- Philology Resources: Proto-Indo-European to Modern English -->
-    <section id="philology-resources" aria-labelledby="res-heading">
-      <div class="section-intro">
-        <h3 id="res-heading">The scholarly trail — from Proto-Indo-European to Modern English.</h3>
-        <p>
-          Primary dictionaries, academic databases, and trusted reference works for every era
-          of the language. Free resources are linked directly. Sources requiring institutional
-          access are noted — most are available through any university or public library system.
-        </p>
-      </div>
-
-      <details class="scholar-shelf">
-        <summary>Open the Scholar's Shelf for primary dictionaries, corpora, and research tools.</summary>
-        <div class="scholar-shelf-content">
-
-      <!-- Proto-Indo-European -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">~4500–2500 BCE</span>
-          <div class="resource-era-title">Proto-Indo-European</div>
-          <div class="resource-era-subtitle">The reconstructed ancestor of English, Latin, Greek, Sanskrit, Persian, and most European languages. Spoken before writing; known through comparative reconstruction.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Indogermanisches etymologisches Wörterbuch</div>
-            <div class="resource-card-org">Julius Pokorny, 1959</div>
-            <div class="resource-card-desc">The foundational PIE root dictionary. Still the standard starting point for tracing English words to their Proto-Indo-European origins. Digitized and freely available.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://archive.org/search?query=pokorny+indogermanisches" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Indo-European Roots Appendix</div>
-            <div class="resource-card-org">American Heritage Dictionary</div>
-            <div class="resource-card-desc">An approachable, curated guide to PIE roots with direct links to English words descended from each root. Ideal for classroom use and independent learners.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.ahdictionary.com" target="_blank" rel="noopener noreferrer">Visit AHDictionary.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Leiden Indo-European Etymological Dictionaries</div>
-            <div class="resource-card-org">Brill / Leiden University</div>
-            <div class="resource-card-desc">The current gold-standard series covering individual IE branches — Germanic, Celtic, Greek, Latin, Balto-Slavic, Anatolian, and more. Peer-reviewed by leading specialists.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Library access</span>
-              <span class="resource-link-muted">Search: Leiden IEEDS via Brill</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Proto-Germanic -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">~500 BCE–300 CE</span>
-          <div class="resource-era-title">Proto-Germanic</div>
-          <div class="resource-era-subtitle">The immediate ancestor of English, Dutch, German, Frisian, and the Scandinavian languages. Distinguishable from other IE branches by Grimm's Law consonant shifts.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Online Etymology Dictionary</div>
-            <div class="resource-card-org">Douglas Harper</div>
-            <div class="resource-card-desc">Traces Proto-Germanic roots for most common English words with clear source references. The most accessible free etymological tool available and consistently reliable.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Perseus Digital Library</div>
-            <div class="resource-card-org">Tufts University</div>
-            <div class="resource-card-desc">Classical and Germanic texts with built-in morphological analysis. Essential for tracing Latin and Greek borrowings through primary sources, and for comparative Germanic study.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.perseus.tufts.edu" target="_blank" rel="noopener noreferrer">Visit Perseus.Tufts.edu →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Old English -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">450–1150 CE</span>
-          <div class="resource-era-title">Old English (Anglo-Saxon)</div>
-          <div class="resource-era-subtitle">The Germanic language of <em>Beowulf</em> and the Anglo-Saxon Chronicle. English's core vocabulary — bread, water, hand, earth, love, death — comes from this era.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Bosworth-Toller Anglo-Saxon Dictionary</div>
-            <div class="resource-card-org">Joseph Bosworth &amp; T. Northcote Toller, 1898</div>
-            <div class="resource-card-desc">The authoritative dictionary of Old English. Comprehensive coverage of Anglo-Saxon vocabulary with original textual citations from manuscripts. Fully digitized and freely searchable.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://bosworthtoller.com" target="_blank" rel="noopener noreferrer">Visit BosworthToller.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Dictionary of Old English (DOE)</div>
-            <div class="resource-card-org">University of Toronto</div>
-            <div class="resource-card-desc">The modern scholarly successor to Bosworth-Toller, based on the complete Old English corpus. Letters A–I are freely searchable; the remainder requires institutional access.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Partial free / Library</span>
-              <span class="resource-link-muted">Search: Dictionary of Old English, U of Toronto</span>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Internet Archive — Anglo-Saxon Texts</div>
-            <div class="resource-card-org">Archive.org</div>
-            <div class="resource-card-desc">Freely digitized editions of Sweet's Anglo-Saxon Primer, Ælfric's Grammar, the Anglo-Saxon Chronicle, and <em>Beowulf</em> in original and translated form.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://archive.org/search?query=old+english+anglo+saxon+grammar" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Middle English -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">1150–1500 CE</span>
-          <div class="resource-era-title">Middle English</div>
-          <div class="resource-era-subtitle">The language of Chaucer, Langland, and Wycliffe. Norman French conquest reshaped English vocabulary, class register, and spelling across two centuries.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Middle English Dictionary (MED)</div>
-            <div class="resource-card-org">University of Michigan</div>
-            <div class="resource-card-desc">The definitive reference for Middle English vocabulary, 1100–1500. Every entry includes dateable citations from period manuscripts. One of the finest historical dictionaries ever compiled.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://quod.lib.umich.edu/m/middle-english-dictionary/" target="_blank" rel="noopener noreferrer">Visit MED Online →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Project Gutenberg — Middle English Texts</div>
-            <div class="resource-card-org">Project Gutenberg</div>
-            <div class="resource-card-desc">Free digitized editions of Chaucer's <em>Canterbury Tales</em>, Langland's <em>Piers Plowman</em>, and <em>Sir Gawain and the Green Knight</em> — the essential primary reading for this period.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.gutenberg.org/ebooks/search/?query=middle+english" target="_blank" rel="noopener noreferrer">Search Gutenberg.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Early English Books Online (EEBO)</div>
-            <div class="resource-card-org">ProQuest</div>
-            <div class="resource-card-desc">Digitized scans of virtually every book printed in England between 1475 and 1700. Invaluable for reading words in the exact historical contexts in which they appeared.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Library access</span>
-              <span class="resource-link-muted">Available via most university libraries</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Early Modern English -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">1500–1700 CE</span>
-          <div class="resource-era-title">Early Modern English</div>
-          <div class="resource-era-subtitle">Shakespeare, the King James Bible, and Francis Bacon. Spelling was not yet standardized. Latin and Greek borrowings flooded in through the Renaissance. The first English dictionaries appeared.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Oxford English Dictionary — Historical Citations</div>
-            <div class="resource-card-org">Oxford University Press</div>
-            <div class="resource-card-desc">Unmatched for this period: quotations from 1500–1700 show exactly how words were used in context. The single most important scholarly tool for Early Modern English vocabulary.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Library access</span>
-              <a class="resource-link" href="https://www.oed.com" target="_blank" rel="noopener noreferrer">Visit OED.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Etymological Dictionary of the English Language</div>
-            <div class="resource-card-org">Walter W. Skeat, 1882</div>
-            <div class="resource-card-desc">Skeat's landmark work traces English words with exceptional historical depth. Especially strong on Early Modern forms and Latin borrowings. Fully digitized and free on Archive.org.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://archive.org/search?query=skeat+etymological+dictionary+english" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Project Gutenberg — Early Modern Texts</div>
-            <div class="resource-card-org">Project Gutenberg</div>
-            <div class="resource-card-desc">Free access to Shakespeare, the King James Bible (1611), Francis Bacon, and Marlowe. Reading these texts alongside a historical dictionary shows the language in motion.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.gutenberg.org" target="_blank" rel="noopener noreferrer">Visit Gutenberg.org →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Late Modern & Contemporary -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge">1700 CE – Present</span>
-          <div class="resource-era-title">Late Modern &amp; Contemporary English</div>
-          <div class="resource-era-subtitle">Standardized spelling, the rise of dictionaries, global spread of English, and the rapid semantic drift of the industrial and digital eras.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Oxford English Dictionary (OED)</div>
-            <div class="resource-card-org">Oxford University Press</div>
-            <div class="resource-card-desc">The definitive record of the English language. Over 600,000 words with dateable first citations and historical quotations spanning 1150 to today. The final authority on English vocabulary.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Library access</span>
-              <a class="resource-link" href="https://www.oed.com" target="_blank" rel="noopener noreferrer">Visit OED.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Merriam-Webster Unabridged</div>
-            <div class="resource-card-org">Merriam-Webster</div>
-            <div class="resource-card-desc">The authoritative American English reference, tracing a direct line from Webster's 1828 original. Clear etymology notes and usage history across Modern American English.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free (core)</span>
-              <a class="resource-link" href="https://www.merriam-webster.com" target="_blank" rel="noopener noreferrer">Visit Merriam-Webster.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Google Books Ngram Viewer</div>
-            <div class="resource-card-org">Google Research</div>
-            <div class="resource-card-desc">Charts word frequency across millions of books from 1800–2019. An extraordinary tool for visualizing semantic drift, word adoption patterns, and vocabulary rise and fall over time.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://books.google.com/ngrams" target="_blank" rel="noopener noreferrer">Visit Google Ngrams →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Cross-Era Reference -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge era-sage">All Eras</span>
-          <div class="resource-era-title">Cross-Era Etymology Reference</div>
-          <div class="resource-era-subtitle">Resources that trace words across the full historical arc — from reconstructed root to living English.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">Online Etymology Dictionary</div>
-            <div class="resource-card-org">Douglas Harper</div>
-            <div class="resource-card-desc">The best free cross-era etymology reference. Covers most English words from PIE through modern usage with clear sourcing. The recommended first stop for any word investigation.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">British Library — Digitized Manuscripts</div>
-            <div class="resource-card-org">British Library</div>
-            <div class="resource-card-desc">Free access to the <em>Beowulf</em> manuscript, the Lindisfarne Gospels, Magna Carta, and hundreds of primary documents of English linguistic history across all eras.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.bl.uk" target="_blank" rel="noopener noreferrer">Visit BL.uk →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Internet Archive — Scholarly Philology</div>
-            <div class="resource-card-org">Archive.org</div>
-            <div class="resource-card-desc">Out-of-copyright works freely available: Skeat, Bosworth, Sweet's Anglo-Saxon Primer, the original OED fascicles, and core philological texts from the 19th and early 20th centuries.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://archive.org/search?query=english+philology+etymology" target="_blank" rel="noopener noreferrer">Search Archive.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Encyclopaedia Britannica — Language History</div>
-            <div class="resource-card-org">Encyclopaedia Britannica</div>
-            <div class="resource-card-desc">Expert-reviewed articles on the history of English, Indo-European languages, and philology. Peer-reviewed by academic specialists. Reliable for high school and undergraduate research.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free (core articles)</span>
-              <a class="resource-link" href="https://www.britannica.com" target="_blank" rel="noopener noreferrer">Visit Britannica.com →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- General Linguistics -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge era-sage">Linguistics</span>
-          <div class="resource-era-title">General Linguistics — Beyond Word History</div>
-          <div class="resource-era-subtitle">Etymology explains where words came from. These resources explain the broader science of how language itself works — sound systems, grammar, and the world's language families.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">MIT OpenCourseWare — Linguistics</div>
-            <div class="resource-card-org">Massachusetts Institute of Technology</div>
-            <div class="resource-card-desc">Full university-level course materials on introductory and historical linguistics, free and self-paced. A rigorous next step for anyone who wants to go beyond word trivia into the underlying science.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://ocw.mit.edu" target="_blank" rel="noopener noreferrer">Visit OCW.mit.edu →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">International Phonetic Association</div>
-            <div class="resource-card-org">IPA</div>
-            <div class="resource-card-desc">Home of the International Phonetic Alphabet — the standard system linguists use to transcribe the sounds of any language precisely, independent of spelling conventions.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.internationalphoneticassociation.org" target="_blank" rel="noopener noreferrer">Visit the IPA →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Glottolog</div>
-            <div class="resource-card-org">Max Planck Institute for Evolutionary Anthropology</div>
-            <div class="resource-card-desc">A comprehensive, scholarly catalog of the world's languages and language families, with bibliographic references. Useful for seeing English's place within Indo-European and beyond.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://glottolog.org" target="_blank" rel="noopener noreferrer">Visit Glottolog.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Ethnologue — Languages of the World</div>
-            <div class="resource-card-org">SIL International</div>
-            <div class="resource-card-desc">A widely cited reference on the world's living languages — their families, distribution, and number of speakers. Useful context for understanding how English fits into the global language landscape.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Partial free / Subscription</span>
-              <a class="resource-link" href="https://www.ethnologue.com" target="_blank" rel="noopener noreferrer">Visit Ethnologue.com →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- Academic Research -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge era-night">Research</span>
-          <div class="resource-era-title">Academic Journals &amp; Databases</div>
-          <div class="resource-era-subtitle">Peer-reviewed scholarship on historical linguistics, semantic change, and English philology.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">JSTOR — Linguistics</div>
-            <div class="resource-card-org">JSTOR</div>
-            <div class="resource-card-desc">Thousands of peer-reviewed articles on historical linguistics, semantic change, and English language history. Free registration provides limited monthly article access.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge library">Partial free / Library</span>
-              <a class="resource-link" href="https://jstor.org" target="_blank" rel="noopener noreferrer">Visit JSTOR.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Linguistic Society of America</div>
-            <div class="resource-card-org">LSA</div>
-            <div class="resource-card-desc">The leading U.S. professional organization for linguistics. Its journal <em>Language</em> publishes foundational papers on historical and comparative linguistics. Educational resources available free.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free resources</span>
-              <a class="resource-link" href="https://www.linguisticsociety.org" target="_blank" rel="noopener noreferrer">Visit LinguisticSociety.org →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Perseus Digital Library</div>
-            <div class="resource-card-org">Tufts University</div>
-            <div class="resource-card-desc">Primary Greek and Latin texts with morphological analysis. Essential for tracing the Latin and Greek borrowings that account for roughly 60% of the English academic vocabulary.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.perseus.tufts.edu" target="_blank" rel="noopener noreferrer">Visit Perseus.Tufts.edu →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr class="resource-divider">
-
-      <!-- For Students -->
-      <div class="resource-era-row">
-        <div class="resource-era-label">
-          <span class="resource-era-badge era-gold">Students</span>
-          <div class="resource-era-title">For High School Students &amp; Curious Readers</div>
-          <div class="resource-era-subtitle">Approachable, accurate, and engaging starting points for exploring the history of English — no prior linguistics knowledge required.</div>
-        </div>
-        <div class="resource-cards-grid">
-          <div class="resource-card">
-            <div class="resource-card-name">The History of English Podcast</div>
-            <div class="resource-card-org">Kevin Stroud</div>
-            <div class="resource-card-desc">A free, chronological audio journey from Proto-Indo-European to Modern English. Exceptionally accurate and engaging — widely regarded as one of the best introductions to English language history available.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.historyofenglishpodcast.com" target="_blank" rel="noopener noreferrer">Visit HistoryOfEnglishPodcast.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Online Etymology Dictionary</div>
-            <div class="resource-card-org">Douglas Harper</div>
-            <div class="resource-card-desc">The best single free tool for curious word investigators. Type any word and trace it through centuries of change — clear explanations, reliable sourcing, and no jargon required.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.etymonline.com" target="_blank" rel="noopener noreferrer">Visit Etymonline.com →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Google Books Ngram Viewer</div>
-            <div class="resource-card-org">Google Research</div>
-            <div class="resource-card-desc">An interactive visualization tool showing how word frequency shifts across 200 years of published writing. Excellent for classroom demonstrations of semantic drift and vocabulary change.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://books.google.com/ngrams" target="_blank" rel="noopener noreferrer">Visit Google Ngrams →</a>
-            </div>
-          </div>
-          <div class="resource-card">
-            <div class="resource-card-name">Project Gutenberg</div>
-            <div class="resource-card-org">Project Gutenberg</div>
-            <div class="resource-card-desc">Free access to over 70,000 texts including Shakespeare, the King James Bible (1611), Chaucer, and Beowulf in translation. Primary sources make etymology real rather than abstract.</div>
-            <div class="resource-card-footer">
-              <span class="access-badge free">Free</span>
-              <a class="resource-link" href="https://www.gutenberg.org" target="_blank" rel="noopener noreferrer">Visit Gutenberg.org →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-        </div>
-      </details>
     </section>
 
     <section class="closing-banner" aria-label="Call to action">
@@ -2204,6 +1493,11 @@
       return String(str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function safeHttpUrl(value) {
+      const text = String(value || '').trim();
+      return /^https?:\/\//i.test(text) ? text : '';
     }
 
     function upsertMeta(selector, attrs) {
@@ -2310,7 +1604,7 @@
       { text: '"Silly" once meant "blessed" or "happy" in Old English (sælig). It drifted through "innocent" → "simple" → "easy to deceive" → "foolish."', source: 'OED' },
       { text: '"Naughty" once meant "possessing nothing." From naught (nothing), it shifted to mean "wicked," then softened to its modern mild sense.', source: 'MED / OED' },
       { text: '"Prevent" comes from Latin praevenire — to come before, to anticipate. In the KJV, "I prevented the dawning of the morning" simply means "I was up before dawn."', source: 'OED' },
-      { text: 'About 60% of Modern English vocabulary traces to Latin or Greek — meaning root knowledge can decode thousands of unfamiliar words without a dictionary.', source: 'Nation, 2001' },
+      { text: 'Greek and Latin roots shape much of English academic, scientific, and technical vocabulary, which is why root knowledge helps readers decode unfamiliar terms.', source: 'Henry / Nation' },
       { text: '"Charity" in early Bible translations rendered the Greek agape — a deep, unconditional love — not mere financial generosity.', source: 'OED / KJV scholarship' },
       { text: '"Bless" derives from Old English blēdsian — originally meaning "to mark with blood" in pre-Christian ritual. Christianity gave it an entirely new register.', source: 'OED' },
       { text: '"Girl" in Middle English meant a young person of either sex. The word became gender-specific only in the Late Modern English period.', source: 'MED / OED' },
@@ -2403,6 +1697,7 @@
     function initShiftsGallery() {
       const track = document.getElementById('shifts-track');
       if (!track) return;
+      track.innerHTML = '';
       SHIFTS.forEach((s) => {
         const card = document.createElement('article');
         card.className = 'shift-card';
@@ -2878,6 +2173,114 @@
       return 'Every word has older layers; this entry is ready for source-backed expansion.';
     }
 
+    function sentenceCase(text) {
+      const clean = String(text || '').trim();
+      if (!clean) return '';
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
+
+    function endSentence(text) {
+      const clean = String(text || '').trim();
+      if (!clean) return '';
+      return /[.!?]$/.test(clean) ? clean : `${clean}.`;
+    }
+
+    function plainDefinitionText(data) {
+      const word = data.word || data.name || 'This word';
+      const raw = String(data.definition || '').trim();
+      if (!raw) return 'No teacher-friendly definition has been loaded yet.';
+      const makeMeaning = (text) => `${sentenceCase(word)} means ${endSentence(text)}`;
+      const cleaned = raw
+        .replace(/^to\s+/i, 'to ')
+        .replace(/^a person who\s+/i, 'someone who ')
+        .replace(/^one who\s+/i, 'someone who ')
+        .replace(/^the act of\s+/i, 'the action of ')
+        .replace(/^the quality of being\s+/i, 'the state of being ');
+      if (/^to\s/i.test(cleaned)) return makeMeaning(cleaned);
+      if (/^(someone|something|the action|the state|the process)\b/i.test(cleaned)) {
+        return makeMeaning(cleaned);
+      }
+      return makeMeaning(cleaned.charAt(0).toLowerCase() + cleaned.slice(1));
+    }
+
+    function usageCueFor(data, registers, layer) {
+      const text = `${data.word || ''} ${data.definition || ''} ${data.historical_context || ''}`.toLowerCase();
+      if (/prevent|avoid|block|hinder|stop/.test(text)) {
+        return 'Use it when you want to show that something is being kept from happening, especially before it fully begins.';
+      }
+      if (/feel|emotion|fear|joy|anger|sad|happy|awe|love/.test(text)) {
+        return 'Use it when the emotional force of the sentence matters, not just the bare event.';
+      }
+      if (/say|speak|tell|write|declare|claim|ask|question/.test(text)) {
+        return 'Use it when the manner of speaking or writing matters as much as the information itself.';
+      }
+      if (/law|legal|court|official|contract|right|duty/.test(text) || registers.includes('legal')) {
+        return 'Use it when the sentence needs an official, legal, or institutional tone.';
+      }
+      if (/medical|science|technical|study|method|system/.test(text) || registers.includes('technical')) {
+        return 'Use it when precision matters more than conversational warmth.';
+      }
+      if (registers.includes('borrowed layer')) {
+        return 'Use it when a more formal, learned, or polished word fits better than a plain everyday synonym.';
+      }
+      if (layer.label === 'Inherited Germanic') {
+        return 'Use it when you want wording that feels direct, familiar, and close to everyday English.';
+      }
+      return 'Use it when the word’s exact shade of meaning is stronger than a simpler nearby word.';
+    }
+
+    function nuanceFor(data, registers, layer) {
+      if (data.figurative_meaning) return `It can also work figuratively: ${endSentence(data.figurative_meaning)}`;
+      if (registers.includes('sacred')) return 'It may carry religious, moral, or elevated force, so casual modern use can flatten its older weight.';
+      if (registers.includes('legal')) return 'It sounds more official or institutional than many everyday alternatives.';
+      if (registers.includes('technical')) return 'It leans precise, learned, or specialized rather than casual.';
+      if (layer.effect && layer.effect !== 'context-dependent') return `Because of its source layer, it may feel ${layer.effect}.`;
+      return 'The important nuance is not only what it names, but the tone and situation in which it sounds natural.';
+    }
+
+    function contrastFor(data, registers) {
+      const text = `${data.word || ''} ${data.definition || ''}`.toLowerCase();
+      if (/prevent/.test(text)) return 'Compare stop: stop can happen during an event; prevent usually happens before it.';
+      if (/ask|question/.test(text)) return 'Compare ask, question, and interrogate: each grows more formal or forceful.';
+      if (/help|aid|assist/.test(text)) return 'Compare help, aid, and assist: help is plain; aid and assist often sound more formal.';
+      if (/king|royal|regal/.test(text)) return 'Compare kingly, royal, and regal: the meaning overlaps, but the historical layer changes the tone.';
+      if (registers.includes('borrowed layer')) return 'Compare it with a shorter native English synonym; the borrowed word often sounds more formal.';
+      return 'Compare it with a simpler synonym and ask: does this word add precision, tone, or historical weight?';
+    }
+
+    function exampleFor(data) {
+      if (data.example_usage) return endSentence(data.example_usage);
+      const word = data.word || data.name || 'word';
+      const definition = String(data.definition || '').toLowerCase();
+      if (/prevent|avoid|stop|hinder/.test(definition)) return `Careful planning can ${word} confusion later.`;
+      if (/speak|say|tell|declare/.test(definition)) return `She chose the word carefully before she began to ${word}.`;
+      if (/feeling|emotion|awe|fear|joy|anger/.test(definition)) return `The scene gave the old word a sharper emotional force.`;
+      if (/person who|someone who/.test(definition)) return `A good reader notices what kind of person the word describes.`;
+      return `In context, ${word} carries more than a simple dictionary meaning.`;
+    }
+
+    function historicalNoteFor(data, timeline, layer) {
+      const old = firstMeaning(timeline);
+      if (old?.meaning) return `Older sense: ${endSentence(old.meaning)} Reading older texts with only the modern meaning may miss that shift.`;
+      if (data.literal_meaning) return `Literal clue: ${endSentence(data.literal_meaning)} That older image can help the modern meaning stick.`;
+      if (data.etymology_root || data.root) {
+        return `Root clue: ${data.etymology_root || data.root}${data.origin_language ? ` from ${data.origin_language}` : ''}.`;
+      }
+      return layer.note || 'A fuller historical note can be added when stronger source evidence is available.';
+    }
+
+    function buildLearnerDefinition(data, timeline, registers, layer) {
+      return {
+        plain: plainDefinitionText(data),
+        nuance: nuanceFor(data, registers, layer),
+        use: usageCueFor(data, registers, layer),
+        contrast: contrastFor(data, registers),
+        example: exampleFor(data),
+        history: historicalNoteFor(data, timeline, layer),
+        source: data.definition || 'No sourced dictionary definition has been loaded yet.',
+      };
+    }
+
     async function runAutocomplete(q) {
       try {
         const res = await apiFetch(`/pg/words/search?q=${encodeURIComponent(q)}&limit=5`);
@@ -2970,6 +2373,7 @@
       const registers = inferRegister(data);
       const layer = classifyOriginLayer(data);
       const path = sourcePath(data, layer);
+      const learner = buildLearnerDefinition(data, timeline, registers, layer);
 
       const nameEl = document.createElement('div');
       nameEl.id = 'word-name';
@@ -2977,7 +2381,7 @@
 
       const defEl = document.createElement('div');
       defEl.id = 'word-definition';
-      defEl.textContent = data.definition || 'No definition on record';
+      defEl.innerHTML = `<span class="definition-label">Teacher's definition</span>${esc(learner.plain)}`;
 
       container.appendChild(nameEl);
       container.appendChild(defEl);
@@ -2991,28 +2395,28 @@
       story.className = 'story-grid';
       story.innerHTML = `
         <article class="story-block">
-          <h3>What it means now</h3>
-          <p>${esc(data.definition || 'No modern definition has been loaded yet.')}</p>
+          <h3>Nuance</h3>
+          <p>${esc(learner.nuance)}</p>
         </article>
         <article class="story-block">
-          <h3>What it used to mean</h3>
-          <p>${esc(old?.meaning || data.literal_meaning || 'No older attested meaning has been loaded yet.')}</p>
+          <h3>Use it when</h3>
+          <p>${esc(learner.use)}</p>
         </article>
         <article class="story-block">
-          <h3>The turning point</h3>
-          <p>${esc(old?.era_name ? `${old.era_name}${old.start_year || old.era_start ? ` (${old.start_year ?? old.era_start} onward)` : ''}` : data.historical_context || 'Timeline evidence will appear here as this entry is enriched.')}</p>
+          <h3>Not quite the same as</h3>
+          <p>${esc(learner.contrast)}</p>
         </article>
         <article class="story-block">
-          <h3>Origin layer</h3>
-          <p>${esc(layer.label)} — ${esc(layer.status)}. ${esc(layer.effect)}.</p>
+          <h3>Example</h3>
+          <p>${esc(learner.example)}</p>
         </article>
         <article class="story-block full">
-          <h3>Source path</h3>
-          <p>${esc(path)}</p>
+          <h3>Historical clue</h3>
+          <p>${esc(learner.history)}</p>
         </article>
         <article class="story-block full">
-          <h3>Use it when reading/writing</h3>
-          <p>${esc(registers.includes('sacred') ? 'Watch for religious or elevated force; modern casual usage may flatten it.' : registers.includes('legal') ? 'Expect legal or institutional weight; the word may sound more formal than its everyday cousins.' : registers.includes('borrowed layer') ? 'Its borrowed ancestry can make it feel formal, learned, technical, or literary.' : layer.effect ? `This layer often feels ${layer.effect}.` : 'Use the history to hear register, tone, and older associations before choosing it.')}</p>
+          <h3>Dictionary source</h3>
+          <p>${esc(learner.source)}</p>
         </article>
       `;
       container.appendChild(story);
@@ -3167,10 +2571,56 @@
           </article>
           <article class="story-block full">
             <h3>Scholarly guardrail</h3>
-            <p>Attested meanings should be treated as stronger than reconstructed roots. Direct borrowing, inherited cognacy, calques, and reconstructed Proto-Indo-European forms should be labeled separately before they appear as teaching claims.</p>
+            <p>Attested meanings should be treated as stronger than reconstructed roots. Treat this page as a source trail and teaching aid, not a final citation, unless exact sense citations are shown below.</p>
+          </article>
+          <article class="story-block full" id="sense-evidence-block">
+            <h3>Exact sense citations</h3>
+            <div id="sense-evidence-content">
+              <p class="empty-state">Loading exact citations and confidence notes...</p>
+            </div>
           </article>
         </div>
       `;
+      loadSourceEvidence(data.word || data.name || currentWord);
+    }
+
+    async function loadSourceEvidence(word) {
+      const target = document.getElementById('sense-evidence-content');
+      if (!target || !word) return;
+      try {
+        const [senseRes, citeRes] = await Promise.all([
+          apiFetch(`/pg/word/${encodeURIComponent(word)}/senses`),
+          apiFetch(`/pg/word/${encodeURIComponent(word)}/cite?format=mla`),
+        ]);
+        const senses = senseRes.ok ? await senseRes.json() : [];
+        const citation = citeRes.ok ? await citeRes.json() : null;
+        if (!Array.isArray(senses) || !senses.length) {
+          target.innerHTML = '<p class="empty-state">Exact sense citations are not loaded for this word yet. Use the listed source as a lead, not as a final citation.</p>';
+          return;
+        }
+        const rows = senses.slice(0, 6).map((sense) => {
+          const sourceUrl = safeHttpUrl(sense.source_url);
+          return `
+          <div class="citation-item">
+            <strong>${esc(sense.era_name || sense.meaning_type || 'Sense')}</strong>
+            <p>${esc(sense.definition || '')}</p>
+            <p>${esc([
+              sense.source_slug ? `Source: ${sense.source_slug}` : '',
+              sense.citation ? `Citation: ${sense.citation}` : '',
+              sense.page ? `Page: ${sense.page}` : '',
+              sense.confidence ? `Confidence: ${sense.confidence}` : '',
+              sense.evidence_grade ? `Evidence grade: ${sense.evidence_grade}` : '',
+            ].filter(Boolean).join(' · ') || 'Citation metadata pending.')}</p>
+            ${sense.confidence_reason ? `<p>${esc(sense.confidence_reason)}</p>` : ''}
+            ${sourceUrl ? `<p><a href="${esc(sourceUrl)}" target="_blank" rel="noopener noreferrer">Open source record</a></p>` : ''}
+          </div>
+        `;
+        }).join('');
+        const raw = citation?.raw ? `<div class="citation-item"><strong>MLA export</strong><p class="citation-raw">${esc(citation.raw)}</p></div>` : '';
+        target.innerHTML = `<div class="citation-list">${rows}${raw}</div>`;
+      } catch {
+        target.innerHTML = '<p class="empty-state">Could not load exact citations right now. Treat this entry as a source lead until the citation service responds.</p>';
+      }
     }
 
     async function analyzeTextHelp() {

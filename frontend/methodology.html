@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology — PensiveApe</title>
+  <meta name="description" content="How PensiveApe handles word-history evidence, source tiers, confidence labels, editorial limits, and citations.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="theme-color" content="#f7f2e8">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="canonical" href="https://pensiveape.com/methodology.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="PensiveApe">
+  <meta property="og:title" content="Methodology — PensiveApe">
+  <meta property="og:description" content="How PensiveApe separates learning explanations from citation-grade word-history evidence.">
+  <meta property="og:url" content="https://pensiveape.com/methodology.html">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Methodology — PensiveApe">
+  <meta name="twitter:description" content="Source tiers, confidence labels, editorial limits, and citation policy for PensiveApe.">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AboutPage",
+      "name": "PensiveApe Methodology",
+      "url": "https://pensiveape.com/methodology.html",
+      "description": "Source, citation, and editorial policy for PensiveApe word-history entries.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "PensiveApe",
+        "url": "https://pensiveape.com/"
+      }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #f7f2e8;
+      --ink: #1e1f1b;
+      --muted: #6d6555;
+      --clay: #a5532a;
+      --clay-deep: #7f3717;
+      --sage: #556b5d;
+      --night: #1d2c35;
+      --gold: #d5a94f;
+      --cream: #fffdf8;
+      --line: rgba(34, 38, 31, 0.12);
+      --shadow: 0 14px 36px rgba(63, 43, 20, 0.1);
+      --hero-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      --ui-font: "Avenir Next Condensed", "Gill Sans", "Trebuchet MS", sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(180deg, #faf6ef 0%, var(--paper) 48%, #f3eadb 100%);
+      color: var(--ink);
+      font-family: var(--hero-font);
+      line-height: 1.58;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1060px, calc(100% - 2rem)); margin: 0 auto; padding: 1rem 0 4rem; }
+    .topbar {
+      display: flex; justify-content: space-between; gap: 1rem; align-items: center;
+      padding: 0.5rem 0 1.2rem; color: var(--muted); font-family: var(--ui-font);
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-mark {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      background: conic-gradient(from 210deg, var(--clay), var(--gold), var(--sage), var(--clay));
+    }
+    .brand h1 {
+      color: var(--night); font-family: var(--ui-font); font-size: 0.95rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .top-links { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: flex-end; }
+    .top-links a { color: var(--clay-deep); font-weight: 700; }
+    .hero {
+      padding: clamp(2rem, 5vw, 4rem) 0 2rem;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1.4rem;
+    }
+    .eyebrow {
+      font-family: var(--ui-font); text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--clay-deep); font-size: 0.76rem; margin-bottom: 0.8rem;
+    }
+    h2 { font-size: clamp(2.4rem, 6vw, 5rem); line-height: 0.95; color: var(--night); max-width: 11ch; }
+    .hero p { max-width: 46rem; color: var(--muted); margin-top: 1rem; font-size: 1.08rem; }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem; margin: 1rem 0 1.4rem;
+    }
+    .card, .note {
+      background: var(--cream); border: 1px solid var(--line); border-radius: 1rem;
+      padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
+    }
+    .card h3, .note h3 {
+      font-family: var(--ui-font); text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--clay-deep); font-size: 0.76rem; margin-bottom: 0.6rem;
+    }
+    .card p, .card li, .note p { color: var(--muted); }
+    .card ul { margin-left: 1.1rem; }
+    .card li { margin: 0.35rem 0; }
+    .note {
+      margin-top: 1rem;
+      border-left: 4px solid var(--sage);
+      border-radius: 0 1rem 1rem 0;
+      background: rgba(255,253,248,0.76);
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 1rem, 1060px); }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-links { width: 100%; }
+      .top-links a {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.45rem 0.7rem;
+        background: rgba(255,253,248,0.7);
+      }
+      h2 { font-size: clamp(2.15rem, 13vw, 3.4rem); }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span><h1>PensiveApe</h1></span>
+      </a>
+      <nav class="top-links" aria-label="Site links">
+        <a href="/">Explorer</a>
+        <a href="/kids.html">Kids</a>
+        <a href="/resources.html">Resources</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Methodology and editorial policy</p>
+        <h2>Source trail first. Authority second.</h2>
+        <p>
+          PensiveApe is designed as a learning tool and research starting point. It helps
+          readers notice older meanings, root clues, and source paths. It should not be
+          treated as a final scholarly citation unless the word entry shows exact source
+          citations, confidence notes, and enough metadata to verify the claim directly.
+        </p>
+      </section>
+
+      <section class="grid" aria-label="Methodology principles">
+        <article class="card">
+          <h3>Evidence Levels</h3>
+          <ul>
+            <li><strong>Attested meaning:</strong> a meaning tied to a historical dictionary, corpus, or dated quotation.</li>
+            <li><strong>Citation lead:</strong> a source name or entry pointer that still needs exact page, entry, or URL verification.</li>
+            <li><strong>Reconstructed root:</strong> a scholarly comparison, useful for learning but weaker than direct attestation.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Source Tiers</h3>
+          <ul>
+            <li><strong>Tier 1:</strong> primary historical dictionaries and scholarly etymological references.</li>
+            <li><strong>Tier 2:</strong> authoritative older dictionaries, corpora, and specialist reference works.</li>
+            <li><strong>Tier 3:</strong> modern dictionaries and educational references used for orientation.</li>
+            <li><strong>Tier 4:</strong> supplementary or community sources, never enough on their own.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>What We Show</h3>
+          <p>
+            Word entries should show the source name, evidence status, confidence label,
+            and, when available, exact sense citations. If exact citations are missing,
+            the page should say so plainly instead of implying final authority.
+          </p>
+        </article>
+        <article class="card">
+          <h3>What We Avoid</h3>
+          <ul>
+            <li>Unsupported numeric claims without nearby citations.</li>
+            <li>Conflating reconstructed Proto-Indo-European roots with directly attested English meanings.</li>
+            <li>Turning folk etymologies, mnemonic stories, or source leads into settled claims.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="note" aria-labelledby="editorial-heading">
+        <h3 id="editorial-heading">Editorial Position</h3>
+        <p>
+          PensiveApe can be cited as a teaching aid or discovery tool. For academic papers,
+          journalism, legal work, or classroom handouts that require formal citation, cite
+          the underlying dictionary, corpus, or primary text shown on the word entry.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
