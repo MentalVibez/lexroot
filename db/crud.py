@@ -256,6 +256,25 @@ async def bulk_get_senses_by_era(
     return out
 
 
+async def bulk_get_senses_all_eras(
+    session: AsyncSession, words: list[str]
+) -> dict[str, list[Sense]]:
+    """Fetch senses across every era for multiple words in one query.
+
+    Like :func:`bulk_get_senses_by_era` but without the era filter — used by the
+    era-check "scan all eras" path so a passage surfaces meaning shifts no matter
+    which era the reader guesses.
+    """
+    result = await session.execute(
+        select(Sense).where(Sense.word.in_(words))
+    )
+    rows = result.scalars().all()
+    out: dict[str, list[Sense]] = {w: [] for w in words}
+    for row in rows:
+        out[row.word].append(row)
+    return out
+
+
 async def bulk_get_words(
     session: AsyncSession, words: list[str]
 ) -> dict[str, Word]:

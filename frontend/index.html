@@ -940,6 +940,67 @@
 
     .flagged-word strong { color: var(--clay-deep); }
 
+    /* Understand This Text — curated sets + in-context readout */
+    .text-help-lead { color: var(--muted); font-size: 0.96rem; margin: 0.2rem 0 1rem; max-width: 46rem; }
+
+    .text-sets {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.8rem; margin-bottom: 1.2rem;
+    }
+
+    .text-set-card {
+      text-align: left; cursor: pointer; font: inherit; color: inherit;
+      background: var(--cream); border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 0.4rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .text-set-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--clay), var(--gold));
+    }
+    .text-set-card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(63, 43, 20, 0.14); }
+    .text-set-card:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+    .text-set-label { font-family: var(--ui-font); font-weight: 700; color: var(--clay-deep); font-size: 0.92rem; }
+    .text-set-snippet {
+      font-style: italic; color: var(--night); font-size: 0.9rem; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .text-set-cite { color: var(--muted); font-size: 0.72rem; font-family: var(--ui-font); }
+    .text-set-cta { color: var(--clay-deep); font-family: var(--ui-font); font-weight: 700; font-size: 0.78rem; margin-top: auto; }
+
+    .passage-readout {
+      background: #fffdf8; border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1rem 1.1rem; line-height: 1.8;
+      font-size: 1.05rem; color: var(--night); margin-bottom: 0.6rem;
+    }
+    .lex-flag {
+      background: rgba(229, 169, 54, 0.28); border-bottom: 2px solid var(--gold);
+      border-radius: 3px; padding: 0 0.12em; cursor: pointer; color: inherit;
+    }
+    .lex-flag:hover, .lex-flag:focus-visible {
+      background: rgba(178, 58, 72, 0.22); border-bottom-color: var(--clay); outline: none;
+    }
+
+    .era-badge {
+      display: inline-block; font-family: var(--ui-font); font-size: 0.66rem;
+      text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+      color: #fffdf8; background: var(--clay); border-radius: 999px;
+      padding: 0.12rem 0.5rem; vertical-align: middle; margin-left: 0.5rem;
+    }
+    .flag-head { display: flex; align-items: baseline; flex-wrap: wrap; }
+    .flag-head strong { font-size: 1.1rem; }
+    .flag-then, .flag-now { color: var(--ink); font-size: 0.95rem; margin-top: 0.2rem; }
+    .flag-source { color: var(--muted); font-family: var(--ui-font); font-size: 0.76rem; margin-top: 0.35rem; }
+    .flag-explore {
+      margin-top: 0.5rem; font-family: var(--ui-font); font-weight: 700; font-size: 0.8rem;
+      background: none; border: 1px solid rgba(127, 55, 23, 0.25); border-radius: 999px;
+      padding: 0.3rem 0.7rem; color: var(--clay-deep); cursor: pointer;
+    }
+    .flag-explore:hover { background: rgba(229, 169, 54, 0.16); border-color: var(--clay); }
+
     .ai-loading, .empty-state {
       color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.96rem;
     }
@@ -1295,10 +1356,17 @@
 
         <div class="panel tab-panel" id="text-help-panel" role="tabpanel">
           <h2>Understand This Text</h2>
+          <p class="text-help-lead">
+            Paste a passage from an older text — or open one of these — and the lexicon
+            flags everyday words that meant something different when it was written. Every
+            flag is traceable to a primary source.
+          </p>
+          <div class="text-sets" id="text-sets" role="list" aria-label="Passages to read in context"></div>
           <div class="text-help-form">
             <textarea id="text-help-input" maxlength="10000" placeholder="Paste a short sentence or passage: He prevented the dawning of the morning."></textarea>
             <div class="text-help-controls">
               <select class="context-select" id="text-era-select" aria-label="Historical era">
+                <option value="">Auto — scan every era (recommended)</option>
                 <option value="Early Modern English">Early Modern English</option>
                 <option value="Middle English">Middle English</option>
                 <option value="Old English">Old English</option>
@@ -1308,7 +1376,7 @@
               <button type="button" class="explain-btn" onclick="analyzeTextHelp()">Check older meanings</button>
             </div>
             <div id="text-help-results" aria-live="polite">
-              <p class="empty-state">The tool flags familiar words that may have meant something different in the selected era.</p>
+              <p class="empty-state">The tool flags familiar words that may have meant something different in older texts.</p>
             </div>
           </div>
         </div>
@@ -1915,6 +1983,7 @@
       initWordOfDay();
       initShiftsGallery();
       initQuiz();
+      renderTextSets();
       loadEraBrowsePills();
 
       const params = new URLSearchParams(window.location.search);
@@ -2683,39 +2752,158 @@
       }
     }
 
+    // Curated public-domain passages. Every flagged word was verified against the
+    // live corpus; composites are labelled honestly as assembled genuine lines.
+    const CURATED_TEXTS = [
+      {
+        label: 'Chaucer — The Canterbury Tales',
+        attribution: 'Assembled lines from the Miller’s Tale and the Wife of Bath’s Tale (spelling modernized).',
+        era: '',
+        text: 'This silly carpenter began to quake. For villain sinful deeds make a churl; look who is most virtuous, and on the poor have mercy.',
+      },
+      {
+        label: 'Shakespeare — Hamlet',
+        attribution: 'Assembled lines from Act 1.4, Act 3.1, and Act 3.2.',
+        era: '',
+        text: "Angels and ministers of grace defend us! Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or in the whirlwind of passion lose all temperance.",
+      },
+      {
+        label: 'King James Bible (1611)',
+        attribution: '1 Timothy 4:12 — verbatim.',
+        era: '',
+        text: 'Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.',
+      },
+      {
+        label: 'Declaration of Independence (1776)',
+        attribution: 'Assembled wording from the preamble and the list of grievances.',
+        era: '',
+        text: 'Mankind are more disposed to suffer, while evils are sufferable, than to right themselves. Let facts be submitted to a candid world: he has endeavoured to prevent the population of these States.',
+      },
+    ];
+
+    function renderTextSets() {
+      const host = document.getElementById('text-sets');
+      if (!host) return;
+      host.innerHTML = '';
+      CURATED_TEXTS.forEach((t, i) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'text-set-card';
+        card.setAttribute('role', 'listitem');
+        card.innerHTML = `
+          <span class="text-set-label">${esc(t.label)}</span>
+          <span class="text-set-snippet">“${esc(t.text)}”</span>
+          <span class="text-set-cite">${esc(t.attribution)}</span>
+          <span class="text-set-cta">Read it in context →</span>`;
+        card.addEventListener('click', () => loadCuratedText(i));
+        host.appendChild(card);
+      });
+    }
+
+    function loadCuratedText(i) {
+      const t = CURATED_TEXTS[i];
+      if (!t) return;
+      const input = document.getElementById('text-help-input');
+      const select = document.getElementById('text-era-select');
+      if (input) input.value = t.text;
+      if (select) select.value = t.era || '';
+      analyzeTextHelp();
+    }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function formatAttested(from, to) {
+      if (from && to) return `attested ${from}–${to}`;
+      if (from) return `attested from ${from}`;
+      if (to) return `attested to ${to}`;
+      return '';
+    }
+
+    // Re-render the passage with each flagged word wrapped in a clickable mark.
+    // Splitting on a single capture group keeps matches at odd indices; every
+    // segment is escaped, so user text is never injected as raw HTML.
+    function highlightPassage(text, words) {
+      if (!words.length) return esc(text);
+      const pattern = new RegExp(
+        '\\b(' + words.map(escapeRegex).sort((a, b) => b.length - a.length).join('|') + ')\\b',
+        'gi',
+      );
+      return text.split(pattern).map((segment, idx) => {
+        if (idx % 2 === 1) {
+          const key = segment.toLowerCase();
+          return `<mark class="lex-flag" data-word="${esc(key)}" tabindex="0" role="button" title="Jump to “${esc(segment)}”">${esc(segment)}</mark>`;
+        }
+        return esc(segment);
+      }).join('');
+    }
+
     async function analyzeTextHelp() {
       const text = document.getElementById('text-help-input')?.value.trim();
-      const era = document.getElementById('text-era-select')?.value || 'Early Modern English';
+      const era = document.getElementById('text-era-select')?.value || '';
       const results = document.getElementById('text-help-results');
       if (!results) return;
       if (!text) {
-        results.innerHTML = '<p class="empty-state">Paste a short passage first.</p>';
+        results.innerHTML = '<p class="empty-state">Paste a short passage first, or open one of the passages above.</p>';
         return;
       }
 
       results.innerHTML = '<p class="empty-state">Checking older meanings…</p>';
       try {
+        const body = era ? { text, era_name: era } : { text };
         const res = await apiFetch('/pg/word/era-check', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, era_name: era }),
+          body: JSON.stringify(body),
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
+        const scope = era ? esc(era) : 'any era';
         if (!data.flagged || !data.flagged.length) {
-          results.innerHTML = `<p class="empty-state">No obvious historical false friends found for ${esc(era)}. That does not prove the passage is simple; it means the current corpus did not flag a mismatch.</p>`;
+          results.innerHTML = `<p class="empty-state">No historical false friends found for ${scope}. That does not prove the passage is simple — it means the current corpus did not flag a mismatch.</p>`;
           return;
         }
-        results.innerHTML = `<div class="section-label">${data.flagged_count || data.flagged.length} word${(data.flagged_count || data.flagged.length) === 1 ? '' : 's'} worth checking</div>`;
+
+        const flaggedWords = data.flagged.map((f) => f.word).filter(Boolean);
+        const count = data.flagged_count || data.flagged.length;
+        results.innerHTML =
+          `<div class="passage-readout">${highlightPassage(text, flaggedWords)}</div>` +
+          `<div class="section-label">${count} word${count === 1 ? '' : 's'} worth checking · ${esc(data.era_name || scope)}</div>`;
+
         data.flagged.forEach((item) => {
           const div = document.createElement('div');
           div.className = 'flagged-word';
+          div.id = 'flag-' + String(item.word || '').toLowerCase();
+          const sourceBits = [
+            item.era_source ? `Source: ${esc(item.era_source)}` : '',
+            esc(formatAttested(item.first_attested_year, item.last_attested_year)),
+            item.confidence ? `confidence: ${esc(item.confidence)}` : '',
+          ].filter(Boolean).join(' · ');
           div.innerHTML = `
-            <strong>${esc(item.word)}</strong>
-            <p>In ${esc(era)}: ${esc(item.era_definition || 'older meaning unavailable')}</p>
-            <p>Modern sense: ${esc(item.modern_definition || 'modern definition unavailable')}</p>
-          `;
+            <div class="flag-head">
+              <strong>${esc(item.word)}</strong>
+              ${item.era_name ? `<span class="era-badge">${esc(item.era_name)}</span>` : ''}
+            </div>
+            <p class="flag-then">Then: ${esc(item.era_definition || 'older meaning unavailable')}</p>
+            <p class="flag-now">Now: ${esc(item.modern_definition || 'modern definition unavailable')}</p>
+            ${sourceBits ? `<p class="flag-source">${sourceBits}</p>` : ''}
+            <button type="button" class="flag-explore" data-word="${esc(item.word)}">Explore “${esc(item.word)}” →</button>`;
           results.appendChild(div);
+        });
+
+        results.querySelectorAll('.lex-flag').forEach((mark) => {
+          const jump = () => {
+            const card = document.getElementById('flag-' + (mark.dataset.word || ''));
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          };
+          mark.addEventListener('click', jump);
+          mark.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+          });
+        });
+        results.querySelectorAll('.flag-explore').forEach((btn) => {
+          btn.addEventListener('click', () => loadWord(btn.dataset.word));
         });
       } catch {
         results.innerHTML = '<p class="empty-state">Could not check that passage yet. Try a shorter sentence or confirm the API is running.</p>';

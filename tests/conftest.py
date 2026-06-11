@@ -194,6 +194,13 @@ async def app_client(monkeypatch):
                 out[sense.word].append(sense)
         return out
 
+    async def fake_bulk_get_senses_all_eras(_session, words_list: list):
+        out: dict[str, list] = {w: [] for w in words_list}
+        for sense in senses.values():
+            if sense.word in out:
+                out[sense.word].append(sense)
+        return out
+
     async def fake_bulk_get_words(_session, words_list: list):
         return {w: words[w.casefold()] for w in words_list if w.casefold() in words}
 
@@ -285,6 +292,7 @@ async def app_client(monkeypatch):
         ][:limit]
 
     monkeypatch.setattr(crud, "bulk_get_senses_by_era", fake_bulk_get_senses_by_era)
+    monkeypatch.setattr(crud, "bulk_get_senses_all_eras", fake_bulk_get_senses_all_eras)
     monkeypatch.setattr(crud, "bulk_get_words", fake_bulk_get_words)
     monkeypatch.setattr(crud, "list_senses_by_field", fake_list_senses_by_field)
     monkeypatch.setattr(crud, "list_senses_by_review_status", fake_list_senses_by_review_status)

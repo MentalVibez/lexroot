@@ -77,15 +77,23 @@ class VitalityResponse(BaseModel):
 
 class EraCheckRequest(BaseModel):
     text: str = Field(min_length=1, max_length=10_000)
-    era_name: str = Field(min_length=1, max_length=80)
+    era_name: str | None = Field(default=None, max_length=80)
+
+
+# Sentinel era_name values that mean "scan every era" rather than one era.
+_ALL_ERAS_VALUES = {"", "auto", "all", "all eras"}
 
 
 class FlaggedWord(BaseModel):
     word: str
+    era_name: str | None = None
     era_definition: str
     era_source: str | None
     modern_definition: str | None
     part_of_speech: str | None
+    first_attested_year: int | None = None
+    last_attested_year: int | None = None
+    confidence: str | None = None
 
 
 class EraCheckResponse(BaseModel):
@@ -101,36 +109,51 @@ async def era_check(
     session: AsyncSession = Depends(get_pg_session),
 ):
     """
-    Scan a block of text for words whose meaning in a given era differs from
-    their modern definition. Useful for period-accuracy checking in writing.
+    Scan a block of text for words whose historical meaning differs from their
+    modern definition. Useful for reading older texts and period-accuracy checking.
 
-    Returns only words that have a documented sense for the requested era —
-    words absent from the lexicon are silently skipped.
+    Pass an ``era_name`` to check a single era, or omit it (or send "auto"/"all")
+    to scan every era at once — each flagged word is then labelled with the era
+    of its earliest documented sense. Words absent from the lexicon are skipped.
     """
     tokens = list({t.lower() for t in _TOKEN_RE.findall(payload.text)})
     if not tokens:
         raise HTTPException(status_code=422, detail="No word tokens found in text.")
 
-    era_senses = await crud.bulk_get_senses_by_era(session, tokens, payload.era_name)
-    word_rows = await crud.bulk_get_words(session, [w for w, s in era_senses.items() if s])
+    scan_all = (payload.era_name or "").strip().lower() in _ALL_ERAS_VALUES
+    if scan_all:
+        word_senses = await crud.bulk_get_senses_all_eras(session, tokens)
+    else:
+        word_senses = await crud.bulk_get_senses_by_era(session, tokens, payload.era_name)
+
+    word_rows = await crud.bulk_get_words(session, [w for w, s in word_senses.items() if s])
 
     flagged: list[FlaggedWord] = []
-    for word, senses in era_senses.items():
+    for word, senses in word_senses.items():
         if not senses:
             continue
-        best = senses[0]
+        # All-era scan can return several eras for one word; show the earliest
+        # documented sense. Single-era scan already has at most one era's senses.
+        best = min(
+            senses,
+            key=lambda s: s.first_attested_year if s.first_attested_year is not None else 1 << 31,
+        ) if scan_all else senses[0]
         modern_def = word_rows[word].definition if word in word_rows else None
         flagged.append(FlaggedWord(
             word=word,
+            era_name=best.era_name if scan_all else payload.era_name,
             era_definition=best.definition,
             era_source=best.source_slug,
             modern_definition=modern_def,
             part_of_speech=best.part_of_speech,
+            first_attested_year=best.first_attested_year,
+            last_attested_year=best.last_attested_year,
+            confidence=best.confidence,
         ))
 
     flagged.sort(key=lambda f: f.word)
     return EraCheckResponse(
-        era_name=payload.era_name,
+        era_name="All eras" if scan_all else payload.era_name,
         words_checked=len(tokens),
         flagged_count=len(flagged),
         flagged=flagged,

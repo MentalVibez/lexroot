@@ -198,3 +198,63 @@ async def test_era_check_flags_anachronism(app_client, write_headers):
     assert data["words_checked"] > 0
     flagged_words = [f["word"] for f in data["flagged"]]
     assert "prevent" in flagged_words
+
+
+async def test_era_check_scans_all_eras_when_era_omitted(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="nice", definition="agreeable; precise.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-me-1",
+        "word": "nice",
+        "definition": "Foolish; ignorant.",
+        "era_name": "Middle English",
+        "first_attested_year": 1290,
+        "last_attested_year": 1450,
+        "source_slug": "mec-corpus",
+        "confidence": "high",
+    }, headers=write_headers)
+    # A second, later era for the same word — the scan should pick the earliest.
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-eme-1",
+        "word": "nice",
+        "definition": "Precise; fastidious.",
+        "era_name": "Early Modern English",
+        "first_attested_year": 1560,
+    }, headers=write_headers)
+
+    # No era_name at all -> scan every era.
+    resp = await app_client.post("/pg/word/era-check", json={
+        "text": "What a nice remark.",
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["era_name"] == "All eras"
+    flagged = {f["word"]: f for f in data["flagged"]}
+    assert "nice" in flagged
+    entry = flagged["nice"]
+    # Earliest sense wins and the word is labelled with its own era + metadata.
+    assert entry["era_name"] == "Middle English"
+    assert entry["first_attested_year"] == 1290
+    assert entry["era_source"] == "mec-corpus"
+    assert entry["confidence"] == "high"
+    assert entry["modern_definition"] == "agreeable; precise."
+
+
+async def test_era_check_auto_sentinel_scans_all_eras(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="silly", definition="foolish.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "silly-me-1",
+        "word": "silly",
+        "definition": "Innocent; deserving compassion.",
+        "era_name": "Middle English",
+        "first_attested_year": 1200,
+    }, headers=write_headers)
+
+    # An explicit "auto" sentinel is treated the same as omitting era_name.
+    resp = await app_client.post("/pg/word/era-check", json={
+        "text": "The silly child.",
+        "era_name": "auto",
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["era_name"] == "All eras"
+    assert "silly" in [f["word"] for f in data["flagged"]]
