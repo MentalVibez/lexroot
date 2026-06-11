@@ -5,7 +5,7 @@ etymwn.tsv format (tab-separated):
   source_lang: source_word  <TAB>  rel:relationship_type  <TAB>  target_lang: target_word
 
 This importer extracts two types of relationships:
-  1. ROOT DERIVATION: Latin/Greek/OldEnglish/OldFrench/OldNorse → English word
+  1. ROOT DERIVATION: OldEnglish/ProtoGermanic/OldNorse/Latin/Greek/OldFrench → English word
      e.g. "lat: convenire  rel:etymological_origin_of  eng: convene"
   2. ENGLISH COGNATES: English word → etymologically_related → English word
      e.g. "eng: convene  rel:etymologically_related  eng: convention"
@@ -78,6 +78,31 @@ LANG_CODE_MAP = {
 }
 
 ETYMWN_SOURCE_SLUG = "etymwordnet"
+
+# English is a West Germanic language. When EtymWordNet provides several
+# possible source forms, prefer inherited English/Germanic ancestry first.
+# Romance/Latin/Greek candidates remain valid, but should win only when no
+# closer Germanic source is present.
+ROOT_SOURCE_PRIORITY = {
+    "English": 0,
+    "Old English": 1,
+    "Middle English": 2,
+    "Proto-Germanic": 3,
+    "Old Norse": 4,
+    "Frankish": 5,
+    "Middle High German": 6,
+    "Middle Dutch": 7,
+    "German": 8,
+    "Dutch": 9,
+    "Scots": 10,
+    "Proto-Indo-European": 20,
+    "Classical Latin": 30,
+    "Old French": 31,
+    "Anglo-Norman": 32,
+    "French": 33,
+    "Middle French": 34,
+    "Ancient Greek": 35,
+}
 _ALL_SOURCE_LANG = "*"
 
 # Relationship types that express "source gave rise to English word"
@@ -235,10 +260,8 @@ def build_word_entries(
 
     entries = []
     for eng_word, sources in by_word.items():
-        # Pick the "best" root source — prefer Latin, then Greek, then Old English
-        priority = {"Classical Latin": 0, "Ancient Greek": 1, "Old French": 2,
-                    "Old English": 3, "Old Norse": 4, "Middle English": 5}
-        best = min(sources, key=lambda s: priority.get(s["root_origin_language"], 99))
+        # Pick the closest source without turning English into a Romance-first language.
+        best = min(sources, key=lambda s: ROOT_SOURCE_PRIORITY.get(s["root_origin_language"], 99))
 
         definition = _get_definition(eng_word)
         cognates = cognate_map.get(eng_word, [])[:10]

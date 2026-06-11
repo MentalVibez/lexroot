@@ -1,0 +1,22 @@
+aws_region          = "us-east-1"
+project_name        = "living-lexicon"
+domain_name         = "pensiveape.com"
+api_subdomain       = "api"
+container_image_tag = "latest"
+
+app_cpu           = 512
+app_memory        = 1024
+app_desired_count = 1
+
+db_name              = "living_lexicon"
+db_username          = "lexicon"
+db_instance_class    = "db.t4g.micro"
+db_allocated_storage = 20
+
+cors_origins           = "https://pensiveape.com,https://www.pensiveape.com"
+enable_write_endpoints = false
+require_api_key        = false
+
+log_retention_days        = 30
+rds_backup_retention_days = 7
+deletion_protection       = true

@@ -27,6 +27,24 @@ SYNC_URL: str = os.getenv(
     "postgresql://lexicon:lexicon_secret@localhost:5432/living_lexicon",
 )
 
+_RECONSTRUCTION_LEVELS = {"attested", "reconstructed", "inferred", "uncertain"}
+_LEARNER_LEVELS = {"beginner", "intermediate", "advanced", "research"}
+_EVIDENCE_GRADES = {"A", "B", "C", "D"}
+
+
+def _enum_or_default(value: str | None, allowed: set[str], default: str) -> tuple[str, str | None]:
+    cleaned = _clean(value).lower()
+    if cleaned in allowed:
+        return cleaned, None
+    return default, cleaned or None
+
+
+def _evidence_grade(value: str | None) -> tuple[str | None, str | None]:
+    cleaned = _clean(value).upper()
+    if cleaned in _EVIDENCE_GRADES:
+        return cleaned, None
+    return None, _clean(value) or None
+
 
 def load_senses(path: str | Path = DEFAULT_SENSES) -> list[dict[str, Any]]:
     file_path = Path(path)
@@ -40,6 +58,25 @@ def load_senses(path: str | Path = DEFAULT_SENSES) -> list[dict[str, Any]]:
             definition = _clean(row.get("definition"))
             if not sense_id or not word or not definition:
                 continue
+            notes = _clean(row.get("notes")) or None
+            reconstruction_level, shifted_reconstruction_note = _enum_or_default(
+                row.get("reconstruction_level"),
+                _RECONSTRUCTION_LEVELS,
+                "attested",
+            )
+            learner_level, shifted_learner_note = _enum_or_default(
+                row.get("learner_level"),
+                _LEARNER_LEVELS,
+                "intermediate",
+            )
+            evidence_grade, shifted_grade_note = _evidence_grade(row.get("evidence_grade"))
+            shifted_notes = [
+                value
+                for value in (shifted_grade_note, shifted_reconstruction_note, shifted_learner_note)
+                if value
+            ]
+            if shifted_notes:
+                notes = " ".join([part for part in [notes, *shifted_notes] if part])
             rows.append({
                 "sense_id": sense_id,
                 "word": word,
@@ -56,7 +93,7 @@ def load_senses(path: str | Path = DEFAULT_SENSES) -> list[dict[str, Any]]:
                 "source_slug": _clean(row.get("source_slug")) or None,
                 "confidence": _clean(row.get("confidence")) or "medium",
                 "confidence_reason": _clean(row.get("confidence_reason")) or None,
-                "evidence_grade": _clean(row.get("evidence_grade")).upper() or None,
+                "evidence_grade": evidence_grade,
                 "citation": _clean(row.get("citation")) or None,
                 "page": _clean(row.get("page")) or None,
                 "entry_headword": _clean(row.get("entry_headword")) or None,
@@ -67,7 +104,9 @@ def load_senses(path: str | Path = DEFAULT_SENSES) -> list[dict[str, Any]]:
                 "origin_status": _clean(row.get("origin_status")) or None,
                 "usage_region": _clean(row.get("usage_region")) or None,
                 "usage_register": _clean(row.get("usage_register")) or None,
-                "notes": _clean(row.get("notes")) or None,
+                "notes": notes,
+                "reconstruction_level": reconstruction_level,
+                "learner_level": learner_level,
             })
     return rows
 
@@ -83,6 +122,10 @@ def load_attestations(path: str | Path = DEFAULT_ATTESTATIONS) -> list[dict[str,
             word = _clean(row.get("word"))
             if not sense_id or not word:
                 continue
+            evidence_grade, shifted_grade_note = _evidence_grade(row.get("evidence_grade"))
+            notes = _clean(row.get("notes")) or None
+            if shifted_grade_note:
+                notes = " ".join([part for part in [notes, shifted_grade_note] if part])
             rows.append({
                 "sense_id": sense_id,
                 "word": word,
@@ -93,14 +136,14 @@ def load_attestations(path: str | Path = DEFAULT_ATTESTATIONS) -> list[dict[str,
                 "source_slug": _clean(row.get("source_slug")) or None,
                 "attestation_type": _clean(row.get("attestation_type")) or "historical_dictionary",
                 "citation": _clean(row.get("citation")) or None,
-                "evidence_grade": _clean(row.get("evidence_grade")).upper() or None,
+                "evidence_grade": evidence_grade,
                 "confidence_reason": _clean(row.get("confidence_reason")) or None,
                 "page": _clean(row.get("page")) or None,
                 "entry_headword": _clean(row.get("entry_headword")) or None,
                 "source_url": _clean(row.get("source_url")) or None,
                 "access_date": _clean(row.get("access_date")) or None,
                 "review_status": _clean(row.get("review_status")) or None,
-                "notes": _clean(row.get("notes")) or None,
+                "notes": notes,
             })
     return rows
 
@@ -112,7 +155,7 @@ INSERT INTO senses (
     first_attested_source, source_slug, confidence, confidence_reason,
     evidence_grade, citation, page, entry_headword, source_url, access_date,
     review_status, semantic_change_type, origin_status, usage_region,
-    usage_register, notes
+    usage_register, notes, reconstruction_level, learner_level
 ) VALUES %s
 ON CONFLICT (sense_id) DO UPDATE SET
     word = EXCLUDED.word,
@@ -140,7 +183,9 @@ ON CONFLICT (sense_id) DO UPDATE SET
     origin_status = EXCLUDED.origin_status,
     usage_region = EXCLUDED.usage_region,
     usage_register = EXCLUDED.usage_register,
-    notes = EXCLUDED.notes
+    notes = EXCLUDED.notes,
+    reconstruction_level = EXCLUDED.reconstruction_level,
+    learner_level = EXCLUDED.learner_level
 """
 
 ATTESTATION_SQL = """
@@ -185,7 +230,7 @@ def import_senses_and_attestations(
                         [tuple(row.values()) for row in senses],
                         template=(
                             "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                            "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                            "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         ),
                     )
                 if attestations:

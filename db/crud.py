@@ -105,10 +105,28 @@ async def search_words(
     prefix: str,
     limit: int = 20,
 ) -> list[Word]:
+    folded = prefix.casefold()
+    word_priority = (
+        (Word.entry_type == "word"),
+        (Word.entry_type == "idiom"),
+        (Word.entry_type == "medical_term"),
+    )
+    enrichment_priority = (
+        Word.semantic_drift_history.is_not(None),
+        Word.origin_language.is_not(None),
+        Word.definition_source_slug.is_not(None),
+    )
     result = await session.execute(
         select(Word)
         .where(Word.word.ilike(f"{prefix}%"))
-        .order_by(Word.word)
+        .order_by(
+            (func.lower(Word.word) == folded).desc(),
+            *[expr.desc() for expr in word_priority],
+            *[expr.desc() for expr in enrichment_priority],
+            Word.wordfreq_zipf.desc().nullslast(),
+            func.length(Word.word),
+            Word.word,
+        )
         .limit(limit)
     )
     return list(result.scalars().all())

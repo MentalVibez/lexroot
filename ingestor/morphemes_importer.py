@@ -69,7 +69,10 @@ class MorphemesImporter(BaseImporter):
             return result
 
         import os
-        conn = psycopg2.connect(os.environ["DATABASE_URL"])
+        conn = psycopg2.connect(os.environ.get(
+            "POSTGRES_SYNC_URL",
+            "postgresql://lexicon:lexicon_secret@localhost:5432/living_lexicon",
+        ))
         try:
             with conn.cursor() as cur:
                 psycopg2.extras.execute_values(cur, _INSERT, rows, page_size=500)
