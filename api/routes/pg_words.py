@@ -160,6 +160,51 @@ async def era_check(
     )
 
 
+class EraTimelineEntry(BaseModel):
+    era_name: str
+    era_start: int | None = None
+    era_end: int | None = None
+    meaning: str | None = None
+    usage_example: str | None = None
+
+
+class EraTimelineResponse(BaseModel):
+    word: str
+    timeline: list[EraTimelineEntry]
+
+
+@router.get("/word/{word}/era-timeline", response_model=EraTimelineResponse)
+async def pg_era_timeline(word: str, session: AsyncSession = Depends(get_pg_session)):
+    """Era-by-era meaning timeline for a word, built from PostgreSQL senses.
+
+    Mirrors the SDK ``/word/{word}/era-timeline`` shape but reads the relational
+    corpus, so it works on deployments that have no Neo4j graph backend.
+    """
+    senses = await crud.list_senses(session, word)  # sorted oldest-first
+    by_era: dict[str, list] = {}
+    order: list[str] = []
+    for s in senses:
+        if not s.era_name:
+            continue
+        if s.era_name not in by_era:
+            by_era[s.era_name] = []
+            order.append(s.era_name)
+        by_era[s.era_name].append(s)
+
+    timeline: list[EraTimelineEntry] = []
+    for era in order:
+        group = by_era[era]
+        starts = [s.first_attested_year for s in group if s.first_attested_year is not None]
+        ends = [s.last_attested_year for s in group if s.last_attested_year is not None]
+        timeline.append(EraTimelineEntry(
+            era_name=era,
+            era_start=min(starts) if starts else None,
+            era_end=max(ends) if ends else (max(starts) if starts else None),
+            meaning=group[0].definition,
+        ))
+    return EraTimelineResponse(word=word, timeline=timeline)
+
+
 @router.get("/word/{word}/vitality", response_model=VitalityResponse)
 async def get_word_vitality(word: str, session: AsyncSession = Depends(get_pg_session)):
     row = await crud.get_word(session, word)

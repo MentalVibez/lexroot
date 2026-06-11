@@ -2913,7 +2913,7 @@
     async function loadEraTimeline(word) {
       document.getElementById('timeline-content').textContent = 'Loading timeline…';
       try {
-        const res = await apiFetch(`/word/${encodeURIComponent(word)}/era-timeline`);
+        const res = await apiFetch(`/pg/word/${encodeURIComponent(word)}/era-timeline`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         currentTimeline = data.timeline || [];

@@ -239,6 +239,39 @@ async def test_era_check_scans_all_eras_when_era_omitted(app_client, write_heade
     assert entry["modern_definition"] == "agreeable; precise."
 
 
+async def test_pg_era_timeline_builds_from_senses(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="nice", definition="pleasant; agreeable.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-me", "word": "nice", "definition": "Foolish; ignorant.",
+        "era_name": "Middle English", "first_attested_year": 1290, "last_attested_year": 1450,
+    }, headers=write_headers)
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-lme", "word": "nice", "definition": "Pleasant; kind.",
+        "era_name": "Late Modern English", "first_attested_year": 1769,
+    }, headers=write_headers)
+    # A sense with no era should be skipped, not crash.
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-x", "word": "nice", "definition": "Undated.",
+    }, headers=write_headers)
+
+    resp = await app_client.get("/pg/word/nice/era-timeline")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["word"] == "nice"
+    eras = [e["era_name"] for e in data["timeline"]]
+    assert eras == ["Middle English", "Late Modern English"]
+    first = data["timeline"][0]
+    assert first["era_start"] == 1290
+    assert first["era_end"] == 1450
+    assert first["meaning"] == "Foolish; ignorant."
+
+
+async def test_pg_era_timeline_empty_for_unknown_word(app_client, write_headers):
+    resp = await app_client.get("/pg/word/nonexistentword/era-timeline")
+    assert resp.status_code == 200
+    assert resp.json() == {"word": "nonexistentword", "timeline": []}
+
+
 async def test_era_check_auto_sentinel_scans_all_eras(app_client, write_headers):
     await _upsert(app_client, write_headers, word="silly", definition="foolish.")
     await app_client.put("/pg/sense", json={
