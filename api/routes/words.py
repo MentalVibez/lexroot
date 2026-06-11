@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from api.deps import get_historian
+from api.deps import get_historian, require_legacy_sdk
 from api.schemas import WordContextResponse
 from living_lexicon.exceptions import WordNotFoundError
 
@@ -9,6 +9,7 @@ router = APIRouter(tags=["words"])
 
 @router.get("/word/{word}", response_model=WordContextResponse)
 def get_word(word: str):
+    require_legacy_sdk()
     try:
         ctx = get_historian().context(word)
         return WordContextResponse(
@@ -26,6 +27,7 @@ def get_word(word: str):
 
 @router.get("/word/{word}/tree")
 def get_word_tree(word: str):
+    require_legacy_sdk()
     tree = get_historian()._store.get_word_tree(word)
     if not tree:
         raise HTTPException(status_code=404, detail=f"No root tree found for '{word}'")
@@ -34,6 +36,7 @@ def get_word_tree(word: str):
 
 @router.get("/word/{word}/cognates")
 def get_cognates(word: str):
+    require_legacy_sdk()
     cognates = get_historian()._store.get_cognates(word)
     if not cognates:
         raise HTTPException(status_code=404, detail=f"No cognates found for '{word}'")
@@ -42,6 +45,7 @@ def get_cognates(word: str):
 
 @router.get("/word/{word}/etymology-claims")
 def get_etymology_claims(word: str):
+    require_legacy_sdk()
     if not get_historian()._store.get_word(word):
         raise HTTPException(status_code=404, detail=f"'{word}' not found in the lexicon")
     claims = get_historian()._store.get_etymology_claims(word)
@@ -50,6 +54,7 @@ def get_etymology_claims(word: str):
 
 @router.get("/word/{word}/retrieval-bundle")
 def get_retrieval_bundle(word: str):
+    require_legacy_sdk()
     try:
         bundle = get_historian().retrieval_bundle(word)
     except WordNotFoundError:
@@ -119,6 +124,7 @@ def get_retrieval_bundle(word: str):
 
 @router.get("/word/{word}/word-detective")
 def get_word_detective(word: str):
+    require_legacy_sdk()
     try:
         result = get_historian().word_detective(word)
     except WordNotFoundError:
@@ -128,5 +134,6 @@ def get_word_detective(word: str):
 
 @router.get("/search")
 def search(q: str = Query(..., min_length=2), limit: int = Query(default=10, le=50)):
+    require_legacy_sdk()
     results = get_historian()._store.search(q, limit)
     return {"query": q, "results": results}

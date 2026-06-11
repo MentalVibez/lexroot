@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Young Word Explorers - PensiveApe</title>
-  <meta name="description" content="A kid-friendly word history quiz for ages 9-12. Guess what everyday words used to mean and discover the stories hiding inside English.">
+  <meta name="description" content="A kid-friendly word history quiz and word-game set for ages 9-12. Guess old meanings, find word-change patterns, build vocabulary, and print family or classroom activities.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="theme-color" content="#fff4c7">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -15,19 +15,19 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PensiveApe">
   <meta property="og:title" content="Young Word Explorers - PensiveApe">
-  <meta property="og:description" content="A playful, account-free word history quiz for curious kids, teachers, and families.">
+  <meta property="og:description" content="A playful, account-free word history quiz and word-game set for curious kids, teachers, and families.">
   <meta property="og:url" content="https://pensiveape.com/kids.html">
   <meta property="og:locale" content="en_US">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Young Word Explorers - PensiveApe">
-  <meta name="twitter:description" content="Guess what words used to mean and uncover their hidden stories.">
+  <meta name="twitter:description" content="Guess what words used to mean, match meanings, and build words from their pieces.">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LearningResource",
       "name": "Young Word Explorers",
       "url": "https://pensiveape.com/kids.html",
-      "description": "A kid-friendly word history quiz for independent readers ages 9-12.",
+      "description": "A kid-friendly word history quiz, vocabulary builder, and word-game set for independent readers ages 9-12.",
       "educationalUse": ["Vocabulary study", "English language arts", "Word history"],
       "audience": {
         "@type": "EducationalAudience",
@@ -239,6 +239,10 @@
     }
 
     .quiz-section,
+    .game-section,
+    .friendly-section,
+    .path-section,
+    .teacher-section,
     .grownups,
     .word-sheet {
       margin-top: 1.2rem;
@@ -247,6 +251,35 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .kids-games-section {
+      margin-top: 1.2rem;
+      padding: clamp(0.5rem, 2vw, 1rem) 0 0;
+    }
+
+    .kids-games-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .kids-games-header p {
+      color: var(--muted);
+      max-width: 54rem;
+      margin-top: 0.5rem;
+    }
+
+    .games-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .games-stack .game-section {
+      margin-top: 0;
     }
 
     .quiz-header {
@@ -258,6 +291,11 @@
     }
 
     .quiz-header h3,
+    .game-header h3,
+    .friendly-section h3,
+    .path-section h3,
+    .teacher-section h3,
+    .kids-games-section h3,
     .word-sheet h3,
     .grownups h3 {
       color: var(--leaf-deep);
@@ -408,11 +446,173 @@
       margin-top: 0.8rem;
     }
 
+    .reflection,
+    .try-panel {
+      margin-top: 0.9rem;
+      background: rgba(255, 253, 247, 0.86);
+      border: 1px solid rgba(37, 86, 63, 0.12);
+      border-radius: var(--radius);
+      padding: 0.9rem;
+    }
+
+    .mini-heading {
+      display: block;
+      color: var(--berry-deep);
+      font-family: var(--ui);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .reflection p,
+    .try-card p {
+      color: var(--muted);
+    }
+
+    .reflection-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.75rem;
+    }
+
+    .reflection-chip {
+      min-height: 2.7rem;
+      border: 1px solid rgba(37, 86, 63, 0.18);
+      border-radius: 999px;
+      background: #fff8df;
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.5rem 0.78rem;
+    }
+
+    .reflection-chip:hover,
+    .reflection-chip:focus-visible {
+      border-color: var(--berry);
+      outline: none;
+    }
+
+    .reflection-chip.selected {
+      background: #e5f8e9;
+      border-color: var(--leaf);
+    }
+
+    .reflection-chip.strongest {
+      box-shadow: inset 0 0 0 2px rgba(61, 122, 91, 0.28);
+    }
+
+    .reflection-note {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      margin-top: 0.65rem;
+    }
+
+    .try-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.65rem;
+    }
+
+    .try-card {
+      background: var(--paper);
+      border: 1px solid rgba(37, 86, 63, 0.12);
+      border-radius: var(--radius);
+      padding: 0.8rem;
+    }
+
     .quiz-actions {
       display: flex;
       gap: 0.75rem;
       flex-wrap: wrap;
       align-items: center;
+    }
+
+    .path-grid,
+    .daily-grid,
+    .teacher-grid,
+    .pattern-grid {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .path-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 1rem;
+    }
+
+    .level-card,
+    .daily-card,
+    .teacher-card,
+    .pattern-card {
+      background: var(--paper);
+      border: 1px solid rgba(37, 86, 63, 0.13);
+      border-radius: var(--radius);
+      padding: 0.9rem;
+    }
+
+    .level-card {
+      text-align: left;
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .level-card:hover,
+    .level-card:focus-visible {
+      border-color: var(--berry);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    .level-card.active {
+      background: #e5f8e9;
+      border-color: var(--leaf);
+    }
+
+    .level-card strong,
+    .daily-card strong,
+    .teacher-card strong,
+    .pattern-card strong {
+      display: block;
+      color: var(--berry-deep);
+      font-family: var(--ui);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .level-card p,
+    .daily-card p,
+    .teacher-card p,
+    .pattern-card p {
+      color: var(--muted);
+    }
+
+    .daily-grid {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      margin-top: 1rem;
+    }
+
+    .daily-word {
+      color: var(--berry-deep);
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      line-height: 0.95;
+    }
+
+    .level-hint,
+    .quest-status {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+    }
+
+    .quest-status {
+      min-height: 1.35rem;
+      margin-left: 0.2rem;
     }
 
     .finish-card {
@@ -424,6 +624,319 @@
     }
 
     .finish-card.show { display: block; }
+
+    /* ----- Word games ----- */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .game-header p {
+      color: var(--muted);
+      max-width: 60rem;
+      margin-top: 0.5rem;
+    }
+
+    .game-score {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--sky);
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.45rem 0.85rem;
+      border: 1px solid rgba(37, 86, 63, 0.12);
+      white-space: nowrap;
+    }
+
+    .game-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    /* Then or Now? */
+    .sorter-card { display: grid; gap: 1rem; }
+
+    .sorter-sentence {
+      font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+      color: var(--ink);
+      background: #fff8df;
+      border: 2px solid rgba(229, 169, 54, 0.38);
+      border-radius: var(--radius);
+      padding: 1.1rem;
+      max-width: 54rem;
+    }
+
+    .sorter-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+      max-width: 40rem;
+    }
+
+    .sorter-feedback {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      min-height: 1.4rem;
+    }
+
+    .sorter-btn.correct { background: #e5f8e9; border-color: var(--leaf); }
+    .sorter-btn.incorrect { background: #fff0f0; border-color: var(--berry); }
+
+    /* Match the Meaning */
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.7rem;
+    }
+
+    .match-card {
+      min-height: 6rem;
+      border-radius: var(--radius);
+      border: 2px solid rgba(37, 86, 63, 0.16);
+      background: var(--gold);
+      color: var(--ink);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.6rem;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease;
+    }
+
+    .match-card:hover:not(:disabled) { transform: translateY(-2px); }
+    .match-card .match-face { display: none; font-size: 0.95rem; line-height: 1.15; }
+    .match-card .match-back { font-size: 1.8rem; }
+    .match-card.flipped { background: #fff8df; border-color: var(--berry); }
+    .match-card.flipped .match-face { display: block; }
+    .match-card.flipped .match-back { display: none; }
+    .match-card.is-word.flipped .match-face { color: var(--berry-deep); font-size: 1.25rem; }
+    .match-card.matched { background: #e5f8e9; border-color: var(--leaf); cursor: default; }
+    .match-card:disabled { cursor: default; }
+
+    .match-win {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+    }
+
+    /* Build a Word */
+    .build-board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .piece-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .piece-btn {
+      min-height: 3rem;
+      border: 1px solid rgba(37, 86, 63, 0.2);
+      border-radius: var(--radius);
+      background: #fff8df;
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 0.4rem 0.75rem;
+      text-align: left;
+    }
+
+    .piece-btn small {
+      display: block;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .piece-btn:hover,
+    .piece-btn:focus-visible { border-color: var(--berry); outline: none; }
+    .piece-btn.selected { background: #e5f8e9; border-color: var(--leaf); }
+
+    .build-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .build-result {
+      margin-top: 1rem;
+      background: #f4fff5;
+      border-left: 4px solid var(--leaf);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem;
+      color: var(--ink);
+    }
+
+    .build-result.miss { background: #fff0f0; border-left-color: var(--berry); }
+
+    .build-word {
+      color: var(--berry-deep);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      line-height: 1;
+    }
+
+    .build-equation {
+      font-family: var(--ui);
+      font-weight: 800;
+      color: var(--leaf-deep);
+      margin: 0.4rem 0;
+    }
+
+    .build-tally {
+      font-family: var(--ui);
+      font-weight: 800;
+      color: var(--leaf-deep);
+      margin-top: 0.8rem;
+    }
+
+    /* Pattern Finder */
+    .pattern-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 0.9rem;
+    }
+
+    .pattern-target {
+      background: #fff8df;
+      border: 2px solid rgba(229, 169, 54, 0.38);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .pattern-target .daily-word { margin-bottom: 0.45rem; }
+
+    .pattern-choice {
+      min-height: 5.4rem;
+      text-align: left;
+      border: 2px solid rgba(37, 86, 63, 0.16);
+      border-radius: var(--radius);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.8rem;
+      font-family: var(--ui);
+      font-weight: 800;
+    }
+
+    .pattern-choice.correct { background: #e5f8e9; border-color: var(--leaf); }
+    .pattern-choice.incorrect { background: #fff0f0; border-color: var(--berry); }
+
+    .friendly-section {
+      background:
+        linear-gradient(135deg, rgba(255, 253, 247, 0.94), rgba(255, 248, 223, 0.92));
+    }
+
+    .friendly-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: start;
+      margin-bottom: 1rem;
+    }
+
+    .friendly-section > p,
+    .friendly-header p {
+      color: var(--muted);
+      max-width: 62rem;
+      margin-top: 0.55rem;
+    }
+
+    .friendly-count {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+    }
+
+    .friendly-groups {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .friendly-group {
+      border-top: 1px solid rgba(37, 86, 63, 0.12);
+      padding-top: 1rem;
+    }
+
+    .friendly-group h4 {
+      color: var(--leaf-deep);
+      font-size: 1.25rem;
+      line-height: 1.1;
+      margin-bottom: 0.7rem;
+    }
+
+    .friendly-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .friendly-card {
+      background: var(--paper);
+      border: 1px solid rgba(37, 86, 63, 0.13);
+      border-radius: var(--radius);
+      padding: 0.85rem;
+      min-height: 13.8rem;
+      display: grid;
+      gap: 0.55rem;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+
+    .friendly-card.highlight {
+      border-color: var(--berry);
+      box-shadow: 0 12px 28px rgba(131, 35, 51, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .friendly-card h5 {
+      color: var(--berry-deep);
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    .friendly-card p {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .nearby {
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .example-toggle {
+      justify-self: start;
+      min-height: 2.55rem;
+      border: 1px solid rgba(37, 86, 63, 0.18);
+      border-radius: var(--radius);
+      background: #e5f8e9;
+      color: var(--leaf-deep);
+      font-family: var(--ui);
+      font-weight: 800;
+      padding: 0.45rem 0.65rem;
+    }
+
+    .friendly-extra[hidden] {
+      display: none;
+    }
 
     .word-sheet {
       display: grid;
@@ -460,10 +973,24 @@
 
     .grownups li { margin-bottom: 0.35rem; }
 
+    .teacher-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 1rem;
+    }
+
+    .teacher-card ul {
+      margin: 0.5rem 0 0 1.1rem;
+      color: var(--muted);
+    }
+
+    .teacher-card li { margin-bottom: 0.25rem; }
+
     @media (max-width: 780px) {
       .shell { width: min(100% - 1rem, 1120px); }
       .topbar,
+      .friendly-header,
       .quiz-header,
+      .game-header,
       .word-sheet {
         flex-direction: column;
         display: flex;
@@ -473,8 +1000,19 @@
       .hero { grid-template-columns: 1fr; padding: 1rem; }
       h2 { max-width: 9ch; }
       .choices,
-      .reveal-grid {
+      .reveal-grid,
+      .try-grid,
+      .friendly-grid,
+      .sorter-actions,
+      .build-board,
+      .path-grid,
+      .daily-grid,
+      .teacher-grid,
+      .pattern-grid {
         grid-template-columns: 1fr;
+      }
+      .match-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
       .choice-btn {
         min-height: 4.6rem;
@@ -486,6 +1024,9 @@
       .topbar,
       .hero,
       .quiz-section,
+      .game-section,
+      .friendly-section,
+      .path-section,
       .grownups,
       .secondary-btn {
         display: none !important;
@@ -528,11 +1069,12 @@
           <p class="eyebrow">For curious readers ages 9-12</p>
           <h2 id="hero-heading">Young Word Explorers</h2>
           <p class="hero-lead">
-            Words have secret pasts. Guess what a word used to mean, then let the
-            PensiveApe show you the story hiding inside it.
+            Words have secret pasts. Guess what a word used to mean, then play four
+            word games, find word-change patterns, and build your own word treasure with the PensiveApe.
           </p>
           <div class="cta-row">
             <a class="primary-btn" href="#quiz">Start the word quest</a>
+            <a class="secondary-btn" href="#games">Play the word games</a>
             <button type="button" class="secondary-btn" onclick="window.print()">Print word of the week</button>
           </div>
         </div>
@@ -542,13 +1084,52 @@
         </aside>
       </section>
 
+      <section class="path-section" aria-labelledby="path-heading">
+        <p class="eyebrow">Choose your explorer level</p>
+        <h3 id="path-heading">Same word secrets. Different challenge.</h3>
+        <p class="hero-lead">
+          Pick a level before the quiz. Warm-up gives an extra hint. Explorer keeps the regular challenge.
+          Wordsmith asks you to look for the pattern behind the change.
+        </p>
+        <div class="path-grid" id="level-cards" role="group" aria-label="Explorer levels">
+          <button type="button" class="level-card active" data-level="warm">
+            <strong>Warm-up</strong>
+            <p>Get a friendly clue before you answer.</p>
+          </button>
+          <button type="button" class="level-card" data-level="explorer">
+            <strong>Explorer</strong>
+            <p>Try the question with the normal hints.</p>
+          </button>
+          <button type="button" class="level-card" data-level="wordsmith">
+            <strong>Wordsmith</strong>
+            <p>Look for the type of word change too.</p>
+          </button>
+        </div>
+        <div class="daily-grid" aria-labelledby="daily-heading">
+          <article class="daily-card">
+            <strong id="daily-heading">Daily word challenge</strong>
+            <div class="daily-word" id="daily-word">nice</div>
+            <p id="daily-question">Can you guess what this word used to mean?</p>
+          </article>
+          <article class="daily-card">
+            <strong>Today’s mission</strong>
+            <p id="daily-mission">Use the word once with its modern meaning, then explain its older meaning to someone at home.</p>
+            <div class="cta-row">
+              <button type="button" class="secondary-btn" id="daily-start">Try this word</button>
+              <button type="button" class="secondary-btn" id="daily-reveal">Reveal clue</button>
+            </div>
+            <p class="quest-status" id="daily-status" aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+
       <section class="quiz-section" id="quiz" aria-labelledby="quiz-heading">
         <div class="quiz-header">
           <div>
             <p class="eyebrow">Guess the old meaning</p>
             <h3 id="quiz-heading">What did this word use to mean?</h3>
           </div>
-          <div class="progress-pill" id="progress">Word 1 of 8</div>
+          <div class="progress-pill" id="progress">Word 1 of 24</div>
         </div>
 
         <div class="quiz-card" id="quiz-card">
@@ -556,7 +1137,14 @@
             <strong id="word">nice</strong>
             <span>Word secret waiting...</span>
           </div>
+          <p class="level-hint" id="level-hint">Warm-up clue: Look for how the older meaning differs from today.</p>
           <p class="question" id="question">Long ago, what did "nice" mean?</p>
+          <noscript>
+            <p class="source-note">
+              JavaScript is off, so the quiz and word games cannot reveal answers here. The printable word sheet,
+              privacy note, and vocabulary cards below still work as a reading activity.
+            </p>
+          </noscript>
           <div class="choices" id="choices" role="group" aria-label="Choose the old meaning">
             <button type="button" class="choice-btn">
               <span class="choice-icon">A</span>
@@ -578,7 +1166,25 @@
               <div class="reveal-block"><strong>Then</strong><p id="then">Nice once meant foolish or ignorant.</p></div>
               <div class="reveal-block"><strong>Now</strong><p id="now">Now it means pleasant, kind, or agreeable.</p></div>
               <div class="reveal-block"><strong>Imagine this</strong><p id="imagine">A medieval teacher calling a careless student "nice" was not giving a compliment.</p></div>
-              <div class="reveal-block"><strong>Word piece clue</strong><p id="word-piece">It comes from Latin nescius: not knowing.</p></div>
+              <div class="reveal-block"><strong>How it changed</strong><p id="change-pattern">A sharp word softened into a polite compliment.</p></div>
+              <div class="reveal-block"><strong>Word family clue</strong><p id="word-piece">It comes from Latin nescius: not knowing.</p></div>
+            </div>
+            <div class="reflection">
+              <strong class="mini-heading">Think like a word detective</strong>
+              <p>Why do you think the meaning changed?</p>
+              <div class="reflection-choices" id="reflection-choices" role="group" aria-label="Choose a meaning-change clue">
+                <button type="button" class="reflection-chip">People used it more politely</button>
+                <button type="button" class="reflection-chip">The word moved into stories</button>
+                <button type="button" class="reflection-chip">It named a new invention</button>
+              </div>
+              <p class="reflection-note" id="reflection-note">Pick a clue after you read the story.</p>
+            </div>
+            <div class="try-panel">
+              <strong class="mini-heading">Try it two ways</strong>
+              <div class="try-grid">
+                <div class="try-card"><strong class="mini-heading">Older meaning</strong><p id="try-old">Write: "The nice student needed help understanding the riddle."</p></div>
+                <div class="try-card"><strong class="mini-heading">Modern meaning</strong><p id="try-now">Write: "The nice student shared their pencils."</p></div>
+              </div>
             </div>
             <p class="source-note" id="source">Source: OED / MED</p>
           </div>
@@ -590,8 +1196,164 @@
 
           <div class="finish-card" id="finish" aria-live="polite">
             <p class="feedback">You found every word secret in this set.</p>
-            <p>Play again, or print the word of the week for a classroom or kitchen-table challenge.</p>
+            <p>Play again, or scroll down to the word games and the vocabulary cards for more to explore.</p>
           </div>
+        </div>
+      </section>
+
+      <section class="kids-games-section" id="games" aria-labelledby="kids-games-heading">
+        <div class="kids-games-header">
+          <div>
+            <p class="eyebrow">Kids games</p>
+            <h3 id="kids-games-heading">Play with word secrets.</h3>
+            <p>After the quiz, keep exploring with four quick games. Sort meanings, match old definitions, build words from pieces, and spot how meanings change.</p>
+          </div>
+          <a class="secondary-btn" href="#friendly-heading">Explore vocabulary cards</a>
+        </div>
+
+        <div class="games-stack">
+          <section class="game-section" aria-labelledby="sorter-heading">
+            <div class="game-header">
+              <div>
+                <p class="eyebrow">Word game 1</p>
+                <h3 id="sorter-heading">Then or Now?</h3>
+                <p>Read the sentence. Is the word being used with its <strong>old</strong> meaning or its <strong>modern</strong> meaning?</p>
+              </div>
+              <div class="game-score" id="sorter-score">Score: 0</div>
+            </div>
+            <div class="sorter-card">
+              <p class="sorter-sentence" id="sorter-sentence">Loading a sentence...</p>
+              <div class="sorter-actions" id="sorter-buttons">
+                <button type="button" class="choice-btn sorter-btn" data-answer="old">
+                  <span class="choice-icon">T</span><span>Old meaning (Then)</span>
+                </button>
+                <button type="button" class="choice-btn sorter-btn" data-answer="now">
+                  <span class="choice-icon">N</span><span>Modern meaning (Now)</span>
+                </button>
+              </div>
+              <p class="sorter-feedback" id="sorter-feedback" aria-live="polite">Old meaning or modern meaning?</p>
+              <button type="button" class="primary-btn" id="sorter-next">Next sentence</button>
+            </div>
+          </section>
+
+          <section class="game-section" aria-labelledby="match-heading">
+            <div class="game-header">
+              <div>
+                <p class="eyebrow">Word game 2</p>
+                <h3 id="match-heading">Match the Meaning</h3>
+                <p>Flip two cards to match each word with the surprising thing it <strong>used to mean</strong>. Find all six pairs!</p>
+              </div>
+              <div class="game-score" id="match-score">Pairs found: 0</div>
+            </div>
+            <div class="match-grid" id="match-grid"></div>
+            <div class="game-actions">
+              <button type="button" class="secondary-btn" id="match-restart">New board</button>
+              <p class="match-win" id="match-win" aria-live="polite" hidden>You matched every word to its secret past!</p>
+            </div>
+          </section>
+
+          <section class="game-section" aria-labelledby="build-heading">
+            <div class="game-header">
+              <div>
+                <p class="eyebrow">Word game 3</p>
+                <h3 id="build-heading">Build a Word</h3>
+                <p>Pick a <strong>beginning piece</strong> and a <strong>root piece</strong>, then snap them together to discover a real word and what its pieces mean.</p>
+              </div>
+            </div>
+            <div class="build-board">
+              <div>
+                <span class="mini-heading">Beginning piece</span>
+                <div class="piece-list" id="prefix-list"></div>
+              </div>
+              <div>
+                <span class="mini-heading">Root piece</span>
+                <div class="piece-list" id="root-list"></div>
+              </div>
+            </div>
+            <div class="build-actions">
+              <button type="button" class="primary-btn" id="build-btn">Snap together</button>
+              <button type="button" class="secondary-btn" id="build-clear">Clear</button>
+            </div>
+            <div class="build-result" id="build-result" aria-live="polite">
+              <p>Choose one beginning piece and one root piece, then press "Snap together."</p>
+            </div>
+          </section>
+
+          <section class="game-section" aria-labelledby="pattern-heading">
+            <div class="game-header">
+              <div>
+                <p class="eyebrow">Word game 4</p>
+                <h3 id="pattern-heading">Pattern Finder</h3>
+                <p>Words change in patterns. Read the clue, then choose what kind of change happened.</p>
+              </div>
+              <div class="game-score" id="pattern-score">Patterns found: 0</div>
+            </div>
+            <div class="pattern-target">
+              <div class="daily-word" id="pattern-word">nice</div>
+              <p id="pattern-clue">A sharp word softened into a polite compliment.</p>
+            </div>
+            <div class="pattern-grid" id="pattern-choices" role="group" aria-label="Choose the word-change pattern"></div>
+            <div class="game-actions">
+              <button type="button" class="primary-btn" id="pattern-next">Next pattern</button>
+              <p class="sorter-feedback" id="pattern-feedback" aria-live="polite">Which pattern fits best?</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="friendly-section" aria-labelledby="friendly-heading">
+        <div class="friendly-header">
+          <div>
+            <p class="eyebrow">Build your word treasure</p>
+            <h3 id="friendly-heading">Family-Friendly Vocabulary</h3>
+            <p>
+              These words are safe for home, library, and classroom use. Try one
+              in a sentence today, or notice it the next time you read.
+            </p>
+            <p class="friendly-count" id="friendly-count"></p>
+          </div>
+          <button type="button" class="secondary-btn" id="try-word-btn">Surprise me</button>
+        </div>
+
+        <div class="friendly-groups" id="friendly-word-list"></div>
+      </section>
+
+      <section class="teacher-section" aria-labelledby="teacher-heading">
+        <p class="eyebrow">For parents and teachers</p>
+        <h3 id="teacher-heading">Mini lessons that fit one page.</h3>
+        <p class="hero-lead">
+          These quick activities work after the quiz, during morning work, in a library group,
+          or as a family word talk at dinner.
+        </p>
+        <div class="teacher-grid">
+          <article class="teacher-card">
+            <strong>10-minute word talk</strong>
+            <ul>
+              <li>Guess the older meaning.</li>
+              <li>Read Then and Now aloud.</li>
+              <li>Ask: what changed, and why?</li>
+            </ul>
+          </article>
+          <article class="teacher-card">
+            <strong>Exit ticket</strong>
+            <ul>
+              <li>One word I learned today was...</li>
+              <li>It used to mean...</li>
+              <li>The clue that helped me was...</li>
+            </ul>
+          </article>
+          <article class="teacher-card">
+            <strong>Vocabulary stretch</strong>
+            <ul>
+              <li>Pick one family-friendly word.</li>
+              <li>Use it in a true sentence.</li>
+              <li>Trade sentences and explain the word.</li>
+            </ul>
+          </article>
+        </div>
+        <div class="cta-row" style="margin-top: 1rem;">
+          <button type="button" class="secondary-btn" onclick="window.print()">Print word sheet</button>
+          <a class="secondary-btn" href="#friendly-heading">Use vocabulary cards</a>
         </div>
       </section>
 
@@ -622,8 +1384,10 @@
           or save progress on a server.
         </p>
         <ul>
-          <li>The starter set is hand-picked from safer, concrete word histories.</li>
-          <li>Each reveal keeps the source label visible for teachers and parents.</li>
+          <li>The quiz loop is prediction, surprise, story, connection, and sentence practice across 24 word histories.</li>
+          <li>Four replayable games extend the learning: <strong>Then or Now?</strong> (sorting meanings in context), <strong>Match the Meaning</strong> (recall and pairing), <strong>Build a Word</strong> (morphology and roots), and <strong>Pattern Finder</strong> (recognizing how meanings change).</li>
+          <li>The family-friendly vocabulary set is grouped by theme and hand-picked for safe home and classroom use.</li>
+          <li>Each quiz reveal keeps the source label visible for teachers and parents.</li>
           <li>The full adult lexicon search stays on the main PensiveApe explorer.</li>
         </ul>
       </section>
@@ -641,6 +1405,13 @@
         now: 'Now it means pleasant, kind, or agreeable.',
         imagine: 'A medieval teacher calling a careless student "nice" was not giving a compliment.',
         wordPiece: 'It comes from Latin nescius: not knowing.',
+        changePattern: 'A sharp word softened into a polite compliment.',
+        reflectionChoices: ['People used it more politely', 'It named a new invention', 'It became a weather word'],
+        reflectionAnswer: 'People used it more politely',
+        reflectionNote: 'The strongest clue is that "nice" moved from blame to careful, agreeable, and then kind.',
+        familyClue: 'Nescius means "not knowing." Nearby clue: science is about knowing.',
+        tryOld: 'The nice explorer packed no map and got lost.',
+        tryNow: 'The nice explorer shared the map with everyone.',
         source: 'OED / MED',
       },
       {
@@ -652,6 +1423,13 @@
         now: 'Now it usually means foolish, playful, or not serious.',
         imagine: 'A person called "silly" long ago might have been lucky, not ridiculous.',
         wordPiece: 'It is related to old words for happiness and blessing.',
+        changePattern: 'A gentle word slid from lucky to innocent to foolish.',
+        reflectionChoices: ['The feeling became less serious', 'It turned into a number', 'It named a tool'],
+        reflectionAnswer: 'The feeling became less serious',
+        reflectionNote: 'The strongest clue is that the word passed through ideas like harmless and innocent before foolish.',
+        familyClue: 'This is a meaning-change family: lucky -> innocent -> foolish. Words can step from one idea to the next.',
+        tryOld: 'The silly traveler found shelter before the storm.',
+        tryNow: 'The silly joke made the whole table laugh.',
         source: 'OED',
       },
       {
@@ -663,6 +1441,31 @@
         now: 'Now it usually means very bad.',
         imagine: 'A mountain, storm, or king could be called awful because people felt amazed and small.',
         wordPiece: 'Awe means a mix of wonder, respect, and fear.',
+        changePattern: 'A powerful feeling narrowed toward the scary or unpleasant side.',
+        reflectionChoices: ['One part of the feeling grew stronger', 'The word became a color', 'People forgot how to spell it'],
+        reflectionAnswer: 'One part of the feeling grew stronger',
+        reflectionNote: 'The strongest clue is that awe can include fear, and that fearful side became the everyday meaning.',
+        familyClue: 'Awe hides inside awful and awesome. One went mostly negative; the other often stayed positive.',
+        tryOld: 'The awful waterfall thundered through the deep valley.',
+        tryNow: 'The awful noise made everyone cover their ears.',
+        source: 'OED',
+      },
+      {
+        word: 'terrific',
+        question: 'What did "terrific" first mean?',
+        choices: ['Causing terror', 'Tasting sweet', 'Moving slowly'],
+        answer: 'Causing terror',
+        then: 'Terrific once meant frightening, or causing terror.',
+        now: 'Now it usually means wonderful or great.',
+        imagine: 'A roaring storm could be called terrific because it filled people with fear.',
+        wordPiece: 'The Latin word terrere means to frighten.',
+        changePattern: 'A scary word flipped to mean something wonderful.',
+        reflectionChoices: ['A strong word flipped to the opposite side', 'It named a new machine', 'It came from a color'],
+        reflectionAnswer: 'A strong word flipped to the opposite side',
+        reflectionNote: 'The strongest clue is flipping: a powerful, frightening word became a word of high praise, just like "awesome."',
+        familyClue: 'The fear clue "terr-" also hides in terror, terrify, and terrible.',
+        tryOld: 'The terrific storm sent the whole village running for shelter.',
+        tryNow: 'You did a terrific job on your science project.',
         source: 'OED',
       },
       {
@@ -674,6 +1477,13 @@
         now: 'Now lord can mean a noble title or a respectful title.',
         imagine: 'Picture the person in charge of sharing bread with the whole household.',
         wordPiece: 'Loaf plus guardian became a word for the person who protected and gave out bread.',
+        changePattern: 'A household job became a title for rank and leadership.',
+        reflectionChoices: ['The job showed power in a household', 'It was always about dragons', 'It began as a color word'],
+        reflectionAnswer: 'The job showed power in a household',
+        reflectionNote: 'The strongest clue is that controlling food in a household could show authority.',
+        familyClue: 'Loaf is the bread clue. A guardian protects or keeps something important.',
+        tryOld: 'The lord made sure every guest received fresh bread.',
+        tryNow: 'The story described a lord who owned a stone castle.',
         source: 'Bosworth-Toller / OED',
       },
       {
@@ -685,6 +1495,31 @@
         now: 'Now lady can mean a woman, a polite title, or a woman of rank.',
         imagine: 'In an old household, bread work could be important enough to leave a mark inside a title.',
         wordPiece: 'The old word connects loaf and kneading.',
+        changePattern: 'A household role became a respectful title.',
+        reflectionChoices: ['Important work became a title', 'It changed because of machines', 'It was borrowed from space talk'],
+        reflectionAnswer: 'Important work became a title',
+        reflectionNote: 'The strongest clue is that bread work mattered deeply in a household and could become part of status language.',
+        familyClue: 'Lady and lord both carry old bread clues: kneading bread and guarding bread.',
+        tryOld: 'The lady kneaded loaves for the busy household.',
+        tryNow: 'The lady at the desk gave clear directions.',
+        source: 'OED',
+      },
+      {
+        word: 'companion',
+        question: 'What is the old idea hiding inside "companion"?',
+        choices: ['One you share bread with', 'One who sails a ship', 'One who paints walls'],
+        answer: 'One you share bread with',
+        then: 'Companion comes from words meaning "one you share bread with."',
+        now: 'Now it means a friend or someone you spend time with.',
+        imagine: 'Picture two travelers breaking one loaf of bread between them.',
+        wordPiece: 'Com- means "with" and panis means "bread."',
+        changePattern: 'Sharing bread became a word for friendship.',
+        reflectionChoices: ['A shared meal became a symbol of friendship', 'It started as a number', 'It was borrowed from sailing'],
+        reflectionAnswer: 'A shared meal became a symbol of friendship',
+        reflectionNote: 'The strongest clue is the bread: sharing food has long meant closeness and trust.',
+        familyClue: 'The bread clue "pan-" also hides in pantry and in Spanish "pan" (bread). It links to lord and lady too.',
+        tryOld: 'The two companions split a single loaf at the campfire.',
+        tryNow: 'My dog has been my best companion all summer.',
         source: 'OED',
       },
       {
@@ -696,7 +1531,50 @@
         now: 'Now it usually means a young female person.',
         imagine: 'A medieval writer could use a word like "girl" in a way that would surprise modern readers.',
         wordPiece: 'Some words narrow over time: they start wide, then point to a smaller group.',
+        changePattern: 'A broad word narrowed to a smaller group.',
+        reflectionChoices: ['The word became more specific', 'The word became a food name', 'The word turned into a place name'],
+        reflectionAnswer: 'The word became more specific',
+        reflectionNote: 'The strongest clue is narrowing: the old meaning covered more people, and the modern meaning points to fewer.',
+        familyClue: 'Narrowing happens when a word starts wide and later points to a smaller set.',
+        tryOld: 'Long ago a writer might call any young person a girl.',
+        tryNow: 'The girl carried three library books home.',
         source: 'MED / OED',
+      },
+      {
+        word: 'deer',
+        question: 'In Old English, what did "deer" mean?',
+        choices: ['Any wild animal', 'A type of bird', 'A kind of bread'],
+        answer: 'Any wild animal',
+        then: 'Deer once meant any wild animal, not just one kind.',
+        now: 'Now it means a specific animal with hooves and often antlers.',
+        imagine: 'An Old English writer might call a fox, a wolf, or a hare a "deer."',
+        wordPiece: 'The Old English word "deor" meant beast or wild animal.',
+        changePattern: 'A wide word narrowed to point at just one animal.',
+        reflectionChoices: ['The word became more specific', 'It turned into a number', 'It named a new color'],
+        reflectionAnswer: 'The word became more specific',
+        reflectionNote: 'The strongest clue is narrowing: the old word covered many animals, and the new one points to one.',
+        familyClue: 'This is narrowing, just like "girl." German still has "Tier" meaning animal from the same root.',
+        tryOld: 'Every deer in the forest hid from the storm, from mouse to bear.',
+        tryNow: 'A deer stepped quietly across the meadow at dawn.',
+        source: 'Bosworth-Toller / OED',
+      },
+      {
+        word: 'meat',
+        question: 'What did "meat" mean in Old English?',
+        choices: ['Any kind of food', 'A kind of music', 'A small boat'],
+        answer: 'Any kind of food',
+        then: 'Meat once meant food of any kind.',
+        now: 'Now it usually means the flesh of an animal.',
+        imagine: 'Bread, fruit, and nuts could all be called "meat" long ago.',
+        wordPiece: 'The Old English word "mete" simply meant food.',
+        changePattern: 'A wide word narrowed to one kind of food.',
+        reflectionChoices: ['The word became more specific', 'It became a weather word', 'It named a tool'],
+        reflectionAnswer: 'The word became more specific',
+        reflectionNote: 'The strongest clue is narrowing, like "deer" and "girl."',
+        familyClue: 'You can still hear the old meaning in "sweetmeat" (a sweet treat) and "nutmeat."',
+        tryOld: 'The travelers shared their meat of bread, cheese, and apples.',
+        tryNow: 'We grilled vegetables instead of meat for dinner.',
+        source: 'OED',
       },
       {
         word: 'prevent',
@@ -707,6 +1585,31 @@
         now: 'Now it means to stop something from happening.',
         imagine: 'If you woke before sunrise, an older writer might say you prevented the morning.',
         wordPiece: 'Pre- means before. Venire means come.',
+        changePattern: 'Coming before something became stopping it before it happens.',
+        reflectionChoices: ['Acting early can stop a problem', 'It became a musical note', 'It was shortened from a name'],
+        reflectionAnswer: 'Acting early can stop a problem',
+        reflectionNote: 'The strongest clue is the time idea: if you come before trouble, you may be able to stop it.',
+        familyClue: 'Pre- means before. You can see it in preview, predict, preheat, and prepare.',
+        tryOld: 'The fast messenger prevented the king at the castle gate.',
+        tryNow: 'A good helmet can prevent a serious injury.',
+        source: 'OED',
+      },
+      {
+        word: 'noon',
+        question: 'What time of day did "noon" first mean?',
+        choices: ['The middle of the afternoon', 'The middle of the night', 'Sunrise'],
+        answer: 'The middle of the afternoon',
+        then: 'Noon once meant the "ninth hour," around three in the afternoon.',
+        now: 'Now it means twelve o\'clock in the middle of the day.',
+        imagine: 'Long ago, people counted hours from sunrise, so the "ninth hour" landed in mid-afternoon.',
+        wordPiece: 'The Latin word "nona" means ninth.',
+        changePattern: 'A time word slid earlier in the day until it landed at midday.',
+        reflectionChoices: ['The time slowly shifted earlier', 'It became a number game', 'It named a meal only'],
+        reflectionAnswer: 'The time slowly shifted earlier',
+        reflectionNote: 'The strongest clue is the slow slide: the marker drifted earlier until "noon" meant midday.',
+        familyClue: 'This is a time shift, like "prevent." The ninth-hour clue lives on in "afternoon."',
+        tryOld: 'The monks gathered for their noon prayer in the mid-afternoon light.',
+        tryNow: 'The clock struck noon and we stopped for lunch.',
         source: 'OED',
       },
       {
@@ -718,15 +1621,359 @@
         now: 'Now it means a terrible event or big failure.',
         imagine: 'Long ago, some people thought the stars could explain why something went wrong.',
         wordPiece: 'Dis- can mean bad or apart. Aster means star.',
+        changePattern: 'An old sky explanation became a general word for trouble.',
+        reflectionChoices: ['People used an old belief as a picture', 'It started as a candy name', 'It was invented for computers'],
+        reflectionAnswer: 'People used an old belief as a picture',
+        reflectionNote: 'The strongest clue is the star picture: an unlucky star became a way to talk about any terrible event.',
+        familyClue: 'Aster means star. It appears in asteroid, asterisk, and astronomy-related words.',
+        tryOld: 'The sailors feared a disaster written in the stars.',
+        tryNow: 'Forgetting the lunch was a disaster for the picnic.',
         source: 'OED',
+      },
+      {
+        word: 'salary',
+        question: 'What was "salary" first connected to?',
+        choices: ['Salt', 'Sailing', 'Singing'],
+        answer: 'Salt',
+        then: 'Salary comes from a Latin word about salt.',
+        now: 'Now it means the money someone earns for their work.',
+        imagine: 'Long ago salt was so valuable that it was linked with pay.',
+        wordPiece: 'The Latin word "sal" means salt.',
+        changePattern: 'A word about valuable salt became a word about pay.',
+        reflectionChoices: ['Something valuable became a word for pay', 'It started as a song', 'It named a season'],
+        reflectionAnswer: 'Something valuable became a word for pay',
+        reflectionNote: 'The strongest clue is value: salt mattered so much that its name stuck to the idea of payment.',
+        familyClue: 'The salt clue "sal" also hides in salt, salad (salted greens), and salsa.',
+        tryOld: 'The Roman soldier guarded the precious salt with great care.',
+        tryNow: 'She saved part of her salary to buy a new bike.',
+        source: 'OED',
+      },
+      {
+        word: 'muscle',
+        question: 'What does the old word behind "muscle" mean?',
+        choices: ['Little mouse', 'Strong tree', 'Loud drum'],
+        answer: 'Little mouse',
+        then: 'Muscle comes from a Latin word meaning "little mouse."',
+        now: 'Now it means the body parts that help you move and lift.',
+        imagine: 'People thought a muscle moving under the skin looked like a small mouse darting along.',
+        wordPiece: 'The Latin word "musculus" means little mouse.',
+        changePattern: 'A playful picture of a mouse became the name for a body part.',
+        reflectionChoices: ['A picture from nature named a body part', 'It started as a math word', 'It came from a place name'],
+        reflectionAnswer: 'A picture from nature named a body part',
+        reflectionNote: 'The strongest clue is the picture: a moving muscle reminded people of a tiny mouse.',
+        familyClue: 'The mouse clue "mus-" also appears in "mussel," the little shellfish.',
+        tryOld: 'The doctor watched a muscle ripple like a little mouse under the skin.',
+        tryNow: 'Climbing the hill made the muscles in my legs ache.',
+        source: 'OED',
+      },
+      {
+        word: 'clue',
+        question: 'What did a "clue" first mean?',
+        choices: ['A ball of thread', 'A loud bell', 'A type of cloud'],
+        answer: 'A ball of thread',
+        then: 'A clue was once a ball of thread.',
+        now: 'Now it means a hint that helps you solve a mystery.',
+        imagine: 'In an old story, a hero unrolled a ball of thread to find the way out of a maze.',
+        wordPiece: 'The older spelling "clew" meant a ball of yarn or thread.',
+        changePattern: 'A thread that guides you out of a maze became a hint that guides your thinking.',
+        reflectionChoices: ['A guiding thread became a guiding hint', 'It started as a sound', 'It named a coin'],
+        reflectionAnswer: 'A guiding thread became a guiding hint',
+        reflectionNote: 'The strongest clue is guiding: a thread led you through a maze, and a clue leads you through a puzzle.',
+        familyClue: 'The story behind it is the Greek myth of Theseus, who used thread to escape a maze.',
+        tryOld: 'She wound the long clue of thread into a neat ball.',
+        tryNow: 'The muddy footprint was the first clue to the mystery.',
+        source: 'OED',
+      },
+      {
+        word: 'pupil',
+        question: 'What does the old word behind "pupil" (in your eye) mean?',
+        choices: ['Little doll', 'Black stone', 'Round moon'],
+        answer: 'Little doll',
+        then: 'Pupil comes from a Latin word meaning "little doll."',
+        now: 'It can mean the dark center of your eye, or a student.',
+        imagine: 'Look into someone\'s eye and you see a tiny reflection of yourself, like a little doll.',
+        wordPiece: 'The Latin word "pupilla" means little doll.',
+        changePattern: 'The tiny reflection in the eye gave the eye part its name.',
+        reflectionChoices: ['A tiny reflection named the eye part', 'It started as a clock', 'It came from a place'],
+        reflectionAnswer: 'A tiny reflection named the eye part',
+        reflectionNote: 'The strongest clue is the reflection: people saw a doll-sized image of themselves in the eye.',
+        familyClue: 'The same word also gave us "pupil" meaning a student, and "puppet."',
+        tryOld: 'In the still water he saw a little doll-sized picture of his own face.',
+        tryNow: 'In bright light, the pupil of your eye gets smaller.',
+        source: 'OED',
+      },
+      {
+        word: 'window',
+        question: 'What do the old word pieces in "window" mean?',
+        choices: ['Wind eye', 'Water door', 'Night light'],
+        answer: 'Wind eye',
+        then: 'Window comes from old words meaning "wind eye."',
+        now: 'Now it means an opening with glass that lets in light.',
+        imagine: 'An early window was just a hole that let wind and a little light pass through, like an eye in the wall.',
+        wordPiece: '"Vindr" means wind and "auga" means eye.',
+        changePattern: 'A simple "wind eye" became the glass window we know.',
+        reflectionChoices: ['A picture of an eye named an opening', 'It started as a clock', 'It came from a food'],
+        reflectionAnswer: 'A picture of an eye named an opening',
+        reflectionNote: 'The strongest clue is the picture: an opening in the wall was imagined as an eye that let in wind.',
+        familyClue: 'This word came from Old Norse, the language of the Vikings.',
+        tryOld: 'Cold air slipped through the wind eye cut high in the stone wall.',
+        tryNow: 'Rain tapped softly against the bedroom window.',
+        source: 'OED',
+      },
+      {
+        word: 'daisy',
+        question: 'What do the old word pieces in "daisy" mean?',
+        choices: ["Day's eye", 'Night star', 'Snow drop'],
+        answer: "Day's eye",
+        then: 'Daisy comes from old words meaning "day\'s eye."',
+        now: 'Now it means a small white-and-yellow flower.',
+        imagine: 'The flower opens in the morning and closes at night, like an eye that watches the day.',
+        wordPiece: '"Daeges" means day and "eage" means eye.',
+        changePattern: 'A poetic "day\'s eye" became the flower\'s plain name.',
+        reflectionChoices: ['How the flower behaves named it', 'It came from a number', 'It was borrowed from sailing'],
+        reflectionAnswer: 'How the flower behaves named it',
+        reflectionNote: 'The strongest clue is behavior: the flower opens by day and closes by night, like an eye.',
+        familyClue: 'The "eye" clue connects daisy to window, another old "eye" word.',
+        tryOld: 'Each day\'s eye opened wide to greet the morning sun.',
+        tryNow: 'She picked a daisy and counted its white petals.',
+        source: 'OED',
+      },
+      {
+        word: 'dandelion',
+        question: 'What do the old word pieces in "dandelion" mean?',
+        choices: ["Lion's tooth", 'Sun crown', 'Bee house'],
+        answer: "Lion's tooth",
+        then: 'Dandelion comes from French words meaning "lion\'s tooth."',
+        now: 'Now it means a yellow flower that turns into fluffy seeds.',
+        imagine: 'Look at the jagged leaves: their pointed edges reminded people of a lion\'s sharp teeth.',
+        wordPiece: '"Dent de lion" means tooth of the lion.',
+        changePattern: 'A picture of lion teeth in the leaves became the flower\'s name.',
+        reflectionChoices: ['The shape of the leaves named it', 'It came from a sound', 'It named a season'],
+        reflectionAnswer: 'The shape of the leaves named it',
+        reflectionNote: 'The strongest clue is shape: the jagged leaf edges looked like rows of teeth.',
+        familyClue: 'The tooth clue "dent" also hides in dentist and dental.',
+        tryOld: 'The plant\'s jagged leaves looked just like a row of lion\'s teeth.',
+        tryNow: 'He blew the dandelion and watched the seeds float away.',
+        source: 'OED',
+      },
+      {
+        word: 'breakfast',
+        question: 'What does "breakfast" really describe?',
+        choices: ['Breaking a night without food', 'Breaking a dish', 'Breaking a record'],
+        answer: 'Breaking a night without food',
+        then: 'Breakfast means to "break" the "fast" of the night.',
+        now: 'Now it means the first meal of the day.',
+        imagine: 'While you sleep, you go many hours without eating. Your morning meal breaks that long pause.',
+        wordPiece: 'A "fast" is a time of going without food. To "break" it is to start eating again.',
+        changePattern: 'Two plain words joined to name the morning meal.',
+        reflectionChoices: ['Two small words combined into one', 'It came from a place name', 'It started as a number'],
+        reflectionAnswer: 'Two small words combined into one',
+        reflectionNote: 'The strongest clue is the build: "break" plus "fast" packs a whole idea into one word.',
+        familyClue: 'The word "fast" (going without food) hides inside breakfast. It is different from "fast" meaning quick.',
+        tryOld: 'After the long night, the farmer broke his fast with warm porridge.',
+        tryNow: 'We ate breakfast on the porch before school.',
+        source: 'OED',
+      },
+      {
+        word: 'goodbye',
+        question: 'What is "goodbye" a short way of saying?',
+        choices: ['God be with you', 'Good night sleep', 'Go and buy'],
+        answer: 'God be with you',
+        then: 'Goodbye began as a squeezed-down way of saying "God be with you."',
+        now: 'Now it is just a friendly word for leaving.',
+        imagine: 'Over many years, a whole phrase wore down into one quick word.',
+        wordPiece: 'The phrase "God be with ye" slowly blended into "goodbye."',
+        changePattern: 'A long blessing shrank into a single everyday word.',
+        reflectionChoices: ['A long phrase shrank over time', 'It named a new tool', 'It came from a song'],
+        reflectionAnswer: 'A long phrase shrank over time',
+        reflectionNote: 'The strongest clue is shrinking: phrases said often wear down into shorter words.',
+        familyClue: 'This is a contraction. "Good" replaced "God" partly to match "good day" and "good night."',
+        tryOld: 'At the gate she said softly, "God be with you," and waved.',
+        tryNow: 'We waved goodbye as the bus pulled away.',
+        source: 'OED',
+      },
+      {
+        word: 'glamour',
+        question: 'What did "glamour" once mean?',
+        choices: ['A magic spell', 'A loud cheer', 'A warm coat'],
+        answer: 'A magic spell',
+        then: 'Glamour once meant a magic spell or enchantment.',
+        now: 'Now it means a charming, exciting kind of beauty.',
+        imagine: 'To cast a glamour was to put a spell on someone so they saw things differently.',
+        wordPiece: 'Glamour is a twisted-around version of the word "grammar," which once meant special, secret learning.',
+        changePattern: 'A word for magic softened into a word for charm.',
+        reflectionChoices: ['Magic charm became personal charm', 'It started as a number', 'It named a tool'],
+        reflectionAnswer: 'Magic charm became personal charm',
+        reflectionNote: 'The strongest clue is charm: the magic kind of "spell" became the dazzling kind of beauty.',
+        familyClue: 'Surprisingly, glamour and grammar are word cousins from the same root.',
+        tryOld: 'The witch cast a glamour so the travelers saw gold instead of leaves.',
+        tryNow: 'The old theater was full of glamour and sparkling lights.',
+        source: 'OED',
+      },
+      {
+        word: 'emoji',
+        question: 'What do the word pieces in "emoji" really mean?',
+        choices: ['Picture character', 'Happy feeling', 'Tiny robot'],
+        answer: 'Picture character',
+        then: 'Emoji comes from Japanese words meaning "picture" and "written character."',
+        now: 'It means the small pictures you add to messages.',
+        imagine: 'It sounds like "emotion," but that is just a coincidence. It really means a picture-letter.',
+        wordPiece: '"E" means picture and "moji" means written character.',
+        changePattern: 'A new word was built from plain pieces: picture plus character.',
+        reflectionChoices: ['It only sounds like an English word', 'It came from Latin', 'It named a season'],
+        reflectionAnswer: 'It only sounds like an English word',
+        reflectionNote: 'The strongest clue is the surprise: "emoji" looks like "emotion" but is really "picture character" from Japanese.',
+        familyClue: 'This is a "false friend": emoji and emotion look related but are not.',
+        tryOld: 'In Japanese, an emoji is literally a little picture-character.',
+        tryNow: 'She added a smiling emoji to the end of her message.',
+        inSorter: false,
+        source: 'OED / Oxford Languages',
       },
     ];
 
-    let currentIndex = 0;
-    let answered = false;
+    const FRIENDLY_WORDS = [
+      { group: 'Kind Words', word: 'generous', meaning: 'Ready to give, share, or help more than expected.', example: 'Lina was generous with her art supplies.', useWhen: 'Use it when someone shares time, care, or things.', nearbyWords: ['giving', 'helpful', 'open-handed'] },
+      { group: 'Kind Words', word: 'patient', meaning: 'Able to wait calmly or keep trying without rushing.', example: 'Omar was patient while his little brother learned the game.', useWhen: 'Use it when waiting takes effort.', nearbyWords: ['calm', 'steady', 'unhurried'] },
+      { group: 'Kind Words', word: 'gentle', meaning: 'Kind, careful, and not rough.', example: 'The coach gave a gentle reminder before practice.', useWhen: 'Use it when strength is used carefully.', nearbyWords: ['soft', 'careful', 'tender'] },
+      { group: 'Kind Words', word: 'grateful', meaning: 'Feeling thankful for help, kindness, or a good moment.', example: 'I felt grateful for the warm soup after the hike.', useWhen: 'Use it when you notice a gift or kindness.', nearbyWords: ['thankful', 'glad', 'appreciative'] },
+      { group: 'Kind Words', word: 'thoughtful', meaning: 'Caring about how others feel and thinking before acting.', example: 'It was thoughtful of you to save me a seat.', useWhen: 'Use it when someone considers other people.', nearbyWords: ['considerate', 'caring', 'kind'] },
+      { group: 'Kind Words', word: 'honest', meaning: 'Truthful and fair, even when it is hard.', example: 'She was honest about breaking the cup.', useWhen: 'Use it when someone tells the truth.', nearbyWords: ['truthful', 'sincere', 'fair'] },
+      { group: 'Brave Words', word: 'courage', meaning: 'The strength to do something even when it feels hard or scary.', example: 'It took courage to read the poem aloud.', useWhen: 'Use it when someone faces a fear.', nearbyWords: ['bravery', 'heart', 'nerve'] },
+      { group: 'Brave Words', word: 'steady', meaning: 'Calm, balanced, and not easily shaken.', example: 'Her steady voice helped the group focus.', useWhen: 'Use it when someone keeps going calmly.', nearbyWords: ['firm', 'calm', 'reliable'] },
+      { group: 'Brave Words', word: 'bold', meaning: 'Brave, clear, and willing to stand out.', example: 'The poster used bold colors and a bold idea.', useWhen: 'Use it when a choice feels brave or noticeable.', nearbyWords: ['daring', 'bright', 'confident'] },
+      { group: 'Brave Words', word: 'resilient', meaning: 'Able to bounce back after trouble or change.', example: 'The resilient team tried again after the first plan failed.', useWhen: 'Use it when someone recovers and keeps learning.', nearbyWords: ['strong', 'flexible', 'recovering'] },
+      { group: 'Brave Words', word: 'confident', meaning: 'Sure of yourself and ready to try.', example: 'He felt confident after practicing his lines.', useWhen: 'Use it when someone trusts their own effort.', nearbyWords: ['sure', 'assured', 'self-assured'] },
+      { group: 'Brave Words', word: 'determined', meaning: 'Set on reaching a goal and not giving up.', example: 'The determined runner finished the whole race.', useWhen: 'Use it when someone keeps pushing toward a goal.', nearbyWords: ['driven', 'focused', 'persistent'] },
+      { group: 'Thinking Words', word: 'curious', meaning: 'Eager to ask, look, and learn more.', example: 'Mia was curious about why the moon changes shape.', useWhen: 'Use it when a question pulls you forward.', nearbyWords: ['wondering', 'interested', 'questioning'] },
+      { group: 'Thinking Words', word: 'wonder', meaning: 'To feel curious or amazed, or to ask yourself a question.', example: 'I wonder how old that oak tree is.', useWhen: 'Use it when a mystery makes your mind open.', nearbyWords: ['ask', 'imagine', 'marvel'] },
+      { group: 'Thinking Words', word: 'reason', meaning: 'To think carefully and use clues to decide something.', example: 'We used reason to choose the safest path.', useWhen: 'Use it when clues help you make a smart choice.', nearbyWords: ['think', 'explain', 'solve'] },
+      { group: 'Thinking Words', word: 'imagine', meaning: 'To picture something in your mind.', example: 'Try to imagine a city under the sea.', useWhen: 'Use it when you create a picture in your head.', nearbyWords: ['picture', 'dream', 'invent'] },
+      { group: 'Thinking Words', word: 'observe', meaning: 'To watch closely and notice details.', example: 'We observed the ants carrying tiny crumbs.', useWhen: 'Use it when careful watching finds something.', nearbyWords: ['watch', 'notice', 'study'] },
+      { group: 'Thinking Words', word: 'compare', meaning: 'To look at two things and see how they are alike or different.', example: 'We compared the two leaves under the lens.', useWhen: 'Use it when you weigh one thing against another.', nearbyWords: ['match', 'contrast', 'measure'] },
+      { group: 'Feeling Words', word: 'cheerful', meaning: 'Full of happiness and good spirits.', example: 'Her cheerful hello brightened the whole room.', useWhen: 'Use it when someone seems happy and bright.', nearbyWords: ['happy', 'sunny', 'merry'] },
+      { group: 'Feeling Words', word: 'hopeful', meaning: 'Feeling that something good might happen.', example: 'We stayed hopeful even when the sky turned gray.', useWhen: 'Use it when you expect good things ahead.', nearbyWords: ['optimistic', 'expectant', 'positive'] },
+      { group: 'Feeling Words', word: 'proud', meaning: 'Pleased about something you or someone did well.', example: 'I was proud of my finished drawing.', useWhen: 'Use it when good work earns a good feeling.', nearbyWords: ['pleased', 'satisfied', 'glad'] },
+      { group: 'Feeling Words', word: 'content', meaning: 'Calm, happy, and satisfied with what you have.', example: 'After the picnic we felt full and content.', useWhen: 'Use it when enough feels like plenty.', nearbyWords: ['satisfied', 'peaceful', 'at ease'] },
+      { group: 'Feeling Words', word: 'eager', meaning: 'Very keen and excited to do something.', example: 'The puppy was eager to go for a walk.', useWhen: 'Use it when excitement makes you ready to start.', nearbyWords: ['keen', 'excited', 'enthusiastic'] },
+      { group: 'Feeling Words', word: 'calm', meaning: 'Quiet, steady, and not upset.', example: 'A few deep breaths helped me feel calm.', useWhen: 'Use it when feelings settle and steady.', nearbyWords: ['peaceful', 'relaxed', 'still'] },
+      { group: 'Nature Words', word: 'meadow', meaning: 'An open field where grass and wildflowers can grow.', example: 'Butterflies drifted across the sunny meadow.', useWhen: 'Use it when describing an open, grassy place.', nearbyWords: ['field', 'grassland', 'clearing'] },
+      { group: 'Nature Words', word: 'brook', meaning: 'A small stream of water.', example: 'The brook made a soft sound over the stones.', useWhen: 'Use it when water is small and moving gently.', nearbyWords: ['stream', 'creek', 'rivulet'] },
+      { group: 'Nature Words', word: 'bloom', meaning: 'To flower, grow, or become bright with life.', example: 'The garden began to bloom after the rain.', useWhen: 'Use it when something opens, grows, or shines.', nearbyWords: ['flower', 'blossom', 'flourish'] },
+      { group: 'Nature Words', word: 'harvest', meaning: 'The time or act of gathering crops or good results.', example: 'The class held a harvest of ideas after reading.', useWhen: 'Use it when people gather what has grown.', nearbyWords: ['gather', 'crop', 'collect'] },
+      { group: 'Nature Words', word: 'forest', meaning: 'A large area thick with trees.', example: 'Tall pines filled the quiet forest.', useWhen: 'Use it when many trees grow close together.', nearbyWords: ['woods', 'woodland', 'grove'] },
+      { group: 'Nature Words', word: 'breeze', meaning: 'A light, gentle wind.', example: 'A cool breeze lifted the kite into the sky.', useWhen: 'Use it when the wind is soft and pleasant.', nearbyWords: ['wind', 'draft', 'gust'] },
+      { group: 'Story Words', word: 'quest', meaning: 'A search or journey with an important goal.', example: 'The friends began a quest to find the lost map.', useWhen: 'Use it when a search feels important or adventurous.', nearbyWords: ['journey', 'mission', 'search'] },
+      { group: 'Story Words', word: 'mystery', meaning: 'Something unknown that invites questions.', example: 'The locked drawer became the story\'s biggest mystery.', useWhen: 'Use it when nobody knows the answer yet.', nearbyWords: ['puzzle', 'secret', 'riddle'] },
+      { group: 'Story Words', word: 'discover', meaning: 'To find or learn something new.', example: 'We discovered a hidden note inside the old book.', useWhen: 'Use it when a new fact or place appears.', nearbyWords: ['find', 'uncover', 'learn'] },
+      { group: 'Story Words', word: 'clue', meaning: 'A detail that helps solve a question or mystery.', example: 'The muddy shoeprint was the first clue.', useWhen: 'Use it when one detail points toward an answer.', nearbyWords: ['hint', 'sign', 'evidence'] },
+      { group: 'Story Words', word: 'adventure', meaning: 'An exciting experience, often with some risk.', example: 'Our hike turned into a real adventure.', useWhen: 'Use it when something feels exciting and new.', nearbyWords: ['journey', 'exploit', 'escapade'] },
+      { group: 'Story Words', word: 'legend', meaning: 'An old, famous story passed down over time.', example: 'The village kept a legend about a hidden cave.', useWhen: 'Use it when a story is old and well known.', nearbyWords: ['tale', 'myth', 'folklore'] },
+      { group: 'Action Words', word: 'explore', meaning: 'To travel through or look around a new place or idea.', example: 'We set out to explore the tide pools.', useWhen: 'Use it when you search a place or idea closely.', nearbyWords: ['discover', 'investigate', 'roam'] },
+      { group: 'Action Words', word: 'create', meaning: 'To make something new.', example: 'They created a comic strip together.', useWhen: 'Use it when something new is made.', nearbyWords: ['make', 'build', 'invent'] },
+      { group: 'Action Words', word: 'gather', meaning: 'To bring or come together in one place.', example: 'We gathered leaves for the autumn project.', useWhen: 'Use it when things or people come together.', nearbyWords: ['collect', 'assemble', 'round up'] },
+      { group: 'Action Words', word: 'practice', meaning: 'To do something again and again to get better.', example: 'Daily practice made her free throws stronger.', useWhen: 'Use it when repeating builds skill.', nearbyWords: ['rehearse', 'train', 'drill'] },
+      { group: 'Action Words', word: 'encourage', meaning: 'To give someone hope, courage, or support.', example: 'We encouraged him to try the high dive.', useWhen: 'Use it when your words help someone keep going.', nearbyWords: ['support', 'cheer on', 'inspire'] },
+      { group: 'Action Words', word: 'lead', meaning: 'To guide others or go first.', example: 'She offered to lead the group to the campsite.', useWhen: 'Use it when someone guides the way.', nearbyWords: ['guide', 'direct', 'head'] },
+      { group: 'Describing Words', word: 'brilliant', meaning: 'Very bright, or very clever.', example: 'The brilliant idea solved our whole problem.', useWhen: 'Use it when something shines or impresses.', nearbyWords: ['bright', 'clever', 'dazzling'] },
+      { group: 'Describing Words', word: 'enormous', meaning: 'Extremely large.', example: 'An enormous whale surfaced beside the boat.', useWhen: 'Use it when something is huge.', nearbyWords: ['huge', 'giant', 'massive'] },
+      { group: 'Describing Words', word: 'ancient', meaning: 'Very, very old.', example: 'We studied an ancient map of the city.', useWhen: 'Use it when something is from long, long ago.', nearbyWords: ['old', 'aged', 'age-old'] },
+      { group: 'Describing Words', word: 'fragile', meaning: 'Easily broken and needing care.', example: 'The fragile shell cracked at the lightest touch.', useWhen: 'Use it when something needs gentle handling.', nearbyWords: ['delicate', 'breakable', 'frail'] },
+      { group: 'Describing Words', word: 'peculiar', meaning: 'Strange or unusual in an interesting way.', example: 'The plant had a peculiar, spotted leaf.', useWhen: 'Use it when something is oddly different.', nearbyWords: ['odd', 'curious', 'unusual'] },
+      { group: 'Describing Words', word: 'delicate', meaning: 'Fine, soft, or needing gentle care.', example: 'A delicate lace of frost covered the window.', useWhen: 'Use it when something is fine and easily harmed.', nearbyWords: ['fine', 'dainty', 'tender'] },
+      { group: 'Kind Words', word: 'respectful', meaning: 'Showing care for people, places, or rules.', example: 'The class was respectful during the guest speaker.', useWhen: 'Use it when someone treats others with care.', nearbyWords: ['polite', 'considerate', 'courteous'] },
+      { group: 'Kind Words', word: 'helpful', meaning: 'Ready to make a task easier for someone.', example: 'The helpful note explained where to begin.', useWhen: 'Use it when someone gives useful support.', nearbyWords: ['useful', 'supportive', 'kind'] },
+      { group: 'Brave Words', word: 'persistent', meaning: 'Continuing even when something is difficult.', example: 'The persistent inventor tested the model again.', useWhen: 'Use it when effort keeps going.', nearbyWords: ['determined', 'steady', 'tenacious'] },
+      { group: 'Brave Words', word: 'resourceful', meaning: 'Good at finding clever ways to solve problems.', example: 'The resourceful hikers made a shelter from branches.', useWhen: 'Use it when someone uses what they have wisely.', nearbyWords: ['clever', 'creative', 'practical'] },
+      { group: 'Thinking Words', word: 'analyze', meaning: 'To study something by looking at its parts.', example: 'We analyzed the poem one line at a time.', useWhen: 'Use it when careful thinking breaks a problem apart.', nearbyWords: ['study', 'examine', 'inspect'] },
+      { group: 'Thinking Words', word: 'infer', meaning: 'To figure something out from clues.', example: 'From the wet umbrella, I could infer that it had rained.', useWhen: 'Use it when clues point to an answer.', nearbyWords: ['guess', 'deduce', 'reason'] },
+      { group: 'Feeling Words', word: 'delighted', meaning: 'Very pleased and happy.', example: 'She was delighted by the surprise card.', useWhen: 'Use it when happiness feels bright and full.', nearbyWords: ['pleased', 'joyful', 'thrilled'] },
+      { group: 'Feeling Words', word: 'reflective', meaning: 'Thoughtful and careful about what something means.', example: 'After the story, she felt reflective and quiet.', useWhen: 'Use it when someone pauses to think deeply.', nearbyWords: ['thoughtful', 'pensive', 'careful'] },
+      { group: 'Nature Words', word: 'canopy', meaning: 'A roof-like layer of tree branches and leaves.', example: 'Sunlight filtered through the forest canopy.', useWhen: 'Use it when trees make a green roof overhead.', nearbyWords: ['cover', 'treetop', 'shelter'] },
+      { group: 'Nature Words', word: 'ripple', meaning: 'A small wave or gentle spreading movement.', example: 'A ripple crossed the pond after the pebble fell.', useWhen: 'Use it when motion spreads softly.', nearbyWords: ['wave', 'tremble', 'undulation'] },
+      { group: 'Story Words', word: 'chapter', meaning: 'One section of a book or story.', example: 'The next chapter revealed the missing key.', useWhen: 'Use it when a story moves into a new part.', nearbyWords: ['section', 'part', 'episode'] },
+      { group: 'Story Words', word: 'character', meaning: 'A person, creature, or figure in a story.', example: 'The main character learned to listen.', useWhen: 'Use it when naming who a story follows.', nearbyWords: ['person', 'hero', 'figure'] },
+      { group: 'Action Words', word: 'investigate', meaning: 'To look carefully for facts or answers.', example: 'The students investigated why the plant wilted.', useWhen: 'Use it when looking closely solves a question.', nearbyWords: ['explore', 'examine', 'research'] },
+      { group: 'Action Words', word: 'revise', meaning: 'To improve writing or a plan by changing it.', example: 'I revised my paragraph after hearing feedback.', useWhen: 'Use it when a second try makes work stronger.', nearbyWords: ['edit', 'improve', 'reshape'] },
+      { group: 'Describing Words', word: 'vivid', meaning: 'Bright, clear, and easy to imagine.', example: 'The vivid description made the forest feel real.', useWhen: 'Use it when details stand out strongly.', nearbyWords: ['clear', 'bright', 'lively'] },
+      { group: 'Describing Words', word: 'graceful', meaning: 'Moving or acting in a smooth, pleasing way.', example: 'The dancer made a graceful turn.', useWhen: 'Use it when movement or manners feel smooth.', nearbyWords: ['smooth', 'elegant', 'poised'] },
+    ];
+
+    const PREFIXES = [
+      { piece: 'pre', meaning: 'before' },
+      { piece: 're', meaning: 'back or again' },
+      { piece: 'tele', meaning: 'far away' },
+      { piece: 'auto', meaning: 'self' },
+      { piece: 'trans', meaning: 'across' },
+      { piece: 'in', meaning: 'into' },
+      { piece: 'ex', meaning: 'out' },
+      { piece: 'bi', meaning: 'two' },
+    ];
+
+    const ROOTS = [
+      { piece: 'vent', meaning: 'come' },
+      { piece: 'dict', meaning: 'say' },
+      { piece: 'port', meaning: 'carry' },
+      { piece: 'spect', meaning: 'look' },
+      { piece: 'phone', meaning: 'sound' },
+      { piece: 'graph', meaning: 'write or draw' },
+      { piece: 'scope', meaning: 'see' },
+      { piece: 'cycle', meaning: 'wheel' },
+    ];
+
+    const BUILD_WORDS = {
+      'pre+vent': { word: 'prevent', meaning: 'to come before -- and now, to stop something from happening.' },
+      'pre+dict': { word: 'predict', meaning: 'to say what will happen before it happens.' },
+      're+port': { word: 'report', meaning: 'to carry news back to other people.' },
+      'trans+port': { word: 'transport', meaning: 'to carry something across to a new place.' },
+      'ex+port': { word: 'export', meaning: 'to carry goods out to another country.' },
+      'in+spect': { word: 'inspect', meaning: 'to look closely into something.' },
+      're+spect': { word: 'respect', meaning: 'to look at someone with care and value.' },
+      'tele+phone': { word: 'telephone', meaning: 'a tool that carries sound from far away.' },
+      'tele+graph': { word: 'telegraph', meaning: 'an old machine that sent writing from far away.' },
+      'tele+scope': { word: 'telescope', meaning: 'a tool that helps you see things far away.' },
+      'auto+graph': { word: 'autograph', meaning: 'a name you write yourself.' },
+      'bi+cycle': { word: 'bicycle', meaning: 'a machine with two wheels that you ride.' },
+    };
+
+    const PATTERN_CHOICES = [
+      { key: 'narrowing', label: 'Narrowing', note: 'A wide meaning became more specific.' },
+      { key: 'image', label: 'Picture clue', note: 'A shape, object, or scene gave the word its meaning.' },
+      { key: 'pieces', label: 'Word pieces', note: 'Small word parts joined or shrank into a word.' },
+      { key: 'feeling', label: 'Feeling shift', note: 'A feeling word softened, flipped, or changed tone.' },
+    ];
 
     function byId(id) {
       return document.getElementById(id);
+    }
+
+    function shuffle(array) {
+      const copy = array.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    /* ---------- Quiz ---------- */
+    let currentIndex = 0;
+    let answered = false;
+    let currentKidLevel = 'warm';
+
+    function levelHintFor(item) {
+      if (currentKidLevel === 'explorer') return 'Explorer clue: Read each choice carefully. One old meaning will make the reveal story click.';
+      if (currentKidLevel === 'wordsmith') return `Wordsmith clue: Watch for this pattern: ${item.changePattern}`;
+      return `Warm-up clue: ${item.wordPiece}`;
+    }
+
+    function setKidLevel(level) {
+      currentKidLevel = level;
+      document.querySelectorAll('.level-card').forEach((card) => {
+        card.classList.toggle('active', card.dataset.level === level);
+      });
+      const item = KIDS_WORDS[currentIndex];
+      const hint = byId('level-hint');
+      if (hint && item) hint.textContent = levelHintFor(item);
     }
 
     function renderWord() {
@@ -735,9 +1982,12 @@
       byId('progress').textContent = `Word ${currentIndex + 1} of ${KIDS_WORDS.length}`;
       byId('word').textContent = item.word;
       byId('question').textContent = item.question;
+      byId('level-hint').textContent = levelHintFor(item);
       byId('next-btn').textContent = currentIndex >= KIDS_WORDS.length - 1 ? 'Finish quest' : 'Next word';
       byId('reveal').classList.remove('show');
       byId('feedback').textContent = 'Pick an answer to unlock the story.';
+      byId('reflection-note').textContent = 'Pick a clue after you read the story.';
+      byId('reflection-choices').innerHTML = '';
       byId('finish').classList.remove('show');
 
       const choices = byId('choices');
@@ -757,7 +2007,7 @@
       answered = true;
       const item = KIDS_WORDS[currentIndex];
       const correct = choice === item.answer;
-      document.querySelectorAll('.choice-btn').forEach((btn) => {
+      document.querySelectorAll('#choices .choice-btn').forEach((btn) => {
         btn.disabled = true;
         if (btn.textContent.includes(item.answer)) btn.classList.add('correct');
       });
@@ -769,15 +2019,43 @@
       byId('then').textContent = item.then;
       byId('now').textContent = item.now;
       byId('imagine').textContent = item.imagine;
-      byId('word-piece').textContent = item.wordPiece;
+      byId('change-pattern').textContent = item.changePattern;
+      byId('word-piece').textContent = item.familyClue;
+      byId('try-old').textContent = `Write: "${item.tryOld}"`;
+      byId('try-now').textContent = `Write: "${item.tryNow}"`;
       byId('source').textContent = `Source: ${item.source}`;
+      renderReflection(item);
       byId('reveal').classList.add('show');
+    }
+
+    function renderReflection(item) {
+      const reflectionChoices = byId('reflection-choices');
+      reflectionChoices.innerHTML = '';
+      byId('reflection-note').textContent = 'Pick the clue that seems strongest.';
+
+      item.reflectionChoices.forEach((reflectionChoice) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'reflection-chip';
+        chip.textContent = reflectionChoice;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.reflection-chip').forEach((btn) => {
+            btn.classList.remove('selected', 'strongest');
+            if (btn.textContent === item.reflectionAnswer) btn.classList.add('strongest');
+          });
+          chip.classList.add('selected');
+          byId('reflection-note').textContent = reflectionChoice === item.reflectionAnswer
+            ? `That's the strongest clue. ${item.reflectionNote}`
+            : `Good thinking. Historians would lean on this clue: ${item.reflectionNote}`;
+        });
+        reflectionChoices.appendChild(chip);
+      });
     }
 
     function nextWord() {
       if (!answered) {
         const item = KIDS_WORDS[currentIndex];
-        const firstCorrect = Array.from(document.querySelectorAll('.choice-btn'))
+        const firstCorrect = Array.from(document.querySelectorAll('#choices .choice-btn'))
           .find((btn) => btn.textContent.includes(item.answer));
         if (firstCorrect) chooseAnswer(firstCorrect, item.answer);
         return;
@@ -797,10 +2075,387 @@
       byId('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    /* ---------- Daily challenge ---------- */
+    function dailyIndex() {
+      const now = new Date();
+      const dayNumber = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+      return dayNumber % KIDS_WORDS.length;
+    }
+
+    function renderDailyChallenge() {
+      const item = KIDS_WORDS[dailyIndex()];
+      byId('daily-word').textContent = item.word;
+      byId('daily-question').textContent = item.question;
+      byId('daily-mission').textContent = `Mission: use "${item.word}" once with today’s meaning, then tell someone its older meaning.`;
+      byId('daily-status').textContent = '';
+    }
+
+    function startDailyChallenge() {
+      currentIndex = dailyIndex();
+      renderWord();
+      byId('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function revealDailyClue() {
+      const item = KIDS_WORDS[dailyIndex()];
+      byId('daily-status').textContent = `Clue: ${item.wordPiece}`;
+    }
+
+    /* ---------- Then or Now? ---------- */
+    let sorterPool = [];
+    let sorterIndex = 0;
+    let sorterScore = 0;
+    let sorterAnswered = false;
+
+    function buildSorterPool() {
+      const pool = [];
+      KIDS_WORDS.forEach((item) => {
+        if (item.inSorter === false) return;
+        pool.push({ word: item.word, sentence: item.tryOld, type: 'old', meaning: item.then });
+        pool.push({ word: item.word, sentence: item.tryNow, type: 'now', meaning: item.now });
+      });
+      return shuffle(pool);
+    }
+
+    function renderSorter() {
+      if (sorterIndex >= sorterPool.length) {
+        sorterPool = buildSorterPool();
+        sorterIndex = 0;
+      }
+      sorterAnswered = false;
+      const card = sorterPool[sorterIndex];
+      byId('sorter-sentence').textContent = `"${card.sentence}"`;
+      byId('sorter-feedback').textContent = 'Old meaning or modern meaning?';
+      document.querySelectorAll('.sorter-btn').forEach((btn) => {
+        btn.disabled = false;
+        btn.classList.remove('correct', 'incorrect');
+      });
+    }
+
+    function answerSorter(button) {
+      if (sorterAnswered) return;
+      sorterAnswered = true;
+      const card = sorterPool[sorterIndex];
+      const correct = button.dataset.answer === card.type;
+      document.querySelectorAll('.sorter-btn').forEach((btn) => {
+        btn.disabled = true;
+        if (btn.dataset.answer === card.type) btn.classList.add('correct');
+      });
+      if (!correct) button.classList.add('incorrect');
+      if (correct) sorterScore += 1;
+      byId('sorter-score').textContent = `Score: ${sorterScore}`;
+      const label = card.type === 'old' ? 'old' : 'modern';
+      byId('sorter-feedback').textContent = correct
+        ? `Yes! Here "${card.word}" uses its ${label} meaning. ${card.meaning}`
+        : `Not quite. Here "${card.word}" uses its ${label} meaning. ${card.meaning}`;
+    }
+
+    function nextSorter() {
+      sorterIndex += 1;
+      renderSorter();
+    }
+
+    /* ---------- Match the Meaning ---------- */
+    const MATCH_PAIR_COUNT = 6;
+    let matchFlipped = [];
+    let matchLock = false;
+    let matchFound = 0;
+
+    function buildMatchBoard() {
+      const grid = byId('match-grid');
+      grid.innerHTML = '';
+      matchFlipped = [];
+      matchLock = false;
+      matchFound = 0;
+      byId('match-score').textContent = 'Pairs found: 0';
+      byId('match-win').hidden = true;
+
+      const chosen = shuffle(KIDS_WORDS).slice(0, MATCH_PAIR_COUNT);
+      const cards = [];
+      chosen.forEach((item, i) => {
+        cards.push({ pairId: i, kind: 'word', label: item.word });
+        cards.push({ pairId: i, kind: 'meaning', label: item.answer });
+      });
+      shuffle(cards).forEach((card) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `match-card${card.kind === 'word' ? ' is-word' : ''}`;
+        btn.dataset.pair = card.pairId;
+        btn.setAttribute('aria-label', 'Hidden card');
+        btn.innerHTML = `<span class="match-back" aria-hidden="true">?</span><span class="match-face">${card.label}</span>`;
+        btn.addEventListener('click', () => flipMatch(btn));
+        grid.appendChild(btn);
+      });
+    }
+
+    function flipMatch(btn) {
+      if (matchLock) return;
+      if (btn.classList.contains('flipped') || btn.classList.contains('matched')) return;
+      btn.classList.add('flipped');
+      matchFlipped.push(btn);
+      if (matchFlipped.length < 2) return;
+
+      matchLock = true;
+      const [a, b] = matchFlipped;
+      if (a.dataset.pair === b.dataset.pair) {
+        setTimeout(() => {
+          a.classList.add('matched');
+          b.classList.add('matched');
+          a.disabled = true;
+          b.disabled = true;
+          matchFlipped = [];
+          matchLock = false;
+          matchFound += 1;
+          byId('match-score').textContent = `Pairs found: ${matchFound}`;
+          if (matchFound === MATCH_PAIR_COUNT) byId('match-win').hidden = false;
+        }, 380);
+      } else {
+        setTimeout(() => {
+          a.classList.remove('flipped');
+          b.classList.remove('flipped');
+          matchFlipped = [];
+          matchLock = false;
+        }, 850);
+      }
+    }
+
+    /* ---------- Build a Word ---------- */
+    let buildPrefix = null;
+    let buildRoot = null;
+    const buildFound = new Set();
+
+    function renderBuildPieces() {
+      const prefixList = byId('prefix-list');
+      const rootList = byId('root-list');
+      prefixList.innerHTML = '';
+      rootList.innerHTML = '';
+
+      PREFIXES.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'piece-btn';
+        btn.innerHTML = `${p.piece}-<small>${p.meaning}</small>`;
+        btn.addEventListener('click', () => {
+          buildPrefix = p;
+          prefixList.querySelectorAll('.piece-btn').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+        prefixList.appendChild(btn);
+      });
+
+      ROOTS.forEach((r) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'piece-btn';
+        btn.innerHTML = `${r.piece}<small>${r.meaning}</small>`;
+        btn.addEventListener('click', () => {
+          buildRoot = r;
+          rootList.querySelectorAll('.piece-btn').forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        });
+        rootList.appendChild(btn);
+      });
+    }
+
+    function buildTally() {
+      return `<p class="build-tally">Words found: ${buildFound.size} of ${Object.keys(BUILD_WORDS).length}</p>`;
+    }
+
+    function snapTogether() {
+      const result = byId('build-result');
+      if (!buildPrefix || !buildRoot) {
+        result.classList.remove('miss');
+        result.innerHTML = '<p>Pick one beginning piece and one root piece first.</p>';
+        return;
+      }
+      const equation = `${buildPrefix.piece}- (${buildPrefix.meaning}) + ${buildRoot.piece} (${buildRoot.meaning})`;
+      const match = BUILD_WORDS[`${buildPrefix.piece}+${buildRoot.piece}`];
+      if (match) {
+        buildFound.add(`${buildPrefix.piece}+${buildRoot.piece}`);
+        result.classList.remove('miss');
+        result.innerHTML =
+          `<p class="build-equation">${equation}</p>` +
+          `<p class="build-word">${match.word}</p>` +
+          `<p>${match.meaning}</p>` +
+          buildTally();
+      } else {
+        result.classList.add('miss');
+        result.innerHTML =
+          `<p class="build-equation">${equation}</p>` +
+          `<p>Those pieces don't snap into a word here. Try another mix!</p>` +
+          buildTally();
+      }
+    }
+
+    function clearBuild() {
+      buildPrefix = null;
+      buildRoot = null;
+      document.querySelectorAll('.piece-btn').forEach((b) => b.classList.remove('selected'));
+      const result = byId('build-result');
+      result.classList.remove('miss');
+      result.innerHTML = '<p>Choose one beginning piece and one root piece, then press "Snap together."</p>';
+    }
+
+    /* ---------- Pattern Finder ---------- */
+    let patternPool = [];
+    let patternIndex = 0;
+    let patternScore = 0;
+    let patternAnswered = false;
+
+    function patternFor(item) {
+      const text = `${item.word} ${item.changePattern} ${item.familyClue}`.toLowerCase();
+      if (/narrow|specific|deer|meat|girl/.test(text)) return 'narrowing';
+      if (/picture|shape|looked|mouse|thread|eye|tooth|flower|star|salt|bread/.test(text)) return 'image';
+      if (/piece|joined|shrank|phrase|pre-|latin|japanese|means|from/.test(text)) return 'pieces';
+      return 'feeling';
+    }
+
+    function buildPatternPool() {
+      return shuffle(KIDS_WORDS.filter((item) => item.inSorter !== false));
+    }
+
+    function renderPattern() {
+      if (patternIndex >= patternPool.length) {
+        patternPool = buildPatternPool();
+        patternIndex = 0;
+      }
+      patternAnswered = false;
+      const item = patternPool[patternIndex];
+      byId('pattern-word').textContent = item.word;
+      byId('pattern-clue').textContent = item.changePattern;
+      byId('pattern-feedback').textContent = 'Which pattern fits best?';
+      const choices = byId('pattern-choices');
+      choices.innerHTML = '';
+      PATTERN_CHOICES.forEach((choice) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pattern-choice';
+        btn.dataset.pattern = choice.key;
+        btn.innerHTML = `<strong>${choice.label}</strong><span>${choice.note}</span>`;
+        btn.addEventListener('click', () => answerPattern(btn));
+        choices.appendChild(btn);
+      });
+    }
+
+    function answerPattern(button) {
+      if (patternAnswered) return;
+      patternAnswered = true;
+      const item = patternPool[patternIndex];
+      const correctPattern = patternFor(item);
+      const correct = button.dataset.pattern === correctPattern;
+      document.querySelectorAll('.pattern-choice').forEach((btn) => {
+        btn.disabled = true;
+        if (btn.dataset.pattern === correctPattern) btn.classList.add('correct');
+      });
+      if (!correct) button.classList.add('incorrect');
+      if (correct) patternScore += 1;
+      byId('pattern-score').textContent = `Patterns found: ${patternScore}`;
+      const pattern = PATTERN_CHOICES.find((choice) => choice.key === correctPattern);
+      byId('pattern-feedback').textContent = correct
+        ? `Yes. ${item.word} is a ${pattern.label.toLowerCase()} example.`
+        : `Good try. ${item.word} fits ${pattern.label.toLowerCase()}: ${pattern.note}`;
+    }
+
+    function nextPattern() {
+      patternIndex += 1;
+      renderPattern();
+    }
+
+    /* ---------- Vocabulary cards ---------- */
+    function makeText(tagName, className, text) {
+      const element = document.createElement(tagName);
+      if (className) element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function renderFriendlyWords() {
+      const list = byId('friendly-word-list');
+      const groups = [...new Set(FRIENDLY_WORDS.map((item) => item.group))];
+      list.innerHTML = '';
+
+      const count = byId('friendly-count');
+      if (count) count.textContent = `${FRIENDLY_WORDS.length} words across ${groups.length} word families.`;
+
+      groups.forEach((groupName) => {
+        const group = document.createElement('div');
+        group.className = 'friendly-group';
+        group.appendChild(makeText('h4', '', groupName));
+
+        const grid = document.createElement('div');
+        grid.className = 'friendly-grid';
+
+        FRIENDLY_WORDS.filter((item) => item.group === groupName).forEach((item) => {
+          const card = document.createElement('article');
+          card.className = 'friendly-card';
+          card.dataset.word = item.word;
+
+          card.appendChild(makeText('h5', '', item.word));
+          card.appendChild(makeText('p', '', item.meaning));
+          card.appendChild(makeText('p', 'nearby', `Nearby words: ${item.nearbyWords.join(', ')}`));
+
+          const extra = document.createElement('div');
+          extra.className = 'friendly-extra';
+          extra.hidden = true;
+          extra.appendChild(makeText('p', '', `Example: ${item.example}`));
+          extra.appendChild(makeText('p', '', item.useWhen));
+
+          const toggle = document.createElement('button');
+          toggle.type = 'button';
+          toggle.className = 'example-toggle';
+          toggle.textContent = 'Show example';
+          toggle.addEventListener('click', () => {
+            extra.hidden = !extra.hidden;
+            toggle.textContent = extra.hidden ? 'Show example' : 'Hide example';
+          });
+
+          card.appendChild(toggle);
+          card.appendChild(extra);
+          grid.appendChild(card);
+        });
+
+        group.appendChild(grid);
+        list.appendChild(group);
+      });
+    }
+
+    function highlightFriendlyWord() {
+      const cards = Array.from(document.querySelectorAll('.friendly-card'));
+      if (!cards.length) return;
+      cards.forEach((card) => card.classList.remove('highlight'));
+      const card = cards[Math.floor(Math.random() * cards.length)];
+      card.classList.add('highlight');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.level-card').forEach((card) => {
+        card.addEventListener('click', () => setKidLevel(card.dataset.level));
+      });
+      byId('daily-start').addEventListener('click', startDailyChallenge);
+      byId('daily-reveal').addEventListener('click', revealDailyClue);
       byId('next-btn').addEventListener('click', nextWord);
       byId('restart-btn').addEventListener('click', restartQuiz);
+      byId('try-word-btn').addEventListener('click', highlightFriendlyWord);
+      renderDailyChallenge();
+      renderFriendlyWords();
       renderWord();
+
+      sorterPool = buildSorterPool();
+      renderSorter();
+      document.querySelectorAll('.sorter-btn').forEach((btn) => btn.addEventListener('click', () => answerSorter(btn)));
+      byId('sorter-next').addEventListener('click', nextSorter);
+
+      buildMatchBoard();
+      byId('match-restart').addEventListener('click', buildMatchBoard);
+
+      renderBuildPieces();
+      byId('build-btn').addEventListener('click', snapTogether);
+      byId('build-clear').addEventListener('click', clearBuild);
+
+      patternPool = buildPatternPool();
+      renderPattern();
+      byId('pattern-next').addEventListener('click', nextPattern);
     });
   </script>
 </body>

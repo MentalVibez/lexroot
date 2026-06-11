@@ -643,7 +643,7 @@
     }
 
     .reader-levels::before {
-      content: "Depth";
+      content: "Reading mode";
       color: rgba(244,236,222,0.58);
       font-family: var(--ui-font);
       font-size: 0.76rem;
@@ -794,6 +794,8 @@
     }
 
     .source-badge::before { content: "✓"; }
+    .source-badge.citation-needs::before { content: "!"; }
+    .source-badge.citation-lead::before { content: "→"; }
 
     details.source-details {
       margin-top: 1rem;
@@ -940,8 +942,287 @@
 
     .flagged-word strong { color: var(--clay-deep); }
 
+    /* Understand This Text — curated sets + in-context readout */
+    .text-help-lead { color: var(--muted); font-size: 0.96rem; margin: 0.2rem 0 1rem; max-width: 46rem; }
+
+    .text-sets {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0.8rem; margin-bottom: 1.2rem;
+    }
+
+    .text-set-card {
+      text-align: left; cursor: pointer; font: inherit; color: inherit;
+      background: var(--cream); border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 0.4rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .text-set-card::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--clay), var(--gold));
+    }
+    .text-set-card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(63, 43, 20, 0.14); }
+    .text-set-card:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+    .text-set-label { font-family: var(--ui-font); font-weight: 700; color: var(--clay-deep); font-size: 0.92rem; }
+    .text-set-snippet {
+      font-style: italic; color: var(--night); font-size: 0.9rem; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .text-set-cite { color: var(--muted); font-size: 0.72rem; font-family: var(--ui-font); }
+    .text-set-cta { color: var(--clay-deep); font-family: var(--ui-font); font-weight: 700; font-size: 0.78rem; margin-top: auto; }
+
+    .passage-readout {
+      background: #fffdf8; border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: var(--radius); padding: 1rem 1.1rem; line-height: 1.8;
+      font-size: 1.05rem; color: var(--night); margin-bottom: 0.6rem;
+    }
+    .lex-flag {
+      background: rgba(229, 169, 54, 0.28); border-bottom: 2px solid var(--gold);
+      border-radius: 3px; padding: 0 0.12em; cursor: pointer; color: inherit;
+    }
+    .lex-flag:hover, .lex-flag:focus-visible {
+      background: rgba(178, 58, 72, 0.22); border-bottom-color: var(--clay); outline: none;
+    }
+
+    .era-badge {
+      display: inline-block; font-family: var(--ui-font); font-size: 0.66rem;
+      text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;
+      color: #fffdf8; background: var(--clay); border-radius: 999px;
+      padding: 0.12rem 0.5rem; vertical-align: middle; margin-left: 0.5rem;
+    }
+    .flag-head { display: flex; align-items: baseline; flex-wrap: wrap; }
+    .flag-head strong { font-size: 1.1rem; }
+    .flag-then, .flag-now { color: var(--ink); font-size: 0.95rem; margin-top: 0.2rem; }
+    .flag-source { color: var(--muted); font-family: var(--ui-font); font-size: 0.76rem; margin-top: 0.35rem; }
+    .flag-explore {
+      margin-top: 0.5rem; font-family: var(--ui-font); font-weight: 700; font-size: 0.8rem;
+      background: none; border: 1px solid rgba(127, 55, 23, 0.25); border-radius: 999px;
+      padding: 0.3rem 0.7rem; color: var(--clay-deep); cursor: pointer;
+    }
+    .flag-explore:hover { background: rgba(229, 169, 54, 0.16); border-color: var(--clay); }
+
+    .educator-strip, .lesson-pack-grid, .compare-grid, .classroom-actions {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .educator-strip {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      margin: 0.85rem 0 1rem;
+    }
+
+    .educator-note, .lesson-pack-card, .compare-card {
+      border: 1px solid rgba(34, 38, 31, 0.08);
+      border-radius: 1rem;
+      background: rgba(255,253,248,0.78);
+      padding: 0.85rem;
+    }
+
+    .educator-note strong, .lesson-pack-card strong, .compare-card strong {
+      display: block;
+      color: var(--clay-deep);
+      font-family: var(--ui-font);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .educator-note p, .lesson-pack-card p, .compare-card p { color: var(--ink); line-height: 1.58; }
+
+    .lesson-pack-grid { grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); margin-bottom: 1rem; }
+
+    .lesson-pack-card {
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      min-height: 8.4rem;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+
+    .lesson-pack-card:hover, .lesson-pack-card:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(127, 55, 23, 0.26);
+      outline: none;
+    }
+
+    .lesson-pack-card span {
+      display: block;
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-family: var(--ui-font);
+      font-size: 0.78rem;
+    }
+
+    .teacher-summary {
+      margin: 0.75rem 0;
+      border-left: 3px solid var(--sage);
+      border-radius: 0 0.85rem 0.85rem 0;
+      background: rgba(85,107,93,0.1);
+      padding: 0.75rem 0.9rem;
+    }
+
+    .teacher-summary strong, .context-clue {
+      color: var(--sage);
+      font-family: var(--ui-font);
+      font-size: 0.74rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .teacher-summary p { margin-top: 0.28rem; color: var(--ink); line-height: 1.6; }
+
+    .context-clue {
+      display: inline-flex;
+      margin-top: 0.45rem;
+      padding: 0.16rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(85,107,93,0.22);
+      background: rgba(85,107,93,0.08);
+    }
+
+    .flag-why {
+      color: var(--ink);
+      font-size: 0.9rem;
+      margin-top: 0.35rem;
+      line-height: 1.55;
+    }
+
+    .compare-controls {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .compare-controls input {
+      min-height: 2.75rem;
+      border: 1px solid rgba(34, 38, 31, 0.12);
+      border-radius: 999px;
+      padding: 0.6rem 0.9rem;
+      background: #fffdf8;
+      color: var(--ink);
+      font: inherit;
+      flex: 1 1 11rem;
+    }
+
+    .compare-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .compare-card.full { grid-column: 1 / -1; }
+
+    .compare-preset-row, .classroom-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .classroom-actions { margin-bottom: 0.9rem; }
+
+    .citation-ready {
+      background: rgba(85,107,93,0.12);
+      border-color: rgba(85,107,93,0.28);
+      color: #35523c;
+    }
+
+    .citation-lead {
+      background: rgba(213,169,79,0.16);
+      border-color: rgba(213,169,79,0.3);
+      color: #7a5618;
+    }
+
+    .citation-needs {
+      background: rgba(165,83,42,0.1);
+      border-color: rgba(165,83,42,0.22);
+      color: var(--clay-deep);
+    }
+
+    .print-scope-note {
+      display: none;
+      color: var(--muted);
+      font-family: var(--ui-font);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .topbar, .fact-ticker, .hero, .explorer-header, .explorer-toolbar,
+      .word-actions, .drift-controls, .text-help-controls, .text-sets,
+      .closing-banner, .site-footer, .wake-toast, #ai-panel, #era-browse {
+        display: none !important;
+      }
+      .site-shell { width: 100%; padding: 0; }
+      .explorer, .panel {
+        background: #fff !important;
+        color: #111 !important;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+      .tab-panel { display: none !important; }
+      body.print-word-card #story-panel,
+      body.print-text-analysis #text-help-panel,
+      body.print-sources #sources-panel { display: block !important; }
+      .story-grid, .compare-grid, .educator-strip { grid-template-columns: 1fr 1fr; }
+      .story-block, .educator-note, .flagged-word, .passage-readout {
+        break-inside: avoid;
+        background: #fff;
+      }
+      .print-scope-note { display: block; }
+    }
+
+    /* Cold-start "waking the server" toast */
+    .wake-toast {
+      position: fixed; left: 50%; bottom: 1.2rem; z-index: 60;
+      transform: translateX(-50%) translateY(0.6rem);
+      max-width: min(92vw, 30rem);
+      display: flex; align-items: center; gap: 0.6rem;
+      background: var(--night); color: #fff8e7;
+      font-family: var(--ui-font); font-size: 0.86rem; line-height: 1.35;
+      padding: 0.7rem 1rem; border-radius: 999px;
+      box-shadow: 0 16px 40px rgba(20, 18, 12, 0.32);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .wake-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .wake-dot {
+      width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: 0 0 auto;
+      background: var(--gold); animation: wake-pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes wake-pulse {
+      0%, 100% { opacity: 0.35; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wake-dot { animation: none; }
+      .wake-toast { transition: opacity 0.25s ease; }
+    }
+
     .ai-loading, .empty-state {
       color: var(--muted); font-style: italic; line-height: 1.7; font-size: 0.96rem;
+    }
+
+    .did-you-mean {
+      display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center;
+      margin-top: 0.8rem; color: var(--muted); font-family: var(--ui-font);
+      font-style: normal;
+    }
+
+    .suggestion-chip {
+      border: 1px solid rgba(127, 55, 23, 0.18);
+      border-radius: 999px; padding: 0.48rem 0.75rem;
+      background: rgba(255, 252, 247, 0.95); color: var(--clay-deep);
+      font-family: var(--ui-font); font-weight: 700;
+      min-height: 2.45rem;
+    }
+
+    .suggestion-chip:hover, .suggestion-chip:focus-visible {
+      outline: none; border-color: var(--clay);
+      box-shadow: 0 8px 18px rgba(127, 55, 23, 0.12);
     }
 
     .ai-section { margin-bottom: 1rem; }
@@ -1231,12 +1512,13 @@
           <button type="button" class="explorer-tab" data-tab="timeline" onclick="switchExplorerTab('timeline')" role="tab" aria-selected="false">Timeline</button>
           <button type="button" class="explorer-tab" data-tab="roots" onclick="switchExplorerTab('roots')" role="tab" aria-selected="false">Roots</button>
           <button type="button" class="explorer-tab" data-tab="text-help" onclick="switchExplorerTab('text-help')" role="tab" aria-selected="false">Text Help</button>
+          <button type="button" class="explorer-tab" data-tab="compare" onclick="switchExplorerTab('compare')" role="tab" aria-selected="false">Compare</button>
           <button type="button" class="explorer-tab" data-tab="sources" onclick="switchExplorerTab('sources')" role="tab" aria-selected="false">Sources</button>
         </div>
-        <div class="reader-levels" aria-label="Reading depth">
-          <button type="button" class="level-btn active" data-level="simple" onclick="setReaderLevel('simple')">Simple</button>
-          <button type="button" class="level-btn" data-level="detailed" onclick="setReaderLevel('detailed')">Detailed</button>
-          <button type="button" class="level-btn" data-level="scholarly" onclick="setReaderLevel('scholarly')">Scholarly</button>
+        <div class="reader-levels" aria-label="Reading mode">
+          <button type="button" class="level-btn active" data-level="simple" onclick="setReaderLevel('simple')">Student</button>
+          <button type="button" class="level-btn" data-level="detailed" onclick="setReaderLevel('detailed')">Teacher</button>
+          <button type="button" class="level-btn" data-level="scholarly" onclick="setReaderLevel('scholarly')">Research</button>
         </div>
       </div>
 
@@ -1244,7 +1526,9 @@
         <div class="panel tab-panel active" id="story-panel" role="tabpanel">
           <h2>Word Story</h2>
           <div class="word-actions">
-            <button type="button" class="word-action-btn" onclick="saveCurrentWord()">Save word</button>
+            <button type="button" class="word-action-btn" onclick="teachCurrentWord()">Teach This Word</button>
+            <button type="button" class="word-action-btn" onclick="copyLessonNote()">Copy lesson note</button>
+            <button type="button" class="word-action-btn" onclick="printExplorerView('word-card')">Print word card</button>
             <button type="button" class="word-action-btn" onclick="shareCurrentWord()">Share</button>
             <span class="saved-note" id="saved-note" aria-live="polite"></span>
           </div>
@@ -1276,10 +1560,18 @@
 
         <div class="panel tab-panel" id="text-help-panel" role="tabpanel">
           <h2>Understand This Text</h2>
+          <p class="text-help-lead">
+            Paste a passage from an older text — or open one of these — and the lexicon
+            flags everyday words that may have meant something different when it was written.
+            Treat each flag as a teaching lead, with source metadata shown when available.
+          </p>
+          <div class="lesson-pack-grid" id="lesson-packs" role="list" aria-label="Lesson packs"></div>
+          <div class="text-sets" id="text-sets" role="list" aria-label="Passages to read in context"></div>
           <div class="text-help-form">
             <textarea id="text-help-input" maxlength="10000" placeholder="Paste a short sentence or passage: He prevented the dawning of the morning."></textarea>
             <div class="text-help-controls">
               <select class="context-select" id="text-era-select" aria-label="Historical era">
+                <option value="">Auto — scan every era (recommended)</option>
                 <option value="Early Modern English">Early Modern English</option>
                 <option value="Middle English">Middle English</option>
                 <option value="Old English">Old English</option>
@@ -1287,15 +1579,40 @@
                 <option value="Modern English">Modern English</option>
               </select>
               <button type="button" class="explain-btn" onclick="analyzeTextHelp()">Check older meanings</button>
+              <button type="button" class="word-action-btn" onclick="printExplorerView('text-analysis')">Print analysis</button>
             </div>
             <div id="text-help-results" aria-live="polite">
-              <p class="empty-state">The tool flags familiar words that may have meant something different in the selected era.</p>
+              <p class="empty-state">The tool flags familiar words that may have meant something different in older texts.</p>
             </div>
+          </div>
+        </div>
+
+        <div class="panel tab-panel" id="compare-panel" role="tabpanel">
+          <h2>Compare Words</h2>
+          <p class="text-help-lead">
+            Compare related words to see how roots, register, and history create different modern meanings.
+          </p>
+          <div class="compare-controls">
+            <input id="compare-word-a" type="text" placeholder="charity" aria-label="First word to compare">
+            <input id="compare-word-b" type="text" placeholder="love" aria-label="Second word to compare">
+            <button type="button" class="explain-btn" onclick="compareWords()">Compare</button>
+          </div>
+          <div class="compare-preset-row" aria-label="Suggested comparisons">
+            <button type="button" class="suggestion-chip" onclick="loadComparePreset('charity','love')">charity vs love</button>
+            <button type="button" class="suggestion-chip" onclick="loadComparePreset('awful','awesome')">awful vs awesome</button>
+            <button type="button" class="suggestion-chip" onclick="loadComparePreset('prevent','precede')">prevent vs precede</button>
+          </div>
+          <div id="compare-results" aria-live="polite">
+            <p class="empty-state">Choose two words to compare their source paths, meanings, and classroom questions.</p>
           </div>
         </div>
 
         <div class="panel tab-panel" id="sources-panel" role="tabpanel">
           <h2>Sources and Confidence</h2>
+          <div class="classroom-actions">
+            <button type="button" class="word-action-btn" onclick="copyDiscussionQuestions()">Copy discussion questions</button>
+            <button type="button" class="word-action-btn" onclick="printExplorerView('sources')">Print source notes</button>
+          </div>
           <div id="sources-content">
             <p class="empty-state">Search a word to see source notes, confidence, and whether a claim is attested or reconstructed.</p>
           </div>
@@ -1320,7 +1637,8 @@
         <h3 id="shifts-heading">Words that flipped their meaning.</h3>
         <p>
           These are not obscure footnotes — they are everyday words whose history will
-          change how you read older texts. Every entry is traceable to a primary source.
+          change how you read older texts. Use the source labels as leads, and rely on
+          exact citations when they are shown.
           Click any card to explore it.
         </p>
       </div>
@@ -1473,6 +1791,11 @@
 
   </div><!-- .site-shell -->
 
+  <div class="wake-toast" id="wake-toast" role="status" aria-live="polite">
+    <span class="wake-dot" aria-hidden="true"></span>
+    <span>Waking the server… the first request after a quiet spell can take up to a minute.</span>
+  </div>
+
   <script>
     'use strict';
     const API = window.LIVING_LEXICON_API_BASE ||
@@ -1487,6 +1810,75 @@
     let readerLevel = 'simple';
     let searchTimer = null;
     let currentQuizWord = '';
+    let currentTextAnalysis = null;
+
+    const READER_MODE_COPY = {
+      simple: {
+        label: 'Student mode',
+        note: 'Plain explanation, examples, and minimal jargon.',
+      },
+      detailed: {
+        label: 'Teacher mode',
+        note: 'Adds lesson hooks, discussion prompts, and classroom questions.',
+      },
+      scholarly: {
+        label: 'Research mode',
+        note: 'Shows source trail, confidence limits, and citation cautions.',
+      },
+    };
+
+    const LESSON_PACKS = [
+      {
+        title: 'Shakespeare words',
+        era: '',
+        words: ['awful', 'passion', 'temperance', 'grace'],
+        text: "Angels and ministers of grace defend us! Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or in the whirlwind of passion lose all temperance.",
+        goal: 'Read familiar words with Early Modern force before translating the scene into modern English.',
+      },
+      {
+        title: 'Biblical / KJV English',
+        era: '',
+        words: ['charity', 'conversation', 'prevent', 'grace'],
+        text: 'Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.',
+        goal: 'Separate theological or older social meanings from today’s everyday meanings.',
+      },
+      {
+        title: 'Chaucer / Middle English',
+        era: '',
+        words: ['silly', 'villain', 'churl', 'virtue'],
+        text: 'This silly carpenter began to quake. For villain sinful deeds make a churl; look who is most virtuous, and on the poor have mercy.',
+        goal: 'Notice how social rank, morality, and innocence can hide behind familiar spellings.',
+      },
+      {
+        title: 'Founding-era political language',
+        era: '',
+        words: ['candid', 'prevent', 'suffer', 'right'],
+        text: 'Mankind are more disposed to suffer, while evils are sufferable, than to right themselves. Let facts be submitted to a candid world: he has endeavoured to prevent the population of these States.',
+        goal: 'Track political vocabulary whose old sense changes how an argument sounds.',
+      },
+      {
+        title: 'Greek and Latin academic roots',
+        era: '',
+        words: ['inspect', 'predict', 'telescope', 'biology'],
+        text: 'A careful scholar will inspect evidence, predict objections, and use a telescope or microscope to see what ordinary sight misses.',
+        goal: 'Use root pieces to decode academic vocabulary without guessing blindly.',
+      },
+    ];
+
+    const COMPARE_PRESETS = {
+      'charity|love': {
+        shared: 'Both can name love, but charity carries a learned Christian and moral register in older English.',
+        questions: ['When does “charity” mean more than giving money?', 'How does a translation choice change a reader’s moral focus?'],
+      },
+      'awful|awesome': {
+        shared: 'Both grow from awe. One drifted strongly negative; the other became a casual positive intensifier.',
+        questions: ['Why might a powerful feeling split into opposite everyday uses?', 'What happens when a strong word becomes common?'],
+      },
+      'prevent|precede': {
+        shared: 'Both carry a before-idea from Latin. Prevent moved toward blocking; precede stayed closer to coming before.',
+        questions: ['Why does “before” sometimes become “stop”?', 'How would a KJV sentence change if read with only the modern sense?'],
+      },
+    };
 
     /* ── UTILITY ── */
     function esc(str) {
@@ -1585,13 +1977,35 @@
       });
     }
 
+    // Show a gentle "waking the server" toast only if a request stays pending
+    // past the threshold — i.e. a Render cold start — and hide it once anything
+    // responds. Fast requests never trigger it.
+    let _apiPending = 0;
+    let _wakeTimer = null;
+    const WAKE_DELAY_MS = 2500;
+
+    function setWakeToast(show) {
+      document.getElementById('wake-toast')?.classList.toggle('show', show);
+    }
+
     async function apiFetch(path, options) {
       const primary = `${API}${path}`;
+      _apiPending += 1;
+      if (_apiPending === 1) _wakeTimer = setTimeout(() => setWakeToast(true), WAKE_DELAY_MS);
       try {
-        return await fetch(primary, options);
-      } catch (err) {
-        if (!API_FALLBACK) throw err;
-        return fetch(`${API_FALLBACK}${path}`, options);
+        try {
+          return await fetch(primary, options);
+        } catch (err) {
+          if (!API_FALLBACK) throw err;
+          return await fetch(`${API_FALLBACK}${path}`, options);
+        }
+      } finally {
+        _apiPending -= 1;
+        if (_apiPending === 0) {
+          clearTimeout(_wakeTimer);
+          _wakeTimer = null;
+          setWakeToast(false);
+        }
       }
     }
 
@@ -1896,6 +2310,8 @@
       initWordOfDay();
       initShiftsGallery();
       initQuiz();
+      renderLessonPacks();
+      renderTextSets();
       loadEraBrowsePills();
 
       const params = new URLSearchParams(window.location.search);
@@ -1948,6 +2364,99 @@
         btn.classList.toggle('active', btn.dataset.level === level);
       });
       if (currentWordData) renderWordCard(currentWordData, []);
+    }
+
+    function citationReadiness(data, exactCount = 0) {
+      const sourceSlug = data?.source_slug || data?.definition_source_slug;
+      if (exactCount > 0) {
+        return {
+          label: 'Citation-ready',
+          className: 'citation-ready',
+          note: 'Exact sense citation metadata is available for classroom or draft citation use.',
+        };
+      }
+      if (sourceSlug) {
+        return {
+          label: 'Source lead',
+          className: 'citation-lead',
+          note: 'A trusted source is named, but exact sense citation metadata has not loaded here yet.',
+        };
+      }
+      if (data?.definition) {
+        return {
+          label: 'Learning explanation',
+          className: 'citation-lead',
+          note: 'Useful for learning, but not yet enough for formal citation.',
+        };
+      }
+      return {
+        label: 'Needs verification',
+        className: 'citation-needs',
+        note: 'Do not cite this entry until source details are added.',
+      };
+    }
+
+    function currentModeNote() {
+      return READER_MODE_COPY[readerLevel] || READER_MODE_COPY.simple;
+    }
+
+    function setClipboardNote(text) {
+      const note = document.getElementById('saved-note');
+      if (note) note.textContent = text;
+    }
+
+    function buildLessonNote() {
+      if (!currentWordData) return '';
+      const timeline = currentTimeline || [];
+      const old = firstMeaning(timeline);
+      const recent = latestMeaning(timeline);
+      const readiness = citationReadiness(currentWordData);
+      const word = currentWordData.word || currentWordData.name || currentWord;
+      return [
+        `Word: ${word}`,
+        `Now: ${currentWordData.definition || 'modern definition pending'}`,
+        old?.meaning ? `Then: ${old.meaning}` : 'Then: older sense pending',
+        recent?.meaning ? `Latest timeline sense: ${recent.meaning}` : '',
+        `Teaching question: What would a reader misunderstand if they used only today’s meaning?`,
+        `Citation status: ${readiness.label}. ${readiness.note}`,
+      ].filter(Boolean).join('\n');
+    }
+
+    async function copyLessonNote() {
+      const text = buildLessonNote();
+      if (!text) { setClipboardNote('Search a word first'); return; }
+      try {
+        await navigator.clipboard.writeText(text);
+        setClipboardNote('Lesson note copied');
+      } catch {
+        setClipboardNote('Could not copy automatically');
+      }
+    }
+
+    async function copyDiscussionQuestions() {
+      if (!currentWordData) { setClipboardNote('Search a word first'); return; }
+      const word = currentWordData.word || currentWordData.name || currentWord;
+      const questions = discussionQuestionsFor(currentWordData, currentTimeline).map((q) => `- ${q}`).join('\n');
+      try {
+        await navigator.clipboard.writeText(`Discussion questions for ${word}\n${questions}`);
+        setClipboardNote('Discussion questions copied');
+      } catch {
+        setClipboardNote('Could not copy automatically');
+      }
+    }
+
+    function printExplorerView(scope) {
+      const className = `print-${scope}`;
+      document.body.classList.add(className);
+      window.print();
+      setTimeout(() => document.body.classList.remove(className), 300);
+    }
+
+    function teachCurrentWord() {
+      if (!currentWordData) { setClipboardNote('Search a word first'); return; }
+      setReaderLevel('detailed');
+      switchExplorerTab('sources');
+      document.getElementById('sources-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function wordPageUrl(word) {
@@ -2269,6 +2778,31 @@
       return layer.note || 'A fuller historical note can be added when stronger source evidence is available.';
     }
 
+    function lessonHookFor(data, timeline) {
+      const word = data.word || data.name || currentWord || 'this word';
+      const old = firstMeaning(timeline);
+      if (old?.meaning && data.definition) {
+        return `Ask students to read a sentence twice: first with today’s meaning of “${word},” then with the older sense “${old.meaning}.” Which reading changes the author’s point?`;
+      }
+      if (data.etymology_root || data.root) {
+        return `Use “${word}” as a root-clue exercise: what modern words might share this older piece, and where does the meaning still peek through?`;
+      }
+      return `Use “${word}” to practice source-aware vocabulary: what can we responsibly say, and what still needs verification?`;
+    }
+
+    function discussionQuestionsFor(data, timeline) {
+      const word = data.word || data.name || currentWord || 'this word';
+      const old = firstMeaning(timeline);
+      const layer = classifyOriginLayer(data || {});
+      return [
+        old?.meaning
+          ? `What would a reader misunderstand if “${word}” were read only with its modern meaning?`
+          : `What evidence would we need before making a strong historical claim about “${word}”?`,
+        `How does the source layer (${layer.label}) affect the tone of the word?`,
+        `Which nearby synonym would change the sentence’s tone, precision, or historical feel?`,
+      ];
+    }
+
     function buildLearnerDefinition(data, timeline, registers, layer) {
       return {
         plain: plainDefinitionText(data),
@@ -2307,6 +2841,57 @@
       } catch { hideAuto(); }
     }
 
+    async function renderNotFoundState(query) {
+      currentWordData = null;
+      currentTimeline = [];
+      updateDefaultSeo();
+
+      const wordContent = document.getElementById('word-content');
+      wordContent.innerHTML = '';
+      const message = document.createElement('p');
+      message.className = 'empty-state';
+      message.textContent = 'Word not found in the production lexicon yet.';
+      wordContent.appendChild(message);
+
+      try {
+        const res = await apiFetch(`/pg/words/suggest?q=${encodeURIComponent(query)}&limit=3`);
+        if (res.ok) {
+          const suggestions = await res.json();
+          if (Array.isArray(suggestions) && suggestions.length) {
+            const wrap = document.createElement('div');
+            wrap.className = 'did-you-mean';
+            const label = document.createElement('span');
+            label.textContent = 'Did you mean';
+            wrap.appendChild(label);
+            suggestions.forEach((suggestion, index) => {
+              const word = suggestion.word || suggestion;
+              const btn = document.createElement('button');
+              btn.type = 'button';
+              btn.className = 'suggestion-chip';
+              btn.textContent = word;
+              btn.addEventListener('click', () => loadWord(word, true));
+              wrap.appendChild(btn);
+              if (index === suggestions.length - 1) {
+                const mark = document.createElement('span');
+                mark.textContent = '?';
+                wrap.appendChild(mark);
+              }
+            });
+            wordContent.appendChild(wrap);
+          }
+        }
+      } catch {
+        // Suggestions are helpful, but absence of suggestions should not hide the not-found state.
+      }
+
+      document.getElementById('timeline-content').innerHTML =
+        '<p class="empty-state">No timeline available for that search yet.</p>';
+      document.getElementById('roots-content').innerHTML =
+        '<p class="empty-state">No root data available for that search yet.</p>';
+      document.getElementById('sources-content').innerHTML =
+        '<p class="empty-state">No source data available for that search yet.</p>';
+    }
+
     /* ── WORD LOADER ── */
     async function loadWord(word, scrollIntoView = true) {
       currentWord = word.toLowerCase();
@@ -2334,17 +2919,7 @@
       }
 
       if (!wordRes.ok) {
-        currentWordData = null;
-        currentTimeline = [];
-        updateDefaultSeo();
-        document.getElementById('word-content').innerHTML =
-          '<p class="empty-state">Word not found in the production lexicon yet.</p>';
-        document.getElementById('timeline-content').innerHTML =
-          '<p class="empty-state">No timeline available for that search yet.</p>';
-        document.getElementById('roots-content').innerHTML =
-          '<p class="empty-state">No root data available for that search yet.</p>';
-        document.getElementById('sources-content').innerHTML =
-          '<p class="empty-state">No source data available for that search yet.</p>';
+        await renderNotFoundState(currentWord);
         return;
       }
 
@@ -2374,6 +2949,8 @@
       const layer = classifyOriginLayer(data);
       const path = sourcePath(data, layer);
       const learner = buildLearnerDefinition(data, timeline, registers, layer);
+      const readiness = citationReadiness(data);
+      const mode = currentModeNote();
 
       const nameEl = document.createElement('div');
       nameEl.id = 'word-name';
@@ -2390,6 +2967,25 @@
       insight.className = 'word-insight';
       insight.textContent = buildInsight(data, timeline);
       container.appendChild(insight);
+
+      const educatorStrip = document.createElement('div');
+      educatorStrip.className = 'educator-strip';
+      educatorStrip.innerHTML = `
+        <article class="educator-note">
+          <strong>${esc(mode.label)}</strong>
+          <p>${esc(mode.note)}</p>
+        </article>
+        <article class="educator-note">
+          <strong>Citation readiness</strong>
+          <p><span class="source-badge ${esc(readiness.className)}">${esc(readiness.label)}</span></p>
+          <p>${esc(readiness.note)}</p>
+        </article>
+        <article class="educator-note">
+          <strong>Lesson hook</strong>
+          <p>${esc(lessonHookFor(data, timeline))}</p>
+        </article>
+      `;
+      container.appendChild(educatorStrip);
 
       const story = document.createElement('div');
       story.className = 'story-grid';
@@ -2442,11 +3038,12 @@
         detail.className = 'source-details';
         detail.open = readerLevel === 'scholarly';
         detail.innerHTML = `
-          <summary>${readerLevel === 'scholarly' ? 'Scholarly note' : 'More detail'}</summary>
+          <summary>${readerLevel === 'scholarly' ? 'Research note' : 'Teacher note'}</summary>
           <p>${esc(root ? `Root or older form: ${root}${rootOrigin ? `, from ${rootOrigin}` : ''}${rootMeaning ? `, "${rootMeaning}"` : ''}.` : 'No root analysis has been loaded for this entry yet.')}</p>
           <p>${esc(`Origin layer: ${layer.label}. Source path: ${path}.`)}</p>
           <p>${esc(recent?.meaning ? `Latest timeline sense: "${recent.meaning}".` : 'Timeline senses will appear as attested evidence is added.')}</p>
           <p>${esc(`Plain-language drift label: ${plainShiftLabel(data.change_type || data.semantic_change_type)}.`)}</p>
+          <p>${esc(`Classroom question: ${discussionQuestionsFor(data, timeline)[0]}`)}</p>
         `;
         container.appendChild(detail);
       }
@@ -2542,6 +3139,7 @@
       const license = data.definition_license || 'License/source note pending';
       const layer = classifyOriginLayer(data);
       const path = sourcePath(data, layer);
+      const readiness = citationReadiness(data);
 
       container.innerHTML = `
         <div class="story-grid">
@@ -2562,6 +3160,11 @@
             <p>${esc(license)}</p>
           </article>
           <article class="story-block">
+            <h3>Citation readiness</h3>
+            <p><span class="source-badge ${esc(readiness.className)}" id="citation-readiness-label">${esc(readiness.label)}</span></p>
+            <p id="citation-readiness-note">${esc(readiness.note)}</p>
+          </article>
+          <article class="story-block">
             <h3>Origin layer</h3>
             <p>${esc(layer.label)} — ${esc(layer.status)}</p>
           </article>
@@ -2572,6 +3175,13 @@
           <article class="story-block full">
             <h3>Scholarly guardrail</h3>
             <p>Attested meanings should be treated as stronger than reconstructed roots. Treat this page as a source trail and teaching aid, not a final citation, unless exact sense citations are shown below.</p>
+          </article>
+          <article class="story-block full">
+            <h3>Classroom Notes</h3>
+            <p>${esc(lessonHookFor(data, currentTimeline))}</p>
+            <div class="layer-comparison">
+              ${discussionQuestionsFor(data, currentTimeline).map((q, i) => `<div class="layer-row"><strong>Question ${i + 1}</strong><span>${esc(q)}</span></div>`).join('')}
+            </div>
           </article>
           <article class="story-block full" id="sense-evidence-block">
             <h3>Exact sense citations</h3>
@@ -2594,6 +3204,14 @@
         ]);
         const senses = senseRes.ok ? await senseRes.json() : [];
         const citation = citeRes.ok ? await citeRes.json() : null;
+        const exactReadiness = citationReadiness(currentWordData || {}, Array.isArray(senses) ? senses.length : 0);
+        const readinessLabel = document.getElementById('citation-readiness-label');
+        const readinessNote = document.getElementById('citation-readiness-note');
+        if (readinessLabel) {
+          readinessLabel.className = `source-badge ${exactReadiness.className}`;
+          readinessLabel.textContent = exactReadiness.label;
+        }
+        if (readinessNote) readinessNote.textContent = exactReadiness.note;
         if (!Array.isArray(senses) || !senses.length) {
           target.innerHTML = '<p class="empty-state">Exact sense citations are not loaded for this word yet. Use the listed source as a lead, not as a final citation.</p>';
           return;
@@ -2623,49 +3241,317 @@
       }
     }
 
+    // Curated public-domain passages. Every flagged word was verified against the
+    // live corpus; composites are labelled honestly as assembled genuine lines.
+    const CURATED_TEXTS = [
+      {
+        label: 'Chaucer — The Canterbury Tales',
+        attribution: 'Assembled lines from the Miller’s Tale and the Wife of Bath’s Tale (spelling modernized).',
+        era: '',
+        text: 'This silly carpenter began to quake. For villain sinful deeds make a churl; look who is most virtuous, and on the poor have mercy.',
+      },
+      {
+        label: 'Shakespeare — Hamlet',
+        attribution: 'Assembled lines from Act 1.4, Act 3.1, and Act 3.2.',
+        era: '',
+        text: "Angels and ministers of grace defend us! Whether 'tis nobler in the mind to suffer the slings and arrows of outrageous fortune, or in the whirlwind of passion lose all temperance.",
+      },
+      {
+        label: 'King James Bible (1611)',
+        attribution: '1 Timothy 4:12 — verbatim.',
+        era: '',
+        text: 'Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.',
+      },
+      {
+        label: 'Declaration of Independence (1776)',
+        attribution: 'Assembled wording from the preamble and the list of grievances.',
+        era: '',
+        text: 'Mankind are more disposed to suffer, while evils are sufferable, than to right themselves. Let facts be submitted to a candid world: he has endeavoured to prevent the population of these States.',
+      },
+    ];
+
+    function renderLessonPacks() {
+      const host = document.getElementById('lesson-packs');
+      if (!host) return;
+      host.innerHTML = '';
+      LESSON_PACKS.forEach((pack, i) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'lesson-pack-card';
+        card.setAttribute('role', 'listitem');
+        card.innerHTML = `
+          <strong>${esc(pack.title)}</strong>
+          <p>${esc(pack.goal)}</p>
+          <span>${esc(pack.words.join(', '))}</span>`;
+        card.addEventListener('click', () => loadLessonPack(i));
+        host.appendChild(card);
+      });
+    }
+
+    function loadLessonPack(i) {
+      const pack = LESSON_PACKS[i];
+      if (!pack) return;
+      const input = document.getElementById('text-help-input');
+      const select = document.getElementById('text-era-select');
+      if (input) input.value = pack.text;
+      if (select) select.value = pack.era || '';
+      analyzeTextHelp();
+    }
+
+    function renderTextSets() {
+      const host = document.getElementById('text-sets');
+      if (!host) return;
+      host.innerHTML = '';
+      CURATED_TEXTS.forEach((t, i) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'text-set-card';
+        card.setAttribute('role', 'listitem');
+        card.innerHTML = `
+          <span class="text-set-label">${esc(t.label)}</span>
+          <span class="text-set-snippet">“${esc(t.text)}”</span>
+          <span class="text-set-cite">${esc(t.attribution)}</span>
+          <span class="text-set-cta">Read it in context →</span>`;
+        card.addEventListener('click', () => loadCuratedText(i));
+        host.appendChild(card);
+      });
+    }
+
+    function loadCuratedText(i) {
+      const t = CURATED_TEXTS[i];
+      if (!t) return;
+      const input = document.getElementById('text-help-input');
+      const select = document.getElementById('text-era-select');
+      if (input) input.value = t.text;
+      if (select) select.value = t.era || '';
+      analyzeTextHelp();
+    }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function formatAttested(from, to) {
+      if (from && to) return `attested ${from}–${to}`;
+      if (from) return `attested from ${from}`;
+      if (to) return `attested to ${to}`;
+      return '';
+    }
+
+    // Re-render the passage with each flagged word wrapped in a clickable mark.
+    // Splitting on a single capture group keeps matches at odd indices; every
+    // segment is escaped, so user text is never injected as raw HTML.
+    function highlightPassage(text, words) {
+      if (!words.length) return esc(text);
+      const pattern = new RegExp(
+        '\\b(' + words.map(escapeRegex).sort((a, b) => b.length - a.length).join('|') + ')\\b',
+        'gi',
+      );
+      return text.split(pattern).map((segment, idx) => {
+        if (idx % 2 === 1) {
+          const key = segment.toLowerCase();
+          return `<mark class="lex-flag" data-word="${esc(key)}" tabindex="0" role="button" title="Jump to “${esc(segment)}”">${esc(segment)}</mark>`;
+        }
+        return esc(segment);
+      }).join('');
+    }
+
+    function contextClueFor(item) {
+      const text = [
+        item.change_type,
+        item.semantic_change_type,
+        item.era_definition,
+        item.modern_definition,
+      ].join(' ').toLowerCase();
+      if (/pejor|worse|negative|bad|foolish|wicked/.test(text)) return 'pejoration';
+      if (/amelior|better|positive|blessed|noble/.test(text)) return 'amelioration';
+      if (/narrow|specific|only|particular/.test(text)) return 'narrowed meaning';
+      if (/broad|general|any|all/.test(text)) return 'broadened meaning';
+      if (item.era_definition && item.modern_definition) return 'older meaning';
+      return 'needs verification';
+    }
+
+    function whyFlaggedText(item) {
+      const label = contextClueFor(item);
+      if (label === 'needs verification') {
+        return 'This word was flagged because the corpus has a possible historical sense, but the explanation needs more exact metadata before strong classroom claims.';
+      }
+      return `This was flagged because its ${label} may change how the sentence reads: the older sense and the modern sense are not interchangeable.`;
+    }
+
+    function teacherSummaryFor(flagged, eraName) {
+      const labels = flagged.map(contextClueFor);
+      const unique = [...new Set(labels)].slice(0, 3);
+      const words = flagged.map((f) => f.word).filter(Boolean).slice(0, 6).join(', ');
+      return `Focus the class on ${words || 'the highlighted words'}. The main context clue pattern${unique.length === 1 ? ' is' : 's are'} ${unique.join(', ')}. Have students paraphrase the passage once with modern meanings and once with the older meanings.`;
+    }
+
     async function analyzeTextHelp() {
       const text = document.getElementById('text-help-input')?.value.trim();
-      const era = document.getElementById('text-era-select')?.value || 'Early Modern English';
+      const era = document.getElementById('text-era-select')?.value || '';
       const results = document.getElementById('text-help-results');
       if (!results) return;
       if (!text) {
-        results.innerHTML = '<p class="empty-state">Paste a short passage first.</p>';
+        results.innerHTML = '<p class="empty-state">Paste a short passage first, or open one of the passages above.</p>';
         return;
       }
 
       results.innerHTML = '<p class="empty-state">Checking older meanings…</p>';
       try {
+        const body = era ? { text, era_name: era } : { text };
         const res = await apiFetch('/pg/word/era-check', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, era_name: era }),
+          body: JSON.stringify(body),
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
+        const scope = era ? esc(era) : 'any era';
         if (!data.flagged || !data.flagged.length) {
-          results.innerHTML = `<p class="empty-state">No obvious historical false friends found for ${esc(era)}. That does not prove the passage is simple; it means the current corpus did not flag a mismatch.</p>`;
+          results.innerHTML = `<p class="empty-state">No historical false friends found for ${scope}. That does not prove the passage is simple — it means the current corpus did not flag a mismatch.</p>`;
           return;
         }
-        results.innerHTML = `<div class="section-label">${data.flagged_count || data.flagged.length} word${(data.flagged_count || data.flagged.length) === 1 ? '' : 's'} worth checking</div>`;
+        currentTextAnalysis = data;
+
+        const flaggedWords = data.flagged.map((f) => f.word).filter(Boolean);
+        const count = data.flagged_count || data.flagged.length;
+        results.innerHTML =
+          `<div class="passage-readout">${highlightPassage(text, flaggedWords)}</div>` +
+          `<div class="section-label">${count} word${count === 1 ? '' : 's'} worth checking · ${esc(data.era_name || scope)}</div>` +
+          `<div class="teacher-summary">
+            <strong>Teacher summary</strong>
+            <p>${esc(teacherSummaryFor(data.flagged, data.era_name || scope))}</p>
+          </div>
+          <p class="print-scope-note">Printed from PensiveApe Text Help. Treat highlighted words as teaching leads unless exact citations are shown.</p>`;
+
         data.flagged.forEach((item) => {
           const div = document.createElement('div');
           div.className = 'flagged-word';
+          div.id = 'flag-' + String(item.word || '').toLowerCase();
+          const sourceBits = [
+            item.era_source ? `Source: ${esc(item.era_source)}` : '',
+            esc(formatAttested(item.first_attested_year, item.last_attested_year)),
+            item.confidence ? `confidence: ${esc(item.confidence)}` : '',
+          ].filter(Boolean).join(' · ');
           div.innerHTML = `
-            <strong>${esc(item.word)}</strong>
-            <p>In ${esc(era)}: ${esc(item.era_definition || 'older meaning unavailable')}</p>
-            <p>Modern sense: ${esc(item.modern_definition || 'modern definition unavailable')}</p>
-          `;
+            <div class="flag-head">
+              <strong>${esc(item.word)}</strong>
+              ${item.era_name ? `<span class="era-badge">${esc(item.era_name)}</span>` : ''}
+            </div>
+            <p class="flag-then">Then: ${esc(item.era_definition || 'older meaning unavailable')}</p>
+            <p class="flag-now">Now: ${esc(item.modern_definition || 'modern definition unavailable')}</p>
+            <span class="context-clue">${esc(contextClueFor(item))}</span>
+            <p class="flag-why">Why this was flagged: ${esc(whyFlaggedText(item))}</p>
+            ${sourceBits ? `<p class="flag-source">${sourceBits}</p>` : ''}
+            <button type="button" class="flag-explore" data-word="${esc(item.word)}">Explore “${esc(item.word)}” →</button>`;
           results.appendChild(div);
+        });
+
+        results.querySelectorAll('.lex-flag').forEach((mark) => {
+          const jump = () => {
+            const card = document.getElementById('flag-' + (mark.dataset.word || ''));
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          };
+          mark.addEventListener('click', jump);
+          mark.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(); }
+          });
+        });
+        results.querySelectorAll('.flag-explore').forEach((btn) => {
+          btn.addEventListener('click', () => loadWord(btn.dataset.word));
         });
       } catch {
         results.innerHTML = '<p class="empty-state">Could not check that passage yet. Try a shorter sentence or confirm the API is running.</p>';
       }
     }
 
+    function compareKey(a, b) {
+      return `${String(a || '').toLowerCase()}|${String(b || '').toLowerCase()}`;
+    }
+
+    function loadComparePreset(a, b) {
+      const inputA = document.getElementById('compare-word-a');
+      const inputB = document.getElementById('compare-word-b');
+      if (inputA) inputA.value = a;
+      if (inputB) inputB.value = b;
+      compareWords();
+    }
+
+    async function fetchWordDataForCompare(word) {
+      const res = await apiFetch(`/pg/word/${encodeURIComponent(word.toLowerCase())}`);
+      if (!res.ok) throw new Error(word);
+      return res.json();
+    }
+
+    function comparisonSummary(a, b) {
+      const first = a.word || a.name;
+      const second = b.word || b.name;
+      const preset = COMPARE_PRESETS[compareKey(first, second)] || COMPARE_PRESETS[compareKey(second, first)];
+      if (preset) return preset;
+      const layerA = classifyOriginLayer(a);
+      const layerB = classifyOriginLayer(b);
+      const shared = layerA.label === layerB.label
+        ? `Both words sit in the ${layerA.label} layer, so the useful classroom question is how their meanings and register diverged.`
+        : `These words come through different source layers: ${layerA.label} and ${layerB.label}. That difference can shape tone even when meanings overlap.`;
+      return {
+        shared,
+        questions: [
+          'Where do the meanings overlap, and where do they separate?',
+          'Which word sounds plainer, more formal, more emotional, or more technical?',
+        ],
+      };
+    }
+
+    async function compareWords() {
+      const aWord = document.getElementById('compare-word-a')?.value.trim();
+      const bWord = document.getElementById('compare-word-b')?.value.trim();
+      const results = document.getElementById('compare-results');
+      if (!results) return;
+      if (!aWord || !bWord) {
+        results.innerHTML = '<p class="empty-state">Enter two words first.</p>';
+        return;
+      }
+      results.innerHTML = '<p class="empty-state">Comparing source paths and meanings…</p>';
+      try {
+        const [a, b] = await Promise.all([
+          fetchWordDataForCompare(aWord),
+          fetchWordDataForCompare(bWord),
+        ]);
+        const layerA = classifyOriginLayer(a);
+        const layerB = classifyOriginLayer(b);
+        const summary = comparisonSummary(a, b);
+        results.innerHTML = `
+          <div class="compare-grid">
+            <article class="compare-card">
+              <strong>${esc(a.word || a.name || aWord)}</strong>
+              <p>${esc(a.definition || 'Definition pending trusted source import.')}</p>
+              <p>${esc(sourcePath(a, layerA))}</p>
+            </article>
+            <article class="compare-card">
+              <strong>${esc(b.word || b.name || bWord)}</strong>
+              <p>${esc(b.definition || 'Definition pending trusted source import.')}</p>
+              <p>${esc(sourcePath(b, layerB))}</p>
+            </article>
+            <article class="compare-card full">
+              <strong>Shared or contrasting clue</strong>
+              <p>${esc(summary.shared)}</p>
+            </article>
+            <article class="compare-card full">
+              <strong>Classroom questions</strong>
+              <div class="layer-comparison">
+                ${summary.questions.map((q, i) => `<div class="layer-row"><strong>Question ${i + 1}</strong><span>${esc(q)}</span></div>`).join('')}
+              </div>
+            </article>
+          </div>`;
+      } catch {
+        results.innerHTML = '<p class="empty-state">Could not compare those words yet. Try source-rich words such as charity, love, awful, awesome, prevent, or precede.</p>';
+      }
+    }
+
     async function loadEraTimeline(word) {
       document.getElementById('timeline-content').textContent = 'Loading timeline…';
       try {
-        const res = await apiFetch(`/word/${encodeURIComponent(word)}/era-timeline`);
+        const res = await apiFetch(`/pg/word/${encodeURIComponent(word)}/era-timeline`);
         if (!res.ok) throw new Error();
         const data = await res.json();
         currentTimeline = data.timeline || [];
@@ -2749,7 +3635,7 @@
       box.style.display = 'block';
       box.textContent = 'Asking the historian…';
       try {
-        const res = await apiFetch(`/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
+        const res = await apiFetch(`/pg/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
         const data = await res.json();
         box.textContent = data.ai_explanation || 'No explanation available.';
       } catch {
@@ -2849,7 +3735,7 @@
       listDiv.innerHTML = `<h3>Loading words from ${esc(eraName)}…</h3>`;
 
       try {
-        const res = await apiFetch(`/era/${encodeURIComponent(eraName)}/words?limit=20`);
+        const res = await apiFetch(`/pg/era/${encodeURIComponent(eraName)}/words?limit=20`);
         const data = await res.json();
         listDiv.innerHTML = '';
 

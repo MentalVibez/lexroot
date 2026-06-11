@@ -1,4 +1,7 @@
-.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-morphemes import-word-relations research-triage sync-neo4j make-snapshot lint typecheck help
+.PHONY: dev test test-all migrate import-senses import-gcide import-frequency import-common-words import-common-words-next import-morphemes sync-neo4j make-snapshot lint typecheck help
+
+PYTHON ?= python
+COMMON_WORD_ARGS ?=
 
 ## Start Docker services and the API app
 dev:
@@ -7,44 +10,44 @@ dev:
 
 ## Run the fast test suite (no Neo4j/Ollama required)
 test:
-	pytest tests/ test_word_detective.py test_shipley_importer.py \
+	$(PYTHON) -m pytest tests/ test_word_detective.py test_shipley_importer.py \
 	       test_senses_importer.py test_data_quality_validator.py -v
 
 ## Run the full test suite across all testpaths
 test-all:
-	pytest -v
+	$(PYTHON) -m pytest -v
 
 ## Apply all pending Alembic migrations
 migrate:
-	alembic upgrade head
+	$(PYTHON) -m alembic upgrade head
 
 ## Import senses from the default CSV path
 import-senses:
-	python -m ingestor.senses_importer
+	$(PYTHON) -m ingestor.senses_importer
 
 ## Import Webster's 1913 (GCIDE) words and senses into PostgreSQL
 import-gcide:
-	python -m ingestor.gcide_importer
+	$(PYTHON) -m ingestor.gcide_importer
 
 ## Import morpheme decompositions from CSV (Words/morphemes.csv)
 import-morphemes:
-	python -m ingestor.morphemes_importer
-
-## Import semantic and derivational word relations from CSV (Words/sources/word_relations.csv)
-import-word-relations:
-	python -m ingestor.word_relations_importer
-
-## Classify learning resources without scraping copyrighted bodies
-research-triage:
-	python3 -m ingestor.research_triage_agent
+	$(PYTHON) -m ingestor.morphemes_importer
 
 ## Sync PostgreSQL words → Neo4j graph (run after any bulk import)
 sync-neo4j:
-	python -m ingestor.neo4j_sync
+	$(PYTHON) -m ingestor.neo4j_sync
 
 ## Load wordfreq Zipf scores into the PostgreSQL words table
 import-frequency:
-	python -m ingestor.frequency_pg_importer
+	$(PYTHON) -m ingestor.frequency_pg_importer
+
+## Import top 5,000 common English words into PostgreSQL
+import-common-words:
+	$(PYTHON) -m ingestor.common_words_pg_importer --start-rank 1 --limit 5000 $(COMMON_WORD_ARGS)
+
+## Import a later common-word tier: make import-common-words-next START=5001 LIMIT=5000
+import-common-words-next:
+	$(PYTHON) -m ingestor.common_words_pg_importer --start-rank $(START) --limit $(LIMIT) $(COMMON_WORD_ARGS)
 
 ## Create a citable dataset snapshot (requires ADMIN_API_TOKEN + running API)
 make-snapshot:
@@ -56,11 +59,11 @@ make-snapshot:
 
 ## Lint all source packages
 lint:
-	ruff check living_lexicon/ ingestor/ api/ langchain_plugin/
+	$(PYTHON) -m ruff check living_lexicon/ ingestor/ api/ langchain_plugin/
 
 ## Type-check the SDK package
 typecheck:
-	mypy living_lexicon/ --ignore-missing-imports
+	$(PYTHON) -m mypy living_lexicon/ --ignore-missing-imports
 
 ## Print available targets
 help:
