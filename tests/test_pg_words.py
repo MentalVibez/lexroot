@@ -272,6 +272,55 @@ async def test_pg_era_timeline_empty_for_unknown_word(app_client, write_headers)
     assert resp.json() == {"word": "nonexistentword", "timeline": []}
 
 
+async def test_pg_word_in_era_returns_sourced_summary(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="prevent", definition="to stop beforehand.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "prevent-me", "word": "prevent", "definition": "To come before; to precede.",
+        "era_name": "Middle English", "first_attested_year": 1350, "source_slug": "mec-corpus",
+    }, headers=write_headers)
+
+    resp = await app_client.get("/pg/word/prevent/era/Middle English")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["historical_meaning"] == "To come before; to precede."
+    assert data["modern_definition"] == "to stop beforehand."
+    assert data["era_source"] == "mec-corpus"
+    assert "Middle English" in data["ai_explanation"]
+    assert "mec-corpus" in data["ai_explanation"]
+
+
+async def test_pg_word_in_era_unknown_era_degrades_gracefully(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="prevent", definition="to stop beforehand.")
+    resp = await app_client.get("/pg/word/prevent/era/Old English")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["historical_meaning"] is None
+    assert data["modern_definition"] == "to stop beforehand."
+    assert data["ai_explanation"] is None
+
+
+async def test_pg_era_words_lists_words_in_era(app_client, write_headers):
+    await _upsert(app_client, write_headers, word="nice", definition="pleasant.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "nice-me", "word": "nice", "definition": "Foolish.",
+        "era_name": "Middle English", "first_attested_year": 1290,
+    }, headers=write_headers)
+    await _upsert(app_client, write_headers, word="silly", definition="foolish.")
+    await app_client.put("/pg/sense", json={
+        "sense_id": "silly-me", "word": "silly", "definition": "Innocent; blessed.",
+        "era_name": "Middle English", "first_attested_year": 1200,
+    }, headers=write_headers)
+
+    resp = await app_client.get("/pg/era/Middle English/words?limit=20")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["era"] == "Middle English"
+    names = {w["name"]: w for w in data["words"]}
+    assert "nice" in names and "silly" in names
+    assert names["nice"]["historical_meaning"] == "Foolish."
+    assert names["nice"]["modern_definition"] == "pleasant."
+
+
 async def test_era_check_auto_sentinel_scans_all_eras(app_client, write_headers):
     await _upsert(app_client, write_headers, word="silly", definition="foolish.")
     await app_client.put("/pg/sense", json={

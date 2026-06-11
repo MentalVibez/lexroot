@@ -205,6 +205,87 @@ async def pg_era_timeline(word: str, session: AsyncSession = Depends(get_pg_sess
     return EraTimelineResponse(word=word, timeline=timeline)
 
 
+class WordInEraResponse(BaseModel):
+    word: str
+    era: str
+    historical_meaning: str | None = None
+    modern_definition: str | None = None
+    era_source: str | None = None
+    ai_explanation: str | None = None
+
+
+@router.get("/word/{word}/era/{era_name:path}", response_model=WordInEraResponse)
+async def pg_word_in_era(
+    word: str, era_name: str, session: AsyncSession = Depends(get_pg_session)
+):
+    """A word's documented meaning in one era, sourced from PostgreSQL senses.
+
+    PG counterpart of the SDK ``/word/{word}/era/{era}`` route. There is no LLM
+    on this path, so ``ai_explanation`` is a plain, source-attributed summary.
+    """
+    senses = await crud.list_senses(session, word)
+    match = next((s for s in senses if (s.era_name or "") == era_name), None)
+    word_row = await crud.get_word(session, word)
+    modern = word_row.definition if word_row else None
+    if match is None:
+        return WordInEraResponse(word=word, era=era_name, modern_definition=modern)
+    src = f" (source: {match.source_slug})" if match.source_slug else ""
+    explanation = f'In {era_name}, "{word}" meant: {match.definition}{src}.'
+    if modern:
+        explanation += f" Today it usually means: {modern}."
+    return WordInEraResponse(
+        word=word,
+        era=era_name,
+        historical_meaning=match.definition,
+        modern_definition=modern,
+        era_source=match.source_slug,
+        ai_explanation=explanation,
+    )
+
+
+class EraWord(BaseModel):
+    name: str
+    historical_meaning: str | None = None
+    modern_definition: str | None = None
+
+
+class EraWordsResponse(BaseModel):
+    era: str
+    words: list[EraWord]
+
+
+@router.get("/era/{era_name:path}/words", response_model=EraWordsResponse)
+async def pg_era_words(
+    era_name: str,
+    limit: int = Query(default=20, le=100),
+    session: AsyncSession = Depends(get_pg_session),
+):
+    """Words with a documented sense in a given era, from PostgreSQL.
+
+    PG counterpart of the SDK ``/era/{era}/words`` route. Era names are matched
+    exactly as stored (e.g. "18th-19th Century English"), not title-cased.
+    """
+    senses = await crud.list_senses_by_field(session, era_name=era_name, limit=limit * 3)
+    seen: dict[str, object] = {}
+    order: list[str] = []
+    for s in senses:
+        if s.word not in seen:
+            seen[s.word] = s
+            order.append(s.word)
+        if len(order) >= limit:
+            break
+    word_rows = await crud.bulk_get_words(session, order)
+    words = [
+        EraWord(
+            name=w,
+            historical_meaning=seen[w].definition,
+            modern_definition=word_rows[w].definition if w in word_rows else None,
+        )
+        for w in order
+    ]
+    return EraWordsResponse(era=era_name, words=words)
+
+
 @router.get("/word/{word}/vitality", response_model=VitalityResponse)
 async def get_word_vitality(word: str, session: AsyncSession = Depends(get_pg_session)):
     row = await crud.get_word(session, word)

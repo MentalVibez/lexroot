@@ -2997,7 +2997,7 @@
       box.style.display = 'block';
       box.textContent = 'Asking the historian…';
       try {
-        const res = await apiFetch(`/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
+        const res = await apiFetch(`/pg/word/${encodeURIComponent(currentWord)}/era/${encodeURIComponent(eraName)}`);
         const data = await res.json();
         box.textContent = data.ai_explanation || 'No explanation available.';
       } catch {
@@ -3097,7 +3097,7 @@
       listDiv.innerHTML = `<h3>Loading words from ${esc(eraName)}…</h3>`;
 
       try {
-        const res = await apiFetch(`/era/${encodeURIComponent(eraName)}/words?limit=20`);
+        const res = await apiFetch(`/pg/era/${encodeURIComponent(eraName)}/words?limit=20`);
         const data = await res.json();
         listDiv.innerHTML = '';
 
