@@ -24,7 +24,7 @@ class LexiconConfig:
 
         _UNSAFE = {"", "lexicon_secret", "password", "neo4j", "secret"}
 
-        if self.neo4j_password in _UNSAFE:
+        if os.getenv("ENABLE_NEO4J", "true").lower() == "true" and self.neo4j_password in _UNSAFE:
             raise RuntimeError("Refusing to start in production with an unsafe NEO4J_PASSWORD.")
 
         pg_password = os.getenv("POSTGRES_PASSWORD", "")

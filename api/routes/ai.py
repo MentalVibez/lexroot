@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException, Query
 
-from api.deps import get_historian
+from api.deps import get_historian, require_legacy_sdk
 from api.schemas import DriftResponse, FactCheckPayload, FactCheckResponse, TeachingCardResponse
 from living_lexicon.exceptions import LLMError, WordNotFoundError
 
@@ -15,6 +15,7 @@ def semantic_drift(
     word: str,
     context: str | None = Query(default=None, description="biblical | legal | medical | literary"),
 ):
+    require_legacy_sdk()
     try:
         drift = get_historian().explain(word, context=context)
         return DriftResponse(
@@ -36,6 +37,7 @@ def get_teaching_card(
     word: str,
     level: str = Query(default="high_school", pattern="^(middle_school|high_school|college|scholarly)$"),
 ):
+    require_legacy_sdk()
     try:
         card = get_historian().teaching_card(word, level=level)
     except WordNotFoundError:
@@ -45,6 +47,7 @@ def get_teaching_card(
 
 @router.post("/word/{word}/fact-check", response_model=FactCheckResponse)
 def fact_check_word_answer(word: str, payload: FactCheckPayload):
+    require_legacy_sdk()
     try:
         result = get_historian().fact_check_answer(word, payload.answer, strict=payload.strict)
     except WordNotFoundError:
