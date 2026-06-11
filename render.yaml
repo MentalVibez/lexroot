@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: pensiveape-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    domains:
+      - api.pensiveape.com
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: CORS_ORIGINS
+        value: https://pensiveape.com,https://www.pensiveape.com
+      - key: ENABLE_NEO4J
+        value: "false"
+      - key: ENABLE_OLLAMA
+        value: "false"
+      - key: ENABLE_WRITE_ENDPOINTS
+        value: "false"
+      - key: REQUIRE_API_KEY
+        value: "false"
+      - key: AUTO_CREATE_TABLES
+        value: "false"
+      - key: ADMIN_API_TOKEN
+        generateValue: true
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: POSTGRES_URL
+        sync: false
+      - key: POSTGRES_SYNC_URL
+        sync: false
+
+  - type: web
+    name: pensiveape-web
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: frontend
+    domains:
+      - pensiveape.com
+      - www.pensiveape.com
